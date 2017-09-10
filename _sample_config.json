@@ -1,0 +1,13 @@
+{
+   "Database" : {
+      "Driver" : "postgres",
+      "Host" : "YourHostAddressHere",
+      "Username" : "YourUsernameHere",
+      "Password" : "YourPasswordHere",
+      "Database" : "YourDatabaseNameHere",
+      "SSLMode" : "disable"
+   },
+   "Web" : {
+      "Port" : 8080
+   }
+}
