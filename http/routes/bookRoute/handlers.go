@@ -1,4 +1,4 @@
-package BookRoute
+package bookRoute
 
 import (
 	"net/http"
