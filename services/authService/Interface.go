@@ -1,4 +1,4 @@
-package AuthService
+package authService
 
 import (
 	"yellowroad_library/database/entities"

@@ -2,20 +2,24 @@ package containers
 
 import (
 	"fmt"
+
 	"yellowroad_library/configs"
 	db "yellowroad_library/database"
-	"yellowroad_library/database/repositories/UserRepo"
-	"yellowroad_library/http/middleware/AuthMiddleware"
-	"yellowroad_library/services/AuthService"
-	"yellowroad_library/services/TokenService"
+	"yellowroad_library/database/repositories/userRepository"
+	"yellowroad_library/http/middleware/authMiddleware"
+	"yellowroad_library/services/authService"
+	"yellowroad_library/services/tokenService"
+	"yellowroad_library/database/repositories/userRepository/gormUserRepository"
+	"yellowroad_library/services/authService/appAuthService"
+	"yellowroad_library/services/tokenService/appTokenService"
 
 	"github.com/jinzhu/gorm"
 )
 
 type AppContainer struct {
 	dbConn        *gorm.DB
-	tokenService  *TokenService.TokenService
-	AuthService   *AuthService.AuthService
+	tokenService  *tokenService.TokenService
+	AuthService   *authService.AuthService
 	configuration configs.Configuration
 }
 
@@ -61,18 +65,18 @@ func (ac AppContainer) GetConfiguration() configs.Configuration {
 /***********************************************************************************************/
 //Services
 
-func (ac AppContainer) GetAuthService() AuthService.AuthService {
+func (ac AppContainer) GetAuthService() authService.AuthService {
 	if ac.AuthService == nil {
-		var AuthService AuthService.AuthService = AuthService.NewAppAuthService(ac.GetUserRepository(), ac.GetTokenService())
+		var AuthService authService.AuthService = appAuthService.New(ac.GetUserRepository(), ac.GetTokenService())
 		ac.AuthService = &AuthService
 	}
 
 	return *ac.AuthService
 }
 
-func (ac AppContainer) GetTokenService() TokenService.TokenService {
+func (ac AppContainer) GetTokenService() tokenService.TokenService {
 	if ac.tokenService == nil {
-		var tokenService TokenService.TokenService = TokenService.NewAppTokenService(ac.GetDbConn())
+		var tokenService tokenService.TokenService = appTokenService.New(ac.GetDbConn())
 		ac.tokenService = &tokenService
 	}
 
@@ -83,16 +87,16 @@ func (ac AppContainer) GetTokenService() TokenService.TokenService {
 /***********************************************************************************************/
 //Repositories
 
-func (ac AppContainer) GetUserRepository() UserRepo.UserRepository {
-	return UserRepo.NewGormSqlUserRepository(ac.GetDbConn())
+func (ac AppContainer) GetUserRepository() userRepository.UserRepository {
+	return gormUserRepository.New(ac.GetDbConn())
 }
 
 /***********************************************************************************************/
 /***********************************************************************************************/
 //Middleware
 
-func (ac AppContainer) GetAuthMiddleware() AuthMiddleware.AuthMiddleware {
-	return AuthMiddleware.New(ac.GetTokenService())
+func (ac AppContainer) GetAuthMiddleware() authMiddleware.AuthMiddleware {
+	return authMiddleware.New(ac.GetTokenService())
 }
 
 /***********************************************************************************************/

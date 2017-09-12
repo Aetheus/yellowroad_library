@@ -1,4 +1,4 @@
-package BookRepo
+package gormBookRepository
 
 import (
 	"errors"
@@ -7,17 +7,17 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type GormSqlBookRepository struct {
+type GormBookRepository struct {
 	dbConn *gorm.DB
 }
 
-func NewGormSqlBookRepository(dbConn *gorm.DB) GormSqlBookRepository {
-	return GormSqlBookRepository{
+func New(dbConn *gorm.DB) GormBookRepository {
+	return GormBookRepository{
 		dbConn: dbConn,
 	}
 }
 
-func (repo GormSqlBookRepository) FindById(id int) (*entities.Book, error) {
+func (repo GormBookRepository) FindById(id int) (*entities.Book, error) {
 	var book entities.Book
 
 	dbConn := repo.dbConn
@@ -35,7 +35,7 @@ func (repo GormSqlBookRepository) FindById(id int) (*entities.Book, error) {
 	return &book, nil
 }
 
-func (repo GormSqlBookRepository) Update(book *entities.Book) error {
+func (repo GormBookRepository) Update(book *entities.Book) error {
 	if queryResult := repo.dbConn.Save(book); queryResult.Error != nil {
 		return queryResult.Error
 	}
@@ -43,7 +43,7 @@ func (repo GormSqlBookRepository) Update(book *entities.Book) error {
 	return nil
 }
 
-func (repo GormSqlBookRepository) Insert(book *entities.Book) error {
+func (repo GormBookRepository) Insert(book *entities.Book) error {
 
 	if result := repo.dbConn.Create(book); result.Error != nil {
 		return result.Error

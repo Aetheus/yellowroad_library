@@ -1,4 +1,4 @@
-package AuthService
+package appAuthService
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,16 +8,16 @@ import (
 	"unicode/utf8"
 
 	"yellowroad_library/database/entities"
-	"yellowroad_library/database/repositories/UserRepo"
-	"yellowroad_library/services/TokenService"
+	"yellowroad_library/database/repositories/userRepository"
+	"yellowroad_library/services/tokenService"
 )
 
 type AppAuthService struct {
-	userRepository UserRepo.UserRepository
-	tokenService   TokenService.TokenService
+	userRepository userRepository.UserRepository
+	tokenService   tokenService.TokenService
 }
 
-func NewAppAuthService(userRepository UserRepo.UserRepository, tokenService TokenService.TokenService) AppAuthService {
+func New(userRepository userRepository.UserRepository, tokenService tokenService.TokenService) AppAuthService {
 	return AppAuthService{
 		userRepository: userRepository,
 		tokenService:   tokenService,
@@ -88,14 +88,14 @@ func (service AppAuthService) GetLoggedInUser(data interface{}) (*entities.User,
 	}
 }
 
-func getTokenClaim(c *gin.Context) (*TokenService.MyCustomClaims, error) {
-	tokenClaim, exists := c.Get(TokenService.TOKEN_CLAIMS_CONTEXT_KEY)
+func getTokenClaim(c *gin.Context) (*tokenService.MyCustomClaims, error) {
+	tokenClaim, exists := c.Get(tokenService.TOKEN_CLAIMS_CONTEXT_KEY)
 
 	if !exists {
 		return nil, errors.New("No token claim was provided")
 	}
 
-	claimsData := tokenClaim.(TokenService.MyCustomClaims)
+	claimsData := tokenClaim.(tokenService.MyCustomClaims)
 
 	return &claimsData, nil
 }

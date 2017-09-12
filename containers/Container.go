@@ -2,10 +2,10 @@ package containers
 
 import (
 	"yellowroad_library/configs"
-	"yellowroad_library/database/repositories/UserRepo"
-	"yellowroad_library/http/middleware/AuthMiddleware"
-	"yellowroad_library/services/AuthService"
-	"yellowroad_library/services/TokenService"
+	"yellowroad_library/database/repositories/userRepository"
+	"yellowroad_library/http/middleware/authMiddleware"
+	"yellowroad_library/services/authService"
+	"yellowroad_library/services/tokenService"
 )
 
 /*Container :
@@ -19,14 +19,14 @@ and pass these to the Repositories (and will almost definitely need to do so)
 */
 type Container interface {
 	//services
-	GetAuthService() AuthService.AuthService
-	GetTokenService() TokenService.TokenService
+	GetAuthService() authService.AuthService
+	GetTokenService() tokenService.TokenService
 
 	//repositories
-	GetUserRepository() UserRepo.UserRepository
+	GetUserRepository() userRepository.UserRepository
 
 	//middleware
-	GetAuthMiddleware() AuthMiddleware.AuthMiddleware
+	GetAuthMiddleware() authMiddleware.AuthMiddleware
 
 	//configuration
 	GetConfiguration() configs.Configuration

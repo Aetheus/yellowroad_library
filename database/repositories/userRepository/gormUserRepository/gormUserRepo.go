@@ -1,4 +1,4 @@
-package UserRepo
+package gormUserRepository
 
 import (
 	"errors"
@@ -7,17 +7,17 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type GormSqlUserRepository struct {
+type GormUserRepository struct {
 	dbConn *gorm.DB
 }
 
-func NewGormSqlUserRepository(dbConn *gorm.DB) GormSqlUserRepository {
-	return GormSqlUserRepository{
+func New(dbConn *gorm.DB) GormUserRepository {
+	return GormUserRepository{
 		dbConn: dbConn,
 	}
 }
 
-func (repo GormSqlUserRepository) FindById(id int) (*entities.User, error) {
+func (repo GormUserRepository) FindById(id int) (*entities.User, error) {
 	var user entities.User
 
 	dbConn := repo.dbConn
@@ -35,7 +35,7 @@ func (repo GormSqlUserRepository) FindById(id int) (*entities.User, error) {
 	return &user, nil
 }
 
-func (repo GormSqlUserRepository) FindByUsername(username string) (*entities.User, error) {
+func (repo GormUserRepository) FindByUsername(username string) (*entities.User, error) {
 	var dbConn = repo.dbConn
 	var user entities.User
 
@@ -55,7 +55,7 @@ func (repo GormSqlUserRepository) FindByUsername(username string) (*entities.Use
 	return &user, nil
 }
 
-func (repo GormSqlUserRepository) Update(user *entities.User) error {
+func (repo GormUserRepository) Update(user *entities.User) error {
 	if queryResult := repo.dbConn.Save(user); queryResult.Error != nil {
 		return queryResult.Error
 	}
@@ -63,7 +63,7 @@ func (repo GormSqlUserRepository) Update(user *entities.User) error {
 	return nil
 }
 
-func (repo GormSqlUserRepository) Insert(user *entities.User) error {
+func (repo GormUserRepository) Insert(user *entities.User) error {
 
 	if result := repo.dbConn.Create(user); result.Error != nil {
 		return result.Error

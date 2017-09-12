@@ -1,4 +1,4 @@
-package BookRepo
+package bookRepository
 
 import "yellowroad_library/database/entities"
 
