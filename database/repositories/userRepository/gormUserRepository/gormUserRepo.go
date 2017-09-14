@@ -1,10 +1,11 @@
 package gormUserRepository
 
 import (
-	"errors"
 	"yellowroad_library/database/entities"
 
 	"github.com/jinzhu/gorm"
+	"yellowroad_library/utils/appError"
+	"net/http"
 )
 
 type GormUserRepository struct {
@@ -22,12 +23,14 @@ func (repo GormUserRepository) FindById(id int) (*entities.User, error) {
 
 	dbConn := repo.dbConn
 
-	if results := dbConn.Where("id = ?", id).First(&user); results.Error != nil {
+	if queryResult := dbConn.Where("id = ?", id).First(&user); queryResult.Error != nil {
 		var returnedErr error
-		if results.RecordNotFound() {
-			returnedErr = errors.New("No such user")
+		if queryResult.RecordNotFound() {
+			returnedErr = appError.Wrap(queryResult.Error).
+									SetHttpCode(http.StatusNotFound).
+									SetEndpointMessage("No user found")
 		} else {
-			returnedErr = errors.New("Unknown error occured")
+			returnedErr = appError.Wrap(queryResult.Error)
 		}
 		return nil, returnedErr
 	}
@@ -39,14 +42,15 @@ func (repo GormUserRepository) FindByUsername(username string) (*entities.User, 
 	var dbConn = repo.dbConn
 	var user entities.User
 
-	//TODO : email as well
 	if queryResult := dbConn.Where("username = ?", username).First(&user); queryResult.Error != nil {
 		var returnedErr error
 
 		if queryResult.RecordNotFound() {
-			returnedErr = errors.New("Incorrect username")
+			returnedErr = appError.Wrap(queryResult.Error).
+							SetHttpCode(http.StatusNotFound).
+							SetEndpointMessage("Incorrect username or password")
 		} else {
-			returnedErr = errors.New("Unknown error occured")
+			returnedErr = appError.Wrap(queryResult.Error)
 		}
 
 		return nil, returnedErr
@@ -57,7 +61,7 @@ func (repo GormUserRepository) FindByUsername(username string) (*entities.User, 
 
 func (repo GormUserRepository) Update(user *entities.User) error {
 	if queryResult := repo.dbConn.Save(user); queryResult.Error != nil {
-		return queryResult.Error
+		return appError.Wrap(queryResult.Error)
 	}
 
 	return nil
@@ -65,8 +69,8 @@ func (repo GormUserRepository) Update(user *entities.User) error {
 
 func (repo GormUserRepository) Insert(user *entities.User) error {
 
-	if result := repo.dbConn.Create(user); result.Error != nil {
-		return result.Error
+	if queryResult := repo.dbConn.Create(user); queryResult.Error != nil {
+		return appError.Wrap(queryResult.Error)
 	}
 
 	return nil
