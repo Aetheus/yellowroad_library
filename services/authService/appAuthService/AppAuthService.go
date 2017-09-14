@@ -10,6 +10,8 @@ import (
 	"yellowroad_library/database/entities"
 	"yellowroad_library/database/repositories/userRepository"
 	"yellowroad_library/services/tokenService"
+	"yellowroad_library/utils/appError"
+	"net/http"
 )
 
 type AppAuthService struct {
@@ -25,16 +27,15 @@ func New(userRepository userRepository.UserRepository, tokenService tokenService
 }
 
 func (service AppAuthService) RegisterUser(username string, password string, email string) (returnedUser *entities.User, returnedErr error) {
-	var encounteredError error
 
 	if utf8.RuneCountInString(password) < 6 {
-		encounteredError = errors.New("Password had an insufficient length (minimum 6 characters)")
+		encounteredError := appError.New(http.StatusUnprocessableEntity, "","Password had an insufficient length (minimum 6 characters)")
 		return nil, encounteredError
 	}
 
 	hashedPassword, encounteredError := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if encounteredError != nil {
-		return nil, encounteredError
+		return nil, appError.Wrap(encounteredError)
 	}
 
 	var user = entities.User{
@@ -43,11 +44,11 @@ func (service AppAuthService) RegisterUser(username string, password string, ema
 		Email:    email,
 	}
 
-	if error := service.userRepository.Insert(&user); error != nil {
-		return nil, error
+	if err := service.userRepository.Insert(&user); err != nil {
+		return nil, appError.Wrap(err)
 	}
 
-	return &user, encounteredError
+	return &user, nil
 }
 
 // return : user, login_token, err
@@ -58,16 +59,16 @@ func (service AppAuthService) LoginUser(username string, password string) (*enti
 	//TODO : email as well
 	user, err = service.userRepository.FindByUsername(username)
 	if err != nil {
-		return nil, "", err
+		return nil, "", appError.Wrap(err)
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return nil, "", errors.New("Incorrect username or password")
+		return nil, "", appError.New(http.StatusUnauthorized, "","Incorrect username or password")
 	}
 
 	token, err := service.tokenService.CreateTokenString(*user)
 	if err != nil {
-		return nil, "", err
+		return nil, "", appError.Wrap(err)
 	}
 
 	return user, token, nil
@@ -77,14 +78,15 @@ func (service AppAuthService) GetLoggedInUser(data interface{}) (*entities.User,
 	context, ok := data.(*gin.Context)
 
 	if !ok {
-		return nil, errors.New("Provided data was not a gin context struct")
+		err := errors.New("Provided data was not a gin context struct");
+		return nil, appError.Wrap(err)
 	}
 
 	if tokenClaim, err := getTokenClaim(context); err != nil {
-		return nil, err
+		return nil, appError.Wrap(err)
 	} else {
 		user, err := service.userRepository.FindById(tokenClaim.UserID)
-		return user, err
+		return user, appError.Wrap(err)
 	}
 }
 
@@ -92,7 +94,10 @@ func getTokenClaim(c *gin.Context) (*tokenService.MyCustomClaims, error) {
 	tokenClaim, exists := c.Get(tokenService.TOKEN_CLAIMS_CONTEXT_KEY)
 
 	if !exists {
-		return nil, errors.New("No token claim was provided")
+		err := appError.Wrap(errors.New("No token claim was provided")).
+							SetHttpCode(http.StatusUnauthorized).
+							SetEndpointMessage("No login token provided");
+		return nil, err
 	}
 
 	claimsData := tokenClaim.(tokenService.MyCustomClaims)
