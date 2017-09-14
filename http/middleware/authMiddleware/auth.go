@@ -4,6 +4,7 @@ import (
 	TokenService "yellowroad_library/services/tokenService"
 
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type AuthMiddleware gin.HandlerFunc
@@ -29,9 +30,8 @@ func New(tokenService TokenService.TokenService) AuthMiddleware {
 		claims, tokenError := isTokenValid(tokenService, token)
 
 		if len(token) == 0 || claims == nil || tokenError != nil {
-			c.AbortWithStatusJSON(401, gin.H{
-				"woah": "there partner",
-			})
+			//TODO : return an actual JSON with more info (e.g: a message)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{})
 		} else {
 			c.Set(TokenService.TOKEN_CLAIMS_CONTEXT_KEY, claims)
 			c.Next()
