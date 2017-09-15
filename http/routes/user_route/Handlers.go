@@ -6,6 +6,7 @@ import (
 	"yellowroad_library/services/auth_serv"
 
 	"github.com/gin-gonic/gin"
+	"yellowroad_library/utils/app_error"
 )
 
 type signUpForm struct {
@@ -44,7 +45,7 @@ func Login(authService auth_serv.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		form := loginForm{}
 		if err := c.BindJSON(&form); err != nil {
-			c.JSON(http.StatusUnprocessableEntity, gin.H { "error" : err.Error() })
+			c.JSON(http.StatusUnprocessableEntity, gin.H { "error" : app_error.Wrap(err).EndpointMessage() })
 			return
 		}
 
@@ -52,7 +53,7 @@ func Login(authService auth_serv.AuthService) gin.HandlerFunc {
 
 		if (err != nil){
 			//TODO : return an appropriate error code / standardize the API return format and errors with custom structs
-			c.JSON(http.StatusUnauthorized, gin.H{"error": err})
+			c.JSON(http.StatusUnauthorized, gin.H{"error" : app_error.Wrap(err).EndpointMessage()})
 			return
 		}
 
