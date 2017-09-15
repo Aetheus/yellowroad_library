@@ -6,7 +6,7 @@ import (
 )
 
 func New (httpErrorCode int, contextMessage string, endpointMessage string) AppError {
-	enhancedError := merry.New(endpointMessage).WithUserMessage(contextMessage).WithHTTPCode(httpErrorCode)
+	enhancedError := merry.New(contextMessage).WithUserMessage(endpointMessage).WithHTTPCode(httpErrorCode)
 	return &appError {
 		enhancedError : enhancedError,
 	}
