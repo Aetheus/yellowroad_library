@@ -9,11 +9,11 @@ import (
 const TOKEN_CLAIMS_CONTEXT_KEY = "TokenClaims"
 
 type TokenService interface {
-	ValidateTokenString(tokenString string) (*MyCustomClaims, error)
+	ValidateTokenString(tokenString string) (LoginClaim, error)
 	CreateTokenString(user entities.User) (string, error)
 }
 
-type MyCustomClaims struct {
+type LoginClaim struct {
 	UserID int `json:"user_id"`
 	jwt.StandardClaims
 }

@@ -82,7 +82,8 @@ func (service AppAuthService) GetLoggedInUser(data interface{}) (*entities.User,
 		return nil, app_error.Wrap(err)
 	}
 
-	if tokenClaim, err := getTokenClaim(context); err != nil {
+	tokenClaim, err := getTokenClaim(context)
+	if err != nil {
 		return nil, app_error.Wrap(err)
 	} else {
 		user, err := service.userRepository.FindById(tokenClaim.UserID)
@@ -90,17 +91,18 @@ func (service AppAuthService) GetLoggedInUser(data interface{}) (*entities.User,
 	}
 }
 
-func getTokenClaim(c *gin.Context) (*token_serv.MyCustomClaims, error) {
-	tokenClaim, exists := c.Get(token_serv.TOKEN_CLAIMS_CONTEXT_KEY)
+func getTokenClaim(c *gin.Context) (token_serv.LoginClaim, error) {
+	var tokenClaim token_serv.LoginClaim
+	potentialClaim, exists := c.Get(token_serv.TOKEN_CLAIMS_CONTEXT_KEY)
 
 	if !exists {
 		err := app_error.Wrap(errors.New("No token claim was provided")).
 							SetHttpCode(http.StatusUnauthorized).
 							SetEndpointMessage("No login token provided");
-		return nil, err
+		return tokenClaim, err
 	}
 
-	claimsData := tokenClaim.(token_serv.MyCustomClaims)
+	tokenClaim = potentialClaim.(token_serv.LoginClaim)
 
-	return &claimsData, nil
+	return tokenClaim, nil
 }
