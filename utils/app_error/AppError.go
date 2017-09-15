@@ -33,6 +33,8 @@ func Wrap (err error) AppError {
 		return &appError {
 			enhancedError : merryErr,
 		}
+	} else if err == nil {
+		return nil
 	} else {
 		return unhandled(err)
 	}
