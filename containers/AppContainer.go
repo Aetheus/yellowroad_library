@@ -3,27 +3,27 @@ package containers
 import (
 	"fmt"
 
-	"yellowroad_library/configs"
+	"yellowroad_library/config"
 	db "yellowroad_library/database"
-	"yellowroad_library/database/repositories/userRepository"
-	"yellowroad_library/http/middleware/authMiddleware"
-	"yellowroad_library/services/authService"
-	"yellowroad_library/services/tokenService"
-	"yellowroad_library/database/repositories/userRepository/gormUserRepository"
-	"yellowroad_library/services/authService/appAuthService"
-	"yellowroad_library/services/tokenService/appTokenService"
+	"yellowroad_library/database/repo/user_repo"
+	"yellowroad_library/http/middleware/auth_middleware"
+	"yellowroad_library/services/auth_serv"
+	"yellowroad_library/services/token_serv"
+	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
+	"yellowroad_library/services/auth_serv/app_auth_serv"
+	"yellowroad_library/services/token_serv/app_token_serv"
 
 	"github.com/jinzhu/gorm"
 )
 
 type AppContainer struct {
 	dbConn        *gorm.DB
-	tokenService  *tokenService.TokenService
-	AuthService   *authService.AuthService
-	configuration configs.Configuration
+	tokenService  *token_serv.TokenService
+	authService   *auth_serv.AuthService
+	configuration config.Configuration
 }
 
-func NewAppContainer(config configs.Configuration) AppContainer {
+func NewAppContainer(config config.Configuration) AppContainer {
 	return AppContainer{
 		configuration: config,
 	}
@@ -57,7 +57,7 @@ func (ac AppContainer) GetDbConn() *gorm.DB {
 /***********************************************************************************************/
 //Configuration
 
-func (ac AppContainer) GetConfiguration() configs.Configuration {
+func (ac AppContainer) GetConfiguration() config.Configuration {
 	return ac.configuration
 }
 
@@ -65,18 +65,18 @@ func (ac AppContainer) GetConfiguration() configs.Configuration {
 /***********************************************************************************************/
 //Services
 
-func (ac AppContainer) GetAuthService() authService.AuthService {
-	if ac.AuthService == nil {
-		var AuthService authService.AuthService = appAuthService.New(ac.GetUserRepository(), ac.GetTokenService())
-		ac.AuthService = &AuthService
+func (ac AppContainer) GetAuthService() auth_serv.AuthService {
+	if ac.authService == nil {
+		var AuthService auth_serv.AuthService = app_auth_serv.New(ac.GetUserRepository(), ac.GetTokenService())
+		ac.authService = &AuthService
 	}
 
-	return *ac.AuthService
+	return *ac.authService
 }
 
-func (ac AppContainer) GetTokenService() tokenService.TokenService {
+func (ac AppContainer) GetTokenService() token_serv.TokenService {
 	if ac.tokenService == nil {
-		var tokenService tokenService.TokenService = appTokenService.New(ac.GetDbConn())
+		var tokenService token_serv.TokenService = app_token_serv.New(ac.GetDbConn())
 		ac.tokenService = &tokenService
 	}
 
@@ -87,16 +87,16 @@ func (ac AppContainer) GetTokenService() tokenService.TokenService {
 /***********************************************************************************************/
 //Repositories
 
-func (ac AppContainer) GetUserRepository() userRepository.UserRepository {
-	return gormUserRepository.New(ac.GetDbConn())
+func (ac AppContainer) GetUserRepository() user_repo.UserRepository {
+	return gorm_user_repo.New(ac.GetDbConn())
 }
 
 /***********************************************************************************************/
 /***********************************************************************************************/
 //Middleware
 
-func (ac AppContainer) GetAuthMiddleware() authMiddleware.AuthMiddleware {
-	return authMiddleware.New(ac.GetTokenService())
+func (ac AppContainer) GetAuthMiddleware() auth_middleware.AuthMiddleware {
+	return auth_middleware.New(ac.GetTokenService())
 }
 
 /***********************************************************************************************/

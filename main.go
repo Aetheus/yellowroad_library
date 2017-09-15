@@ -1,13 +1,12 @@
 package main
 
 import (
-	"yellowroad_library/configs"
+	config "yellowroad_library/config"
 	"yellowroad_library/containers"
 	"yellowroad_library/http/routes"
 )
-
-var config = configs.Load("./config.json")
-var container = containers.NewAppContainer(config)
+var configuration = config.Load("./config.json")
+var container = containers.NewAppContainer(configuration)
 
 func main() {
 	routes.Init(container)

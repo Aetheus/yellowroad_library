@@ -1,4 +1,4 @@
-package appAuthService
+package app_auth_serv
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,18 +8,18 @@ import (
 	"unicode/utf8"
 
 	"yellowroad_library/database/entities"
-	"yellowroad_library/database/repositories/userRepository"
-	"yellowroad_library/services/tokenService"
-	"yellowroad_library/utils/appError"
+	"yellowroad_library/database/repo/user_repo"
+	"yellowroad_library/services/token_serv"
+	"yellowroad_library/utils/app_error"
 	"net/http"
 )
 
 type AppAuthService struct {
-	userRepository userRepository.UserRepository
-	tokenService   tokenService.TokenService
+	userRepository user_repo.UserRepository
+	tokenService   token_serv.TokenService
 }
 
-func New(userRepository userRepository.UserRepository, tokenService tokenService.TokenService) AppAuthService {
+func New(userRepository user_repo.UserRepository, tokenService token_serv.TokenService) AppAuthService {
 	return AppAuthService{
 		userRepository: userRepository,
 		tokenService:   tokenService,
@@ -29,13 +29,13 @@ func New(userRepository userRepository.UserRepository, tokenService tokenService
 func (service AppAuthService) RegisterUser(username string, password string, email string) (returnedUser *entities.User, returnedErr error) {
 
 	if utf8.RuneCountInString(password) < 6 {
-		encounteredError := appError.New(http.StatusUnprocessableEntity, "","Password had an insufficient length (minimum 6 characters)")
+		encounteredError := app_error.New(http.StatusUnprocessableEntity, "","Password had an insufficient length (minimum 6 characters)")
 		return nil, encounteredError
 	}
 
 	hashedPassword, encounteredError := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if encounteredError != nil {
-		return nil, appError.Wrap(encounteredError)
+		return nil, app_error.Wrap(encounteredError)
 	}
 
 	var user = entities.User{
@@ -45,7 +45,7 @@ func (service AppAuthService) RegisterUser(username string, password string, ema
 	}
 
 	if err := service.userRepository.Insert(&user); err != nil {
-		return nil, appError.Wrap(err)
+		return nil, app_error.Wrap(err)
 	}
 
 	return &user, nil
@@ -59,16 +59,16 @@ func (service AppAuthService) LoginUser(username string, password string) (*enti
 	//TODO : email as well
 	user, err = service.userRepository.FindByUsername(username)
 	if err != nil {
-		return nil, "", appError.Wrap(err)
+		return nil, "", app_error.Wrap(err)
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return nil, "", appError.New(http.StatusUnauthorized, "","Incorrect username or password")
+		return nil, "", app_error.New(http.StatusUnauthorized, "","Incorrect username or password")
 	}
 
 	token, err := service.tokenService.CreateTokenString(*user)
 	if err != nil {
-		return nil, "", appError.Wrap(err)
+		return nil, "", app_error.Wrap(err)
 	}
 
 	return user, token, nil
@@ -79,28 +79,28 @@ func (service AppAuthService) GetLoggedInUser(data interface{}) (*entities.User,
 
 	if !ok {
 		err := errors.New("Provided data was not a gin context struct");
-		return nil, appError.Wrap(err)
+		return nil, app_error.Wrap(err)
 	}
 
 	if tokenClaim, err := getTokenClaim(context); err != nil {
-		return nil, appError.Wrap(err)
+		return nil, app_error.Wrap(err)
 	} else {
 		user, err := service.userRepository.FindById(tokenClaim.UserID)
-		return user, appError.Wrap(err)
+		return user, app_error.Wrap(err)
 	}
 }
 
-func getTokenClaim(c *gin.Context) (*tokenService.MyCustomClaims, error) {
-	tokenClaim, exists := c.Get(tokenService.TOKEN_CLAIMS_CONTEXT_KEY)
+func getTokenClaim(c *gin.Context) (*token_serv.MyCustomClaims, error) {
+	tokenClaim, exists := c.Get(token_serv.TOKEN_CLAIMS_CONTEXT_KEY)
 
 	if !exists {
-		err := appError.Wrap(errors.New("No token claim was provided")).
+		err := app_error.Wrap(errors.New("No token claim was provided")).
 							SetHttpCode(http.StatusUnauthorized).
 							SetEndpointMessage("No login token provided");
 		return nil, err
 	}
 
-	claimsData := tokenClaim.(tokenService.MyCustomClaims)
+	claimsData := tokenClaim.(token_serv.MyCustomClaims)
 
 	return &claimsData, nil
 }

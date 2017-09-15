@@ -1,4 +1,4 @@
-package tokenService
+package token_serv
 
 import (
 	"yellowroad_library/database/entities"

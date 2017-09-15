@@ -1,11 +1,11 @@
-package appTokenService
+package app_token_serv
 
 import (
 	"fmt"
 	"time"
 
 	"yellowroad_library/database/entities"
-	"yellowroad_library/services/tokenService"
+	"yellowroad_library/services/token_serv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
@@ -29,8 +29,8 @@ func New(dbConn *gorm.DB) AppTokenService {
 	}
 }
 
-func (service AppTokenService) ValidateTokenString(tokenString string) (*tokenService.MyCustomClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &tokenService.MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+func (service AppTokenService) ValidateTokenString(tokenString string) (*token_serv.MyCustomClaims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &token_serv.MyCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return service.secretKey, nil
 	})
 
@@ -40,7 +40,7 @@ func (service AppTokenService) ValidateTokenString(tokenString string) (*tokenSe
 	}
 
 	fmt.Println(38)
-	if claims, ok := token.Claims.(*tokenService.MyCustomClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(*token_serv.MyCustomClaims); ok && token.Valid {
 		fmt.Println(claims)
 		return claims, nil
 	}
@@ -52,7 +52,7 @@ func (service AppTokenService) CreateTokenString(user entities.User) (string, er
 	nowTimestamp := time.Now().Unix()
 	expiryDate := time.Now().AddDate(0, 0, service.expiryDurationInDays).Unix()
 
-	claims := tokenService.MyCustomClaims{
+	claims := token_serv.MyCustomClaims{
 		user.ID,
 		jwt.StandardClaims{
 			ExpiresAt: expiryDate,

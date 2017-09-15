@@ -1,4 +1,4 @@
-package userRoute
+package user_route
 
 import (
 	"yellowroad_library/containers"

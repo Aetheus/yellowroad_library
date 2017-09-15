@@ -1,4 +1,4 @@
-package userRepository
+package user_repo
 
 import "yellowroad_library/database/entities"
 

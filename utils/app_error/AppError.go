@@ -1,4 +1,4 @@
-package appError
+package app_error
 
 import (
 	"github.com/ansel1/merry"

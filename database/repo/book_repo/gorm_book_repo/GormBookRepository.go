@@ -1,11 +1,10 @@
-package gormBookRepository
+package gorm_book_repo
 
 import (
-	"errors"
 	"yellowroad_library/database/entities"
 
 	"github.com/jinzhu/gorm"
-	"yellowroad_library/utils/appError"
+	"yellowroad_library/utils/app_error"
 	"net/http"
 )
 
@@ -27,11 +26,11 @@ func (repo GormBookRepository) FindById(id int) (*entities.Book, error) {
 	if queryResult := dbConn.Where("id = ?", id).First(&book); queryResult.Error != nil {
 		var returnedErr error
 		if queryResult.RecordNotFound() {
-			returnedErr = appError.Wrap(queryResult.Error).
+			returnedErr = app_error.Wrap(queryResult.Error).
 							SetEndpointMessage("No such book found").
 							SetHttpCode(http.StatusNotFound)
 		} else {
-			returnedErr = appError.Wrap(queryResult.Error)
+			returnedErr = app_error.Wrap(queryResult.Error)
 		}
 		return nil, returnedErr
 	}
@@ -41,7 +40,7 @@ func (repo GormBookRepository) FindById(id int) (*entities.Book, error) {
 
 func (repo GormBookRepository) Update(book *entities.Book) error {
 	if queryResult := repo.dbConn.Save(book); queryResult.Error != nil {
-		return appError.Wrap(queryResult.Error)
+		return app_error.Wrap(queryResult.Error)
 	}
 
 	return nil
@@ -49,7 +48,7 @@ func (repo GormBookRepository) Update(book *entities.Book) error {
 
 func (repo GormBookRepository) Insert(book *entities.Book) error {
 	if queryResult := repo.dbConn.Create(book); queryResult.Error != nil {
-		return appError.Wrap(queryResult.Error)
+		return app_error.Wrap(queryResult.Error)
 	}
 
 	return nil

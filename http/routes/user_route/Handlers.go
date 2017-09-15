@@ -1,9 +1,9 @@
-package userRoute
+package user_route
 
 import (
 	"net/http"
 
-	"yellowroad_library/services/authService"
+	"yellowroad_library/services/auth_serv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +13,7 @@ type signUpForm struct {
 	Password string `json:"password"`
 	Email string `json:"email"`
 }
-func SignUp(authService authService.AuthService) gin.HandlerFunc {
+func SignUp(authService auth_serv.AuthService) gin.HandlerFunc {
 	return func (c *gin.Context) {
 		form := signUpForm{}
 
@@ -40,7 +40,7 @@ type loginForm struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
-func Login(authService authService.AuthService) gin.HandlerFunc {
+func Login(authService auth_serv.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		form := loginForm{}
 		if err := c.BindJSON(&form); err != nil {

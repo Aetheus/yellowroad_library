@@ -1,7 +1,7 @@
-package authMiddleware
+package auth_middleware
 
 import (
-	TokenService "yellowroad_library/services/tokenService"
+	TokenService "yellowroad_library/services/token_serv"
 
 	"github.com/gin-gonic/gin"
 	"net/http"

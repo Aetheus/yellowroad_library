@@ -1,10 +1,10 @@
-package gormUserRepository
+package gorm_user_repo
 
 import (
 	"yellowroad_library/database/entities"
 
 	"github.com/jinzhu/gorm"
-	"yellowroad_library/utils/appError"
+	"yellowroad_library/utils/app_error"
 	"net/http"
 )
 
@@ -26,11 +26,11 @@ func (repo GormUserRepository) FindById(id int) (*entities.User, error) {
 	if queryResult := dbConn.Where("id = ?", id).First(&user); queryResult.Error != nil {
 		var returnedErr error
 		if queryResult.RecordNotFound() {
-			returnedErr = appError.Wrap(queryResult.Error).
+			returnedErr = app_error.Wrap(queryResult.Error).
 									SetHttpCode(http.StatusNotFound).
 									SetEndpointMessage("No user found")
 		} else {
-			returnedErr = appError.Wrap(queryResult.Error)
+			returnedErr = app_error.Wrap(queryResult.Error)
 		}
 		return nil, returnedErr
 	}
@@ -46,11 +46,11 @@ func (repo GormUserRepository) FindByUsername(username string) (*entities.User, 
 		var returnedErr error
 
 		if queryResult.RecordNotFound() {
-			returnedErr = appError.Wrap(queryResult.Error).
+			returnedErr = app_error.Wrap(queryResult.Error).
 							SetHttpCode(http.StatusNotFound).
 							SetEndpointMessage("Incorrect username or password")
 		} else {
-			returnedErr = appError.Wrap(queryResult.Error)
+			returnedErr = app_error.Wrap(queryResult.Error)
 		}
 
 		return nil, returnedErr
@@ -61,7 +61,7 @@ func (repo GormUserRepository) FindByUsername(username string) (*entities.User, 
 
 func (repo GormUserRepository) Update(user *entities.User) error {
 	if queryResult := repo.dbConn.Save(user); queryResult.Error != nil {
-		return appError.Wrap(queryResult.Error)
+		return app_error.Wrap(queryResult.Error)
 	}
 
 	return nil
@@ -70,7 +70,7 @@ func (repo GormUserRepository) Update(user *entities.User) error {
 func (repo GormUserRepository) Insert(user *entities.User) error {
 
 	if queryResult := repo.dbConn.Create(user); queryResult.Error != nil {
-		return appError.Wrap(queryResult.Error)
+		return app_error.Wrap(queryResult.Error)
 	}
 
 	return nil
