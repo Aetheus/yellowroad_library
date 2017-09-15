@@ -11,7 +11,7 @@ func Register(
 	container containers.Container,
 ) {
 
-	routerGroup.GET("/login", Login(container.GetAuthService()))
+	routerGroup.POST("/login", Login(container.GetAuthService()))
 	routerGroup.POST("/register", SignUp(container.GetAuthService()))
 
 	// routerGroup.GET("/secure/secret", gin.HandlerFunc(authMiddleware), func(c *gin.Context) {
