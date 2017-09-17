@@ -14,12 +14,17 @@ import (
 	"yellowroad_library/services/token_serv/app_token_serv"
 
 	"github.com/jinzhu/gorm"
+	"yellowroad_library/database/repo/book_repo"
+	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
+	"yellowroad_library/services/book_serv"
+	"yellowroad_library/services/book_serv/app_book_serv"
 )
 
 type AppContainer struct {
 	dbConn        *gorm.DB
 	tokenService  *token_serv.TokenService
 	authService   *auth_serv.AuthService
+	bookService	  *book_serv.BookService
 	configuration config.Configuration
 }
 
@@ -83,12 +88,25 @@ func (ac AppContainer) GetTokenService() token_serv.TokenService {
 	return *ac.tokenService
 }
 
+func (ac AppContainer) GetBookService() book_serv.BookService {
+	if ac.bookService == nil {
+		var bookService book_serv.BookService = app_book_serv.New(ac.GetBookRepository(),ac.GetUserRepository())
+		ac.bookService = &bookService
+	}
+
+	return *ac.bookService
+}
+
 /***********************************************************************************************/
 /***********************************************************************************************/
 //Repositories
 
 func (ac AppContainer) GetUserRepository() user_repo.UserRepository {
 	return gorm_user_repo.New(ac.GetDbConn())
+}
+
+func (ac AppContainer) GetBookRepository() book_repo.BookRepository {
+	return gorm_book_repo.New(ac.GetDbConn())
 }
 
 /***********************************************************************************************/
