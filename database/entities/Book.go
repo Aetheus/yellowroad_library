@@ -8,7 +8,7 @@ import (
 type Book struct {
 	Title          string
 	Description    string
-	FirstChapterId int
+	FirstChapterId int  `sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
 	CreatorId      int
 	Permissions    string
 
