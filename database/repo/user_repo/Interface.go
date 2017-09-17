@@ -6,8 +6,8 @@ import (
 )
 
 type UserRepository interface {
-	FindById(int) (*entities.User, app_error.AppError)
-	FindByUsername(string) (*entities.User, app_error.AppError)
+	FindById(int) (entities.User, app_error.AppError)
+	FindByUsername(string) (entities.User, app_error.AppError)
 	Update(*entities.User) app_error.AppError
 	Insert(*entities.User) app_error.AppError
 }

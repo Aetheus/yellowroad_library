@@ -52,43 +52,45 @@ func (service AppAuthService) RegisterUser(username string, password string, ema
 }
 
 // return : user, login_token, err
-func (service AppAuthService) LoginUser(username string, password string) (*entities.User, string, app_error.AppError) {
-	var user *entities.User
+func (service AppAuthService) LoginUser(username string, password string) (entities.User, string, app_error.AppError) {
+	var user entities.User
 	var err error
 
 	//TODO : email as well
 	user, err = service.userRepository.FindByUsername(username)
 	if err != nil {
-		return nil, "", app_error.Wrap(err)
+		return user, "", app_error.Wrap(err)
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return nil, "", app_error.New(http.StatusUnauthorized, "","Incorrect username or password")
+		return user, "", app_error.New(http.StatusUnauthorized, "","Incorrect username or password")
 	}
 
-	token, err := service.tokenService.CreateTokenString(*user)
+	token, err := service.tokenService.CreateTokenString(user)
 	if err != nil {
-		return nil, "", app_error.Wrap(err)
+		return user, "", app_error.Wrap(err)
 	}
 
 	return user, token, nil
 }
 
-func (service AppAuthService) GetLoggedInUser(data interface{}) (*entities.User, app_error.AppError) {
-	context, ok := data.(*gin.Context)
+func (service AppAuthService) GetLoggedInUser(data interface{}) (entities.User, app_error.AppError) {
+	var user entities.User
+	var err app_error.AppError
 
+	context, ok := data.(*gin.Context)
 	if !ok {
 		err := errors.New("Provided data was not a gin context struct");
-		return nil, app_error.Wrap(err)
+		return user, app_error.Wrap(err)
 	}
 
 	tokenClaim, err := getTokenClaim(context)
 	if err != nil {
-		return nil, app_error.Wrap(err)
+		return user, app_error.Wrap(err)
 	}
 
-	return service.userRepository.FindById(tokenClaim.UserID)
-
+	user, err = service.userRepository.FindById(tokenClaim.UserID)
+	return user, err
 }
 
 func getTokenClaim(c *gin.Context) (token_serv.LoginClaim, app_error.AppError) {

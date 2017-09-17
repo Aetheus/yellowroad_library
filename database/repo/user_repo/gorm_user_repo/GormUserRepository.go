@@ -18,7 +18,7 @@ func New(dbConn *gorm.DB) GormUserRepository {
 	}
 }
 
-func (repo GormUserRepository) FindById(id int) (*entities.User, app_error.AppError) {
+func (repo GormUserRepository) FindById(id int) (entities.User, app_error.AppError) {
 	var user entities.User
 
 	dbConn := repo.dbConn
@@ -32,13 +32,13 @@ func (repo GormUserRepository) FindById(id int) (*entities.User, app_error.AppEr
 		} else {
 			returnedErr = app_error.Wrap(queryResult.Error)
 		}
-		return nil, returnedErr
+		return user, returnedErr
 	}
 
-	return &user, nil
+	return user, nil
 }
 
-func (repo GormUserRepository) FindByUsername(username string) (*entities.User, app_error.AppError) {
+func (repo GormUserRepository) FindByUsername(username string) (entities.User, app_error.AppError) {
 	var dbConn = repo.dbConn
 	var user entities.User
 
@@ -53,10 +53,10 @@ func (repo GormUserRepository) FindByUsername(username string) (*entities.User, 
 			returnedErr = app_error.Wrap(queryResult.Error)
 		}
 
-		return nil, returnedErr
+		return user, returnedErr
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 func (repo GormUserRepository) Update(user *entities.User) app_error.AppError {

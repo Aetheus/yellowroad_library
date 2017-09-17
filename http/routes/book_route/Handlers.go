@@ -21,7 +21,7 @@ func FetchSingleBook() gin.HandlerFunc {
 
 func CreateBook(authService auth_serv.AuthService, bookService book_serv.BookService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var user *entities.User
+		var user entities.User
 		var formData createBookForm
 
 		//Get logged in user
@@ -41,9 +41,11 @@ func CreateBook(authService auth_serv.AuthService, bookService book_serv.BookSer
 
 		//Create the book
 		book := entities.Book {
-			CreatorId: user.ID, Title: formData.Title, Description: formData.Description,
+			CreatorId: user.ID,
+			Title: formData.Title,
+			Description: formData.Description,
 		}
-		if err := bookService.CreateBook(*user, &book); err != nil {
+		if err := bookService.CreateBook(user, &book); err != nil {
 			c.JSON(err.HttpCode(), gin.H { "message": err.EndpointMessage()})
 			return
 		}

@@ -18,7 +18,7 @@ func New(dbConn *gorm.DB) GormBookRepository {
 	}
 }
 
-func (repo GormBookRepository) FindById(id int) (*entities.Book, app_error.AppError) {
+func (repo GormBookRepository) FindById(id int) (entities.Book, app_error.AppError) {
 	var book entities.Book
 
 	dbConn := repo.dbConn
@@ -32,10 +32,10 @@ func (repo GormBookRepository) FindById(id int) (*entities.Book, app_error.AppEr
 		} else {
 			returnedErr = app_error.Wrap(queryResult.Error)
 		}
-		return nil, returnedErr
+		return book, returnedErr
 	}
 
-	return &book, nil
+	return book, nil
 }
 
 func (repo GormBookRepository) Update(book *entities.Book) app_error.AppError {
