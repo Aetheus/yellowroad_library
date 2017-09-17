@@ -8,6 +8,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
+	"yellowroad_library/utils/app_error"
 )
 
 
@@ -28,7 +29,7 @@ func New(dbConn *gorm.DB) AppTokenService {
 	}
 }
 
-func (service AppTokenService) ValidateTokenString(tokenString string) (token_serv.LoginClaim, error) {
+func (service AppTokenService) ValidateTokenString(tokenString string) (token_serv.LoginClaim, app_error.AppError) {
 	var claims token_serv.LoginClaim
 
 	token, err := jwt.ParseWithClaims(tokenString, &token_serv.LoginClaim{}, func(token *jwt.Token) (interface{}, error) {
@@ -36,7 +37,7 @@ func (service AppTokenService) ValidateTokenString(tokenString string) (token_se
 	})
 
 	if err != nil {
-		return claims, err
+		return claims, app_error.Wrap(err)
 	}
 
 	if claims, ok := token.Claims.(*token_serv.LoginClaim); ok && token.Valid {
@@ -46,7 +47,7 @@ func (service AppTokenService) ValidateTokenString(tokenString string) (token_se
 	return claims, nil
 }
 
-func (service AppTokenService) CreateTokenString(user entities.User) (string, error) {
+func (service AppTokenService) CreateTokenString(user entities.User) (string, app_error.AppError) {
 	nowTimestamp := time.Now().Unix()
 	expiryDate := time.Now().AddDate(0, 0, service.expiryDurationInDays).Unix()
 
@@ -69,7 +70,7 @@ func (service AppTokenService) CreateTokenString(user entities.User) (string, er
 	tokenString, err := token.SignedString(service.secretKey)
 
 	if err != nil {
-		return "", err
+		return "", app_error.Wrap(err)
 	}
 
 	return tokenString, nil

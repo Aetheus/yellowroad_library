@@ -18,13 +18,13 @@ func New(dbConn *gorm.DB) GormUserRepository {
 	}
 }
 
-func (repo GormUserRepository) FindById(id int) (*entities.User, error) {
+func (repo GormUserRepository) FindById(id int) (*entities.User, app_error.AppError) {
 	var user entities.User
 
 	dbConn := repo.dbConn
 
 	if queryResult := dbConn.Where("id = ?", id).First(&user); queryResult.Error != nil {
-		var returnedErr error
+		var returnedErr app_error.AppError
 		if queryResult.RecordNotFound() {
 			returnedErr = app_error.Wrap(queryResult.Error).
 									SetHttpCode(http.StatusNotFound).
@@ -38,12 +38,12 @@ func (repo GormUserRepository) FindById(id int) (*entities.User, error) {
 	return &user, nil
 }
 
-func (repo GormUserRepository) FindByUsername(username string) (*entities.User, error) {
+func (repo GormUserRepository) FindByUsername(username string) (*entities.User, app_error.AppError) {
 	var dbConn = repo.dbConn
 	var user entities.User
 
 	if queryResult := dbConn.Where("username = ?", username).First(&user); queryResult.Error != nil {
-		var returnedErr error
+		var returnedErr app_error.AppError
 
 		if queryResult.RecordNotFound() {
 			returnedErr = app_error.Wrap(queryResult.Error).
@@ -59,7 +59,7 @@ func (repo GormUserRepository) FindByUsername(username string) (*entities.User, 
 	return &user, nil
 }
 
-func (repo GormUserRepository) Update(user *entities.User) error {
+func (repo GormUserRepository) Update(user *entities.User) app_error.AppError {
 	if queryResult := repo.dbConn.Save(user); queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)
 	}
@@ -67,7 +67,7 @@ func (repo GormUserRepository) Update(user *entities.User) error {
 	return nil
 }
 
-func (repo GormUserRepository) Insert(user *entities.User) error {
+func (repo GormUserRepository) Insert(user *entities.User) app_error.AppError {
 
 	if queryResult := repo.dbConn.Create(user); queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)

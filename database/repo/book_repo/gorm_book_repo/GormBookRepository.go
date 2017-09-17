@@ -18,13 +18,13 @@ func New(dbConn *gorm.DB) GormBookRepository {
 	}
 }
 
-func (repo GormBookRepository) FindById(id int) (*entities.Book, error) {
+func (repo GormBookRepository) FindById(id int) (*entities.Book, app_error.AppError) {
 	var book entities.Book
 
 	dbConn := repo.dbConn
 
 	if queryResult := dbConn.Where("id = ?", id).First(&book); queryResult.Error != nil {
-		var returnedErr error
+		var returnedErr app_error.AppError
 		if queryResult.RecordNotFound() {
 			returnedErr = app_error.Wrap(queryResult.Error).
 							SetEndpointMessage("No such book found").
@@ -38,7 +38,7 @@ func (repo GormBookRepository) FindById(id int) (*entities.Book, error) {
 	return &book, nil
 }
 
-func (repo GormBookRepository) Update(book *entities.Book) error {
+func (repo GormBookRepository) Update(book *entities.Book) app_error.AppError {
 	if queryResult := repo.dbConn.Save(book); queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)
 	}
@@ -46,7 +46,7 @@ func (repo GormBookRepository) Update(book *entities.Book) error {
 	return nil
 }
 
-func (repo GormBookRepository) Insert(book *entities.Book) error {
+func (repo GormBookRepository) Insert(book *entities.Book) app_error.AppError {
 	if queryResult := repo.dbConn.Create(book); queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)
 	}

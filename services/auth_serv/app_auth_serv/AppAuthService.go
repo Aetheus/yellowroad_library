@@ -26,7 +26,7 @@ func New(userRepository user_repo.UserRepository, tokenService token_serv.TokenS
 	}
 }
 
-func (service AppAuthService) RegisterUser(username string, password string, email string) (returnedUser *entities.User, returnedErr error) {
+func (service AppAuthService) RegisterUser(username string, password string, email string) (returnedUser *entities.User, returnedErr app_error.AppError) {
 
 	if utf8.RuneCountInString(password) < 6 {
 		encounteredError := app_error.New(http.StatusUnprocessableEntity, "","Password had an insufficient length (minimum 6 characters)")
@@ -52,7 +52,7 @@ func (service AppAuthService) RegisterUser(username string, password string, ema
 }
 
 // return : user, login_token, err
-func (service AppAuthService) LoginUser(username string, password string) (*entities.User, string, error) {
+func (service AppAuthService) LoginUser(username string, password string) (*entities.User, string, app_error.AppError) {
 	var user *entities.User
 	var err error
 
@@ -74,7 +74,7 @@ func (service AppAuthService) LoginUser(username string, password string) (*enti
 	return user, token, nil
 }
 
-func (service AppAuthService) GetLoggedInUser(data interface{}) (*entities.User, error) {
+func (service AppAuthService) GetLoggedInUser(data interface{}) (*entities.User, app_error.AppError) {
 	context, ok := data.(*gin.Context)
 
 	if !ok {
@@ -85,13 +85,13 @@ func (service AppAuthService) GetLoggedInUser(data interface{}) (*entities.User,
 	tokenClaim, err := getTokenClaim(context)
 	if err != nil {
 		return nil, app_error.Wrap(err)
-	} else {
-		user, err := service.userRepository.FindById(tokenClaim.UserID)
-		return user, app_error.Wrap(err)
 	}
+
+	return service.userRepository.FindById(tokenClaim.UserID)
+
 }
 
-func getTokenClaim(c *gin.Context) (token_serv.LoginClaim, error) {
+func getTokenClaim(c *gin.Context) (token_serv.LoginClaim, app_error.AppError) {
 	var tokenClaim token_serv.LoginClaim
 	potentialClaim, exists := c.Get(token_serv.TOKEN_CLAIMS_CONTEXT_KEY)
 
