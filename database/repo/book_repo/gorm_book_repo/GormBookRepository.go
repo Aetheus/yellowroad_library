@@ -6,11 +6,14 @@ import (
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/utils/app_error"
 	"net/http"
+	"yellowroad_library/database/repo/book_repo"
 )
 
 type GormBookRepository struct {
 	dbConn *gorm.DB
 }
+//ensure interface implementation
+var _ book_repo.BookRepository = GormBookRepository{}
 
 func New(dbConn *gorm.DB) GormBookRepository {
 	return GormBookRepository{

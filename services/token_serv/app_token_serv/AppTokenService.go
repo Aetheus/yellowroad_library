@@ -11,14 +11,14 @@ import (
 	"yellowroad_library/utils/app_error"
 )
 
-
-
 type AppTokenService struct {
 	dbConn               *gorm.DB
 	signingMethod        jwt.SigningMethod
 	secretKey            []byte
 	expiryDurationInDays int
 }
+//ensure interface implementation
+var _ token_serv.TokenService = AppTokenService{}
 
 func New(dbConn *gorm.DB) AppTokenService {
 	return AppTokenService{

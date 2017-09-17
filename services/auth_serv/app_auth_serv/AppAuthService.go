@@ -12,12 +12,15 @@ import (
 	"yellowroad_library/services/token_serv"
 	"yellowroad_library/utils/app_error"
 	"net/http"
+	"yellowroad_library/services/auth_serv"
 )
 
 type AppAuthService struct {
 	userRepository user_repo.UserRepository
 	tokenService   token_serv.TokenService
 }
+//ensure interface implementation
+var _ auth_serv.AuthService = AppAuthService{}
 
 func New(userRepository user_repo.UserRepository, tokenService token_serv.TokenService) AppAuthService {
 	return AppAuthService{

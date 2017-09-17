@@ -27,6 +27,8 @@ type AppContainer struct {
 	bookService	  *book_serv.BookService
 	configuration config.Configuration
 }
+//ensure interface implementation
+var _ Container = AppContainer{}
 
 func NewAppContainer(config config.Configuration) AppContainer {
 	return AppContainer{
