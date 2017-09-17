@@ -12,7 +12,12 @@ func Register(
 ) {
 
 	routerGroup.GET("/", FetchSingleBook())
-	routerGroup.POST("/", CreateBook(container.GetAuthMiddleware()))
+
+
+	routesRequiringLogin := routerGroup.Group("", gin.HandlerFunc(container.GetAuthMiddleware()) )
+	{
+		routesRequiringLogin.POST("", CreateBook(container.GetAuthService(), container.GetBookService()))
+	}
 
 	// routerGroup.GET("/secure/secret", gin.HandlerFunc(authMiddleware), func(c *gin.Context) {
 
