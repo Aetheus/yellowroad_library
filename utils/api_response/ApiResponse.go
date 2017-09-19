@@ -31,9 +31,9 @@ func SuccessWithCode(data interface{}) (int, ApiResponse) {
 
 //converts an AppError into either a Fail or Error response, depending on its HTTP code
 func ConvertErr(err app_error.AppError) ApiResponse{
-	isError := isErrorCode(err.HttpCode())
+	isServerError := isServerErrorCode(err.HttpCode())
 
-	if (isError) {
+	if (isServerError) {
 		return Error(err.EndpointMessage())
 	} else {
 		var dummyData struct{} //TODO add "data" field to AppError and use it here instead
@@ -60,8 +60,8 @@ func Error(message string) ApiResponse{
 	}
 }
 
-//if it's an error code (HTTP 5xx range), returns true. Otherwise, false
-func isErrorCode(code int) bool{
+//if it's a server error code (HTTP 5xx range), returns true. Otherwise, false for others like client error codes (4xx)
+func isServerErrorCode(code int) bool{
 	if (code >= 500 && code < 600 ){
 		return true
 	} else {
