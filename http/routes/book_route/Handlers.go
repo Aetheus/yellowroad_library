@@ -8,7 +8,7 @@ import (
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/services/book_serv"
-	"fmt"
+	"yellowroad_library/utils/api_response"
 )
 
 func FetchSingleBook() gin.HandlerFunc {
@@ -27,15 +27,14 @@ func CreateBook(authService auth_serv.AuthService, bookService book_serv.BookSer
 		//Get logged in user
 		user, err := authService.GetLoggedInUser(c.Copy());
 		if err != nil {
-			c.JSON(err.HttpCode(), gin.H { "message": err.EndpointMessage(), })
+			c.JSON(api_response.ConvertErrWithCode(err))
 			return
 		}
 
 		//Get form data to create book with
 		if err := c.BindJSON(&formData); err != nil {
 			var err app_error.AppError = app_error.Wrap(err)
-			fmt.Println(err.Stacktrace())
-			c.JSON(err.HttpCode(),gin.H { "message": err.EndpointMessage()} )
+			c.JSON( api_response.ConvertErrWithCode(err) )
 			return
 		}
 
@@ -46,11 +45,13 @@ func CreateBook(authService auth_serv.AuthService, bookService book_serv.BookSer
 			Description: formData.Description,
 		}
 		if err := bookService.CreateBook(user, &book); err != nil {
-			c.JSON(err.HttpCode(), gin.H { "message": err.EndpointMessage()})
+			c.JSON(api_response.ConvertErrWithCode(err))
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"book": book})
+		c.JSON(api_response.SuccessWithCode(
+			gin.H{"book": book},
+		))
 	}
 }
 type createBookForm struct {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"yellowroad_library/utils/app_error"
+	"yellowroad_library/utils/api_response"
 )
 
 type signUpForm struct {
@@ -19,20 +20,22 @@ func SignUp(authService auth_serv.AuthService) gin.HandlerFunc {
 		form := signUpForm{}
 
 		if err := c.BindJSON(&form) ; err != nil {
-			c.JSON(http.StatusUnprocessableEntity, gin.H { "error" : err.Error() })
+			var err = app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
+			c.JSON(api_response.ConvertErrWithCode(err))
 			return
 		}
 
 		user, err := authService.RegisterUser(form.Username,form.Password,form.Email)
-
 		if (err != nil) {
-			c.JSON(http.StatusUnprocessableEntity, gin.H { "error" : err.Error() })
+			c.JSON(api_response.ConvertErrWithCode(err))
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H {
-			"user" : user,
-		})
+		c.JSON(api_response.SuccessWithCode(
+			gin.H {
+				"user" : user,
+			},
+		))
 		return
 	}
 }
@@ -45,23 +48,23 @@ func Login(authService auth_serv.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		form := loginForm{}
 		if err := c.BindJSON(&form); err != nil {
-			c.JSON(http.StatusUnprocessableEntity, gin.H { "error" : app_error.Wrap(err).EndpointMessage() })
+			var err  = app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
+			c.JSON(api_response.ConvertErrWithCode(err))
 			return
 		}
 
 		user, loginToken, err := authService.LoginUser(form.Username, form.Password)
-
 		if (err != nil){
-			//TODO : return an appropriate error code / standardize the API return format and errors with custom structs
-			c.JSON(http.StatusUnauthorized, gin.H{"error" : app_error.Wrap(err).EndpointMessage()})
+			c.JSON(api_response.ConvertErrWithCode(err))
 			return
 		}
 
-
-		c.JSON(http.StatusOK, gin.H{
-			"user" : user,
-			"token" : loginToken,
-		})
+		c.JSON(api_response.SuccessWithCode(
+			gin.H{
+				"user" : user,
+				"token" : loginToken,
+			},
+		))
 		return
 	}
 }
