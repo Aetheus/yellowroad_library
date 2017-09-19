@@ -11,7 +11,7 @@ func Register(
 	container containers.Container,
 ) {
 
-	routerGroup.GET("/", FetchSingleBook())
+	routerGroup.GET("/:book_id", FetchSingleBook(container.GetBookRepository()))
 
 
 	routesRequiringLogin := routerGroup.Group("", gin.HandlerFunc(container.GetAuthMiddleware()) )
