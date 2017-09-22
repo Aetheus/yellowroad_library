@@ -19,6 +19,8 @@ type Configuration struct {
 		Database string //the database name
 		SSLMode  string
 		Driver   string
+
+		MigrationsDir string
 	}
 
 	Web struct {
