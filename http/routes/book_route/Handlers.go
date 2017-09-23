@@ -32,6 +32,10 @@ func FetchSingleBook(bookRepo book_repo.BookRepository) gin.HandlerFunc {
 	}
 }
 
+type createBookForm struct {
+	Title string
+	Description string
+}
 func CreateBook(authService auth_serv.AuthService, bookService book_serv.BookService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user entities.User
@@ -67,7 +71,37 @@ func CreateBook(authService auth_serv.AuthService, bookService book_serv.BookSer
 		))
 	}
 }
-type createBookForm struct {
-	Title string
-	Description string
+
+
+func DeleteBook(authService auth_serv.AuthService, bookRepo book_repo.BookRepository, bookService book_serv.BookService) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var book_id int
+		var book entities.Book
+		var appErr app_error.AppError
+		var convErr error
+		if book_id, convErr = strconv.Atoi(c.Param("book_id")); convErr != nil {
+			appErr := app_error.New(http.StatusUnprocessableEntity,"","ID must be a valid integer value!")
+			c.JSON(api_response.ConvertErrWithCode(appErr))
+			return
+		}
+
+		if book, appErr = bookRepo.FindById(book_id); appErr != nil{
+			c.JSON(api_response.ConvertErrWithCode(appErr))
+			return
+		}
+
+		user, err := authService.GetLoggedInUser(c.Copy());
+		if err != nil {
+			c.JSON(api_response.ConvertErrWithCode(err))
+			return
+		}
+
+		if err := bookService.DeleteBook(user, &book); err != nil {
+			c.JSON(api_response.ConvertErrWithCode(err))
+			return
+		}
+
+		c.JSON(api_response.SuccessWithCode(gin.H{}))
+		return
+	}
 }
