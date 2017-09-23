@@ -6,6 +6,7 @@ import (
 	"yellowroad_library/database/repo/user_repo"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/services/book_serv"
+	"net/http"
 )
 
 type AppBookService struct {
@@ -23,11 +24,25 @@ func New(bookRepo book_repo.BookRepository, userRepo user_repo.UserRepository ) 
 }
 
 func (this AppBookService) CreateBook(creator entities.User, book *entities.Book) app_error.AppError {
-	//do some extra checking here (eg: check if the creator is banned or not, etc)
+	//TODO: do some extra checking here (eg: check if the creator is banned or not, etc)
 	book.CreatorId = creator.ID
 	book.FirstChapterId = 0
 
 	if err := this.bookRepo.Insert(book); err != nil {
+		return app_error.Wrap(err)
+	}
+
+	return nil
+}
+
+func (this AppBookService) DeleteBook(instigator entities.User, book *entities.Book) app_error.AppError{
+	//TODO: if we implement a "contributors" system, then this should do more checking later on
+	if (book.CreatorId != instigator.ID){
+		return app_error.New(http.StatusUnauthorized,
+				"","You are not authorized to delete this book!")
+	}
+
+	if err := this.bookRepo.Delete(book); err != nil {
 		return app_error.Wrap(err)
 	}
 

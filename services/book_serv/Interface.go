@@ -7,4 +7,5 @@ import (
 
 type BookService interface {
 	CreateBook(creator entities.User, book *entities.Book) app_error.AppError
+	DeleteBook(instigator entities.User, book *entities.Book) app_error.AppError
 }
