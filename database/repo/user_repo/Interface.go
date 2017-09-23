@@ -10,4 +10,5 @@ type UserRepository interface {
 	FindByUsername(string) (entities.User, app_error.AppError)
 	Update(*entities.User) app_error.AppError
 	Insert(*entities.User) app_error.AppError
+	Delete(*entities.User) app_error.AppError
 }

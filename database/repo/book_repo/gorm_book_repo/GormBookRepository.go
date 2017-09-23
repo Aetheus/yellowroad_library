@@ -7,6 +7,7 @@ import (
 	"yellowroad_library/utils/app_error"
 	"net/http"
 	"yellowroad_library/database/repo/book_repo"
+	"errors"
 )
 
 type GormBookRepository struct {
@@ -51,6 +52,20 @@ func (repo GormBookRepository) Update(book *entities.Book) app_error.AppError {
 
 func (repo GormBookRepository) Insert(book *entities.Book) app_error.AppError {
 	if queryResult := repo.dbConn.Create(book); queryResult.Error != nil {
+		return app_error.Wrap(queryResult.Error)
+	}
+
+	return nil
+}
+
+//soft delete
+func (repo GormBookRepository) Delete(book *entities.Book) app_error.AppError {
+	if (book.ID == 0){
+		err := errors.New("Invalid primary key value of 0 while attempting to delete")
+		return app_error.Wrap(err)
+	}
+
+	if queryResult := repo.dbConn.Delete(book); queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)
 	}
 

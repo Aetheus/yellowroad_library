@@ -7,6 +7,7 @@ import (
 	"yellowroad_library/utils/app_error"
 	"net/http"
 	"yellowroad_library/database/repo/user_repo"
+	"errors"
 )
 
 type GormUserRepository struct {
@@ -79,5 +80,17 @@ func (repo GormUserRepository) Insert(user *entities.User) app_error.AppError {
 	return nil
 }
 
+func (repo GormUserRepository) Delete(user *entities.User) app_error.AppError {
+	if user.ID == 0 {
+		err := errors.New("Invalid primary key value of 0 while attempting to delete")
+		return app_error.Wrap(err)
+	}
+
+	if queryResult := repo.dbConn.Delete(user); queryResult.Error != nil {
+		return app_error.Wrap(queryResult.Error)
+	}
+
+	return nil
+}
 // Update(entities.User) error
 // Create(entities.User) error

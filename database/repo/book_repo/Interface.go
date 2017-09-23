@@ -9,4 +9,5 @@ type BookRepository interface {
 	FindById(int) (entities.Book, app_error.AppError)
 	Update(*entities.Book) app_error.AppError
 	Insert(*entities.Book) app_error.AppError
+	Delete(*entities.Book) app_error.AppError
 }
