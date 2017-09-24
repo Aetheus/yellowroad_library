@@ -24,7 +24,7 @@ type UserForm struct {
 	Password *string //this shouldn't be applied
 	Email    *string
 }
-func (this UserForm) apply(user *User){
+func (this UserForm) Apply(user *User){
 	if(this.Username != nil) { user.Username = *this.Username }
 	//no need to apply password since it needs to be hashed+salted first anyway
 	if(this.Email != nil) { user.Email = *this.Email }

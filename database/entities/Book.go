@@ -25,7 +25,7 @@ type BookForm struct {
 	Description *string
 	FirstChapterId *int
 }
-func (this BookForm) apply(book *Book){
+func (this BookForm) Apply(book *Book){
 	if (this.Title != nil) { book.Title = *this.Title }
 	if (this.Description != nil ) {book.Description = *this.Description}
 	if (this.FirstChapterId != nil ) {book.FirstChapterId = *this.FirstChapterId}

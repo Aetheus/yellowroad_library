@@ -33,7 +33,7 @@ type ChapterForm struct {
 	Body *string
 	BookId *int
 }
-func (this ChapterForm) apply(chapter *Chapter){
+func (this ChapterForm) Apply(chapter *Chapter){
 	if(this.Title != nil) { chapter.Title = *this.Title }
 	if(this.Body != nil) { chapter.Body = *this.Body }
 	if(this.BookId != nil) { chapter.BookId = *this.BookId }
