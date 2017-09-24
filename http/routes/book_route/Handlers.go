@@ -7,17 +7,15 @@ import (
 	"yellowroad_library/database/entities"
 	"yellowroad_library/services/book_serv"
 	"yellowroad_library/utils/api_response"
-	"strconv"
-	"net/http"
 	"yellowroad_library/database/repo/book_repo"
+	"yellowroad_library/utils/gin_tools"
 )
 
 func FetchSingleBook(bookRepo book_repo.BookRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		book_id, convErr := strconv.Atoi(c.Param("book_id"))
-		if (convErr != nil){
-			appErr := app_error.New(http.StatusUnprocessableEntity,"","ID must be a valid integer value!")
-			c.JSON(api_response.ConvertErrWithCode(appErr))
+		book_id, err := gin_tools.GetIntParam("book_id", c)
+		if err != nil {
+			c.JSON(api_response.ConvertErrWithCode(err))
 			return
 		}
 
@@ -75,28 +73,26 @@ func CreateBook(authService auth_serv.AuthService, bookService book_serv.BookSer
 
 func DeleteBook(authService auth_serv.AuthService, bookRepo book_repo.BookRepository, bookService book_serv.BookService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var book_id int
-		var book entities.Book
-		var appErr app_error.AppError
-		var convErr error
-		if book_id, convErr = strconv.Atoi(c.Param("book_id")); convErr != nil {
-			appErr := app_error.New(http.StatusUnprocessableEntity,"","ID must be a valid integer value!")
-			c.JSON(api_response.ConvertErrWithCode(appErr))
-			return
-		}
-
-		if book, appErr = bookRepo.FindById(book_id); appErr != nil{
-			c.JSON(api_response.ConvertErrWithCode(appErr))
-			return
-		}
-
-		user, err := authService.GetLoggedInUser(c.Copy());
+		book_id, err := gin_tools.GetIntParam("book_id",c)
 		if err != nil {
 			c.JSON(api_response.ConvertErrWithCode(err))
 			return
 		}
 
-		if err := bookService.DeleteBook(user, &book); err != nil {
+		book, err := bookRepo.FindById(book_id)
+		if  err != nil{
+			c.JSON(api_response.ConvertErrWithCode(err))
+			return
+		}
+
+		user, err := authService.GetLoggedInUser(c.Copy())
+		if err != nil {
+			c.JSON(api_response.ConvertErrWithCode(err))
+			return
+		}
+
+		err = bookService.DeleteBook(user, &book)
+		if err != nil {
 			c.JSON(api_response.ConvertErrWithCode(err))
 			return
 		}
