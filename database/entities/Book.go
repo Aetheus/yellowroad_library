@@ -18,3 +18,15 @@ type Book struct {
 	UpdatedAt time.Time
 	DeletedAt utils.NullTime
 }
+
+//fields that we allow to edit in our handlers (e.g: for the "update" routes of CRUD)
+type BookForm struct {
+	Title *string
+	Description *string
+	FirstChapterId *int
+}
+func (this BookForm) apply(book *Book){
+	if (this.Title != nil) { book.Title = *this.Title }
+	if (this.Description != nil ) {book.Description = *this.Description}
+	if (this.FirstChapterId != nil ) {book.FirstChapterId = *this.FirstChapterId}
+}
