@@ -55,7 +55,7 @@ func (service AppTokenService) CreateTokenString(user entities.User) (string, ap
 			ExpiresAt: expiryDate,
 			NotBefore: nowTimestamp,
 			IssuedAt:  nowTimestamp,
-			Issuer:    "yellowroad",
+			Issuer:    "yellowroad",	//TODO: make the issuer configurable or at least extract it to a constant
 		},
 	}
 
