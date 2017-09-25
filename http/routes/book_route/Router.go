@@ -19,6 +19,8 @@ func Register(
 		routesRequiringLogin.DELETE("/:book_id", DeleteBook(container.GetAuthService(), container.GetBookRepository(), container.GetBookService()))
 	}
 
+	routerGroup.PUT("/:book_id", UpdateBook(container.GetBookRepository()))
+
 	// routerGroup.GET("/secure/secret", gin.HandlerFunc(authMiddleware), func(c *gin.Context) {
 
 	// 	c.JSON(http.StatusOK, gin.H{"very": "secret"})
