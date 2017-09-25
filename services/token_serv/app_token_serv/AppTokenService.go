@@ -7,12 +7,10 @@ import (
 	"yellowroad_library/services/token_serv"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jinzhu/gorm"
 	"yellowroad_library/utils/app_error"
 )
 
 type AppTokenService struct {
-	dbConn               *gorm.DB
 	signingMethod        jwt.SigningMethod
 	secretKey            []byte
 	expiryDurationInDays int
@@ -20,9 +18,9 @@ type AppTokenService struct {
 //ensure interface implementation
 var _ token_serv.TokenService = AppTokenService{}
 
-func New(dbConn *gorm.DB) AppTokenService {
+func New() AppTokenService {
+	//TODO : change secret key to use something from the settings
 	return AppTokenService{
-		dbConn:               dbConn,
 		signingMethod:        jwt.SigningMethodHS256, //default this for now
 		secretKey:            []byte("blubber"),      //default this for now
 		expiryDurationInDays: 365,                    //default this for now

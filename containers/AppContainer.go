@@ -83,7 +83,7 @@ func (ac AppContainer) GetAuthService() auth_serv.AuthService {
 
 func (ac AppContainer) GetTokenService() token_serv.TokenService {
 	if ac.tokenService == nil {
-		var tokenService token_serv.TokenService = app_token_serv.New(ac.GetDbConn())
+		var tokenService token_serv.TokenService = app_token_serv.New()
 		ac.tokenService = &tokenService
 	}
 
