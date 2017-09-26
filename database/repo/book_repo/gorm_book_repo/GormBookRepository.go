@@ -22,17 +22,29 @@ func New(dbConn *gorm.DB) GormBookRepository {
 	}
 }
 
+func preloadAssociations(dbConn *gorm.DB) *gorm.DB{
+	for i := 0; i < len(entities.BookAssociations); i++ {
+		dbConn = dbConn.Preload(entities.BookAssociations[i])
+	}
+
+	return dbConn
+}
+
 func (repo GormBookRepository) FindById(id int) (entities.Book, app_error.AppError) {
 	var book entities.Book
 
 	dbConn := repo.dbConn
 
-	if queryResult := dbConn.Where("id = ?", id).First(&book); queryResult.Error != nil {
+	queryResult := preloadAssociations(dbConn).
+						Where("id = ?", id).
+						First(&book)
+
+	if queryResult.Error != nil {
 		var returnedErr app_error.AppError
 		if queryResult.RecordNotFound() {
 			returnedErr = app_error.Wrap(queryResult.Error).
-							SetEndpointMessage("No such book found").
-							SetHttpCode(http.StatusNotFound)
+				SetEndpointMessage("No such book found").
+				SetHttpCode(http.StatusNotFound)
 		} else {
 			returnedErr = app_error.Wrap(queryResult.Error)
 		}
@@ -43,7 +55,11 @@ func (repo GormBookRepository) FindById(id int) (entities.Book, app_error.AppErr
 }
 
 func (repo GormBookRepository) Update(book *entities.Book) app_error.AppError {
-	if queryResult := repo.dbConn.Save(book); queryResult.Error != nil {
+	queryResult := repo.dbConn.
+					Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!
+					Save(book)
+
+	if queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)
 	}
 
@@ -51,7 +67,11 @@ func (repo GormBookRepository) Update(book *entities.Book) app_error.AppError {
 }
 
 func (repo GormBookRepository) Insert(book *entities.Book) app_error.AppError {
-	if queryResult := repo.dbConn.Create(book); queryResult.Error != nil {
+	queryResult := repo.dbConn.
+					Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!
+					Create(book)
+
+	if queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)
 	}
 
