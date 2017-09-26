@@ -14,6 +14,7 @@ import (
 
 func FetchSingleBook(bookRepo book_repo.BookRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		book_id, err := gin_tools.GetIntParam("book_id", c)
 		if err != nil {
 			c.JSON(api_response.ConvertErrWithCode(err))
@@ -27,6 +28,23 @@ func FetchSingleBook(bookRepo book_repo.BookRepository) gin.HandlerFunc {
 		}
 
 		c.JSON(api_response.SuccessWithCode(book))
+		return
+	}
+}
+
+func FetchBooks(repository book_repo.BookRepository) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		page := gin_tools.GetIntQueryOrDefault("page",1,c)
+		perpage := gin_tools.GetIntQueryOrDefault("perpage",15,c)
+
+		//TODO: actually get some search options
+		results, err := repository.Paginate(page,perpage, book_repo.SearchOptions{})
+		if err != nil {
+			c.JSON(api_response.ConvertErrWithCode(err))
+			return
+		}
+
+		c.JSON(api_response.SuccessWithCode(results))
 		return
 	}
 }

@@ -10,4 +10,10 @@ type BookRepository interface {
 	Update(*entities.Book) app_error.AppError
 	Insert(*entities.Book) app_error.AppError
 	Delete(*entities.Book) app_error.AppError
+    Paginate(startpage int, perpage int, options SearchOptions) ([]entities.Book, app_error.AppError)
+}
+
+//TODO : define this
+type SearchOptions struct {
+
 }

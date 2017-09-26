@@ -54,6 +54,34 @@ func (repo GormBookRepository) FindById(id int) (entities.Book, app_error.AppErr
 	return book, nil
 }
 
+func (repo GormBookRepository) Paginate(startpage int, perpage int, options book_repo.SearchOptions) ([]entities.Book, app_error.AppError) {
+	results := []entities.Book{}
+
+	if startpage < 1 {
+		startpage = 1
+	}
+
+	//TODO: use SearchOptions to do stuff like filter, order, etc
+	queryResult := repo.dbConn.
+						Offset( (startpage - 1) * perpage).
+						Limit(perpage).
+						Find(&results)
+
+	if queryResult.Error != nil {
+		var returnedErr app_error.AppError
+		if queryResult.RecordNotFound() {
+			returnedErr = app_error.Wrap(queryResult.Error).
+				SetEndpointMessage("No books found").
+				SetHttpCode(http.StatusNotFound)
+		} else {
+			returnedErr = app_error.Wrap(queryResult.Error)
+		}
+		return results, returnedErr
+	}
+
+	return results, nil
+}
+
 func (repo GormBookRepository) Update(book *entities.Book) app_error.AppError {
 	queryResult := repo.dbConn.
 					Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!
