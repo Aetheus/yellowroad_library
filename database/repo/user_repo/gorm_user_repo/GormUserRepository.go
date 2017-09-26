@@ -64,7 +64,11 @@ func (repo GormUserRepository) FindByUsername(username string) (entities.User, a
 }
 
 func (repo GormUserRepository) Update(user *entities.User) app_error.AppError {
-	if queryResult := repo.dbConn.Save(user); queryResult.Error != nil {
+	queryResult := repo.dbConn.
+					Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!
+					Save(user)
+
+	if  queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)
 	}
 
@@ -72,8 +76,11 @@ func (repo GormUserRepository) Update(user *entities.User) app_error.AppError {
 }
 
 func (repo GormUserRepository) Insert(user *entities.User) app_error.AppError {
+	queryResult := repo.dbConn.
+					Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!
+					Create(user)
 
-	if queryResult := repo.dbConn.Create(user); queryResult.Error != nil {
+	if queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)
 	}
 
