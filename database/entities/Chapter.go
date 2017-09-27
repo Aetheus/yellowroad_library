@@ -17,14 +17,23 @@ import (
 type Chapter struct {
 	Title     string
 	Body      string
+
 	BookId    int
+	Book	  *Book `gorm:"ForeignKey:BookId"`
+
 	CreatorId int
+	Creator	  *User	`gorm:"ForeignKey:CreatorId"`
 
 	//housekeeping attributes
 	ID        int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt utils.NullTime
+}
+
+var ChapterAssociations = []string{
+	"Book",
+	"Creator",
 }
 
 //fields that we allow to edit in our handlers (e.g: for the "update" routes of CRUD)
