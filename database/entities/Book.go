@@ -24,7 +24,7 @@ type Book struct {
 }
 
 var BookAssociations = []string{
-	"FirstCreator",
+	"FirstChapter",
 	"Creator",
 }
 
