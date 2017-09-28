@@ -8,6 +8,8 @@ import (
 	"yellowroad_library/services/token_serv"
 	"yellowroad_library/services/book_serv"
 	"yellowroad_library/database/repo/book_repo"
+	"yellowroad_library/services/story_serv"
+	"yellowroad_library/database/repo/chapter_repo"
 )
 
 /*Container :
@@ -24,10 +26,12 @@ type Container interface {
 	GetAuthService() auth_serv.AuthService
 	GetTokenService() token_serv.TokenService
 	GetBookService() book_serv.BookService
+	GetStoryService() story_serv.StoryService
 
 	//repo
 	GetUserRepository() user_repo.UserRepository
 	GetBookRepository() book_repo.BookRepository
+	GetChapterRepository() chapter_repo.ChapterRepository
 
 	//middleware
 	GetAuthMiddleware() auth_middleware.AuthMiddleware

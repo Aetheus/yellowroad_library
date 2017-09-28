@@ -18,6 +18,10 @@ import (
 	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
 	"yellowroad_library/services/book_serv"
 	"yellowroad_library/services/book_serv/app_book_serv"
+	"yellowroad_library/services/story_serv"
+	"yellowroad_library/services/story_serv/app_story_serv"
+	"yellowroad_library/database/repo/chapter_repo"
+	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
 )
 
 type AppContainer struct {
@@ -25,6 +29,7 @@ type AppContainer struct {
 	tokenService  *token_serv.TokenService
 	authService   *auth_serv.AuthService
 	bookService	  *book_serv.BookService
+	storyService  *story_serv.StoryService
 	configuration config.Configuration
 }
 //ensure interface implementation
@@ -99,6 +104,15 @@ func (ac AppContainer) GetBookService() book_serv.BookService {
 	return *ac.bookService
 }
 
+func (ac AppContainer) GetStoryService() story_serv.StoryService {
+	if ac.storyService == nil {
+		var storyService story_serv.StoryService = app_story_serv.New(ac.GetChapterRepository())
+		ac.storyService = &storyService
+	}
+
+	return *ac.storyService
+}
+
 /***********************************************************************************************/
 /***********************************************************************************************/
 //Repositories
@@ -109,6 +123,10 @@ func (ac AppContainer) GetUserRepository() user_repo.UserRepository {
 
 func (ac AppContainer) GetBookRepository() book_repo.BookRepository {
 	return gorm_book_repo.New(ac.GetDbConn())
+}
+
+func (ac AppContainer) GetChapterRepository() chapter_repo.ChapterRepository {
+	return gorm_chapter_repo.New(ac.GetDbConn())
 }
 
 /***********************************************************************************************/
