@@ -1,4 +1,4 @@
-package book_route
+package story_route
 
 import (
 	"github.com/gin-gonic/gin"

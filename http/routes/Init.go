@@ -3,7 +3,7 @@ package routes
 import (
 	"fmt"
 	"yellowroad_library/containers"
-	"yellowroad_library/http/routes/book_route"
+	"yellowroad_library/http/routes/story_route"
 
 	"github.com/gin-gonic/gin"
 	"yellowroad_library/http/routes/user_route"
@@ -14,7 +14,7 @@ func Init(container containers.Container) {
 	var r = newAppRouter(ginEngine, container)
 	var portString = fmt.Sprintf(":%d", container.GetConfiguration().Web.Port)
 
-	r.Route("/api/books", book_route.Register)
+	r.Route("/api/story", story_route.Register)
 	r.Route("/api/users", user_route.Register)
 
 	ginEngine.Run(portString)

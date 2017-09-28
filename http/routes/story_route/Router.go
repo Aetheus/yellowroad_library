@@ -1,4 +1,4 @@
-package book_route
+package story_route
 
 import (
 	"yellowroad_library/containers"
