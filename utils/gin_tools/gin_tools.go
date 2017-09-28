@@ -34,3 +34,11 @@ func GetIntQueryOrDefault(key string, defaultVal int, c *gin.Context) int {
 	}
 	return convertedVal
 }
+
+func GetBoolQueryOrDefault(key string, defaultVal bool, c *gin.Context) bool{
+	convertedVal, err := strconv.ParseBool(c.Query(key))
+	if (err != nil) {
+		return defaultVal
+	}
+	return convertedVal
+}
