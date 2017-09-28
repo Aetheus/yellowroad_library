@@ -4,11 +4,13 @@ import (
 	"yellowroad_library/services/story_serv"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/repo/chapter_repo"
+	"yellowroad_library/services/story_serv/story_save"
 )
 
 type AppStoryService struct {
 	chapterRepo chapter_repo.ChapterRepository
 }
+var _ story_serv.StoryService = AppStoryService{}
 
 func New(chapterRepo chapter_repo.ChapterRepository) AppStoryService{
 	return AppStoryService{
@@ -23,16 +25,24 @@ func (this AppStoryService) NavigateToChapter(request story_serv.PathRequest, en
 		return story_serv.PathResponse{},err
 	}
 
-	if (request.IsFreeMode) {
-		response := story_serv.NewPathResponse(destinationChapter,story_serv.Save{})
+	saveIsEmpty := false
+	if (len(encodedSaveString) == 0) {
+		saveIsEmpty = true
+	}
+
+	destinationChapterIsFirstChapter := (destinationChapter.ID == destinationChapter.Book.FirstChapterId)
+
+	//if the save is empty and we're not on the first chapter, then consider ourselves to be in freemode
+	if (request.IsFreeMode || saveIsEmpty && !destinationChapterIsFirstChapter) {
+		response := story_serv.NewPathResponse(destinationChapter,story_save.Save{})
 		return response, nil
 	}
 
-	var currentSave story_serv.Save
-	if (len(encodedSaveString) == 0) {
-		currentSave = story_serv.NewSave()
+	var currentSave story_save.Save
+	if (saveIsEmpty) {
+		currentSave = story_save.New()
 	}else {
-		currentSave, err = this.DecodeSave(encodedSaveString)
+		currentSave, err = story_save.DecodeSaveString(encodedSaveString)
 		if (err != nil){
 			return story_serv.PathResponse{}, err
 		}
@@ -41,14 +51,4 @@ func (this AppStoryService) NavigateToChapter(request story_serv.PathRequest, en
 	//TODO: actually do something here - get the chapter path, use it to validate/update the story save, etc
 	response := story_serv.NewPathResponse(destinationChapter,currentSave)
 	return response, nil
-}
-
-func (this AppStoryService) EncodeSave(save story_serv.Save) (encodedSaveString string, err app_error.AppError) {
-	//TODO: implement this
-	panic("implement me")
-}
-
-func (this AppStoryService) DecodeSave(encodedSaveString string) (save story_serv.Save, err app_error.AppError) {
-	//TODO: implement this
-	panic("implement me")
 }

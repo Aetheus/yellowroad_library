@@ -3,12 +3,11 @@ package story_serv
 import (
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/entities"
+	"yellowroad_library/services/story_serv/story_save"
 )
 
 type StoryService interface {
 	NavigateToChapter(request PathRequest, encodedSaveString string) (response PathResponse, err app_error.AppError)
-	EncodeSave(save Save) (encodedSaveString string, err app_error.AppError)
-	DecodeSave(encodedSaveString string) (save Save, err app_error.AppError)
 }
 
 //all the necessary parameters to find out if you can navigate to a chapter in a book
@@ -31,10 +30,10 @@ func NewPathRequest(IsFreeMode bool,BookId int,DestinationChapterId int,ChapterP
 }
 
 type PathResponse struct {
-	destinationChapter entities.Chapter
-	newSave            Save
+	DestinationChapter entities.Chapter
+	NewSave            story_save.Save
 }
-func NewPathResponse(destinationChapter entities.Chapter,newSave Save) PathResponse {
+func NewPathResponse(destinationChapter entities.Chapter,newSave story_save.Save) PathResponse {
 	return PathResponse{
 		destinationChapter,newSave,
 	}
@@ -42,7 +41,3 @@ func NewPathResponse(destinationChapter entities.Chapter,newSave Save) PathRespo
 
 //TODO populate this struct
 //save data ...
-type Save struct {}
-func NewSave() Save{
-	return Save {}
-}
