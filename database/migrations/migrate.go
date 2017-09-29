@@ -24,11 +24,12 @@ func Migrate(configuration config.Configuration) (error) {
 
 
 	if err = migrater.Up(); err != nil {
-		if (err.Error() != "no change"){
-			return err
-		}else {
+		if (err.Error() == "no change"){
 			fmt.Println("No migrations to run")
 			return nil
+		}else {
+			fmt.Println(err.Error())
+			return err
 		}
 	}
 
