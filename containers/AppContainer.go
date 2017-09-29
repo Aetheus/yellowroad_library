@@ -22,6 +22,8 @@ import (
 	"yellowroad_library/services/story_serv/app_story_serv"
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
+	"yellowroad_library/database/repo/chapterpath_repo"
+	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
 )
 
 type AppContainer struct {
@@ -127,6 +129,10 @@ func (ac AppContainer) GetBookRepository() book_repo.BookRepository {
 
 func (ac AppContainer) GetChapterRepository() chapter_repo.ChapterRepository {
 	return gorm_chapter_repo.New(ac.GetDbConn())
+}
+
+func (ac AppContainer) GetChapterPathRepository() chapterpath_repo.ChapterPathRepository {
+	return gorm_chapterpath_repo.New(ac.GetDbConn())
 }
 
 /***********************************************************************************************/
