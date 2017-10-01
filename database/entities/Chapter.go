@@ -2,7 +2,7 @@ package entities
 
 import (
 	"time"
-	"yellowroad_library/utils"
+	"yellowroad_library/database"
 )
 
 /*
@@ -28,7 +28,7 @@ type Chapter struct {
 	ID        int
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt utils.NullTime
+	DeletedAt database.NullTime
 }
 
 var ChapterAssociations = []string{

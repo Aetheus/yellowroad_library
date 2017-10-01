@@ -2,7 +2,7 @@ package entities
 
 import (
 	"time"
-	"yellowroad_library/utils"
+	"yellowroad_library/database"
 )
 
 type ChapterPath struct {
@@ -16,7 +16,7 @@ type ChapterPath struct {
 	ID        int
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt utils.NullTime
+	DeletedAt database.NullTime
 }
 
 var ChapterPathAssociations = []string{
