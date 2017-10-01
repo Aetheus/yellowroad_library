@@ -12,6 +12,9 @@ type ChapterPath struct {
 	ToChapterId int
 	ToChapters []Chapter `gorm:"ForeignKey:ToChapterId"`
 
+	Effects database.Jsonb
+	Requirements database.Jsonb
+
 	//housekeeping attributes
 	ID        int
 	CreatedAt time.Time
