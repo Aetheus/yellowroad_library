@@ -1,9 +1,7 @@
-package token_serv
+package app_token_serv
 
 import (
 	"testing"
-
-	"yellowroad_library/services/token_serv/app_token_serv"
 	"yellowroad_library/database/entities"
 )
 
@@ -16,7 +14,7 @@ var user = 	entities.User{
 
 
 func TestCreateTokenString(t *testing.T) {
-	appTokenServ := app_token_serv.New()
+	var appTokenServ AppTokenService = New()
 	tokenString, err := appTokenServ.CreateTokenString(user)
 	if err != nil {
 		t.Errorf("Error occured:\n -Context Message: %s\n - EndpointMessage: %s", err.Error(), err.EndpointMessage())
@@ -29,7 +27,7 @@ func TestCreateTokenString(t *testing.T) {
 }
 
 func TestValidateTokenString(t *testing.T) {
-	appTokenServ := app_token_serv.New()
+	var appTokenServ AppTokenService = New()
 	tokenString, _ := appTokenServ.CreateTokenString(user)
 
 	claim, err := appTokenServ.ValidateTokenString(tokenString)
