@@ -30,7 +30,7 @@ func (this AppStoryService) NavigateToChapter(request story_serv.PathRequest, en
 		saveIsEmpty = true
 	}
 
-	destinationChapterIsFirstChapter := (destinationChapter.ID == destinationChapter.Book.FirstChapterId)
+	destinationChapterIsFirstChapter := (destinationChapter.ID == destinationChapter.Book.FirstChapterId.Int)
 
 	//if the save is empty and we're not on the first chapter, then consider ourselves to be in freemode
 	if (request.IsFreeMode || saveIsEmpty && !destinationChapterIsFirstChapter) {

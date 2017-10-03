@@ -7,6 +7,7 @@ import (
 	"yellowroad_library/database/entities"
 	"yellowroad_library/services/book_serv"
 	"net/http"
+	"yellowroad_library/database"
 )
 
 type AppBookService struct {
@@ -26,7 +27,7 @@ func New(bookRepo book_repo.BookRepository, userRepo user_repo.UserRepository ) 
 func (this AppBookService) CreateBook(creator entities.User, book *entities.Book) app_error.AppError {
 	//TODO: do some extra checking here (eg: check if the creator is banned or not, etc)
 	book.CreatorId = creator.ID
-	book.FirstChapterId = 0
+	book.FirstChapterId = database.NullInt{Int:0}
 
 	if err := this.bookRepo.Insert(book); err != nil {
 		return app_error.Wrap(err)

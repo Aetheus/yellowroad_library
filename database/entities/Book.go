@@ -10,7 +10,7 @@ type Book struct {
 	Description    string
 	Permissions    string
 
-	FirstChapterId int  `sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
+	FirstChapterId database.NullInt  `sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
 	FirstChapter   *Chapter `gorm:"ForeignKey:FirstChapterId"`
 
 	CreatorId      int
@@ -37,5 +37,5 @@ type BookForm struct {
 func (this BookForm) Apply(book *Book){
 	if (this.Title != nil) { book.Title = *this.Title }
 	if (this.Description != nil ) {book.Description = *this.Description}
-	if (this.FirstChapterId != nil ) {book.FirstChapterId = *this.FirstChapterId}
+	if (this.FirstChapterId != nil ) {book.FirstChapterId = database.NullInt{Int : *this.FirstChapterId}}
 }
