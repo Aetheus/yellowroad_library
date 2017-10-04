@@ -11,6 +11,7 @@ import (
 	"yellowroad_library/services/story_serv"
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/database/repo/chapterpath_repo"
+	"yellowroad_library/database/repo/uow"
 )
 
 /*Container :
@@ -34,6 +35,7 @@ type Container interface {
 	GetBookRepository() book_repo.BookRepository
 	GetChapterRepository() chapter_repo.ChapterRepository
 	GetChapterPathRepository() chapterpath_repo.ChapterPathRepository
+	UnitOfWork() uow.UnitOfWork
 
 	//middleware
 	GetAuthMiddleware() auth_middleware.AuthMiddleware
