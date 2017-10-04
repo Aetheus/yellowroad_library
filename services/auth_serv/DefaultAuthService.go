@@ -1,4 +1,4 @@
-package app_auth_serv
+package auth_serv
 
 import (
 	"github.com/gin-gonic/gin"
@@ -12,24 +12,23 @@ import (
 	"yellowroad_library/services/token_serv"
 	"yellowroad_library/utils/app_error"
 	"net/http"
-	"yellowroad_library/services/auth_serv"
 )
 
-type AppAuthService struct {
+type DefaultAuthService struct {
 	userRepository user_repo.UserRepository
 	tokenService   token_serv.TokenService
 }
 //ensure interface implementation
-var _ auth_serv.AuthService = AppAuthService{}
+var _ AuthService = DefaultAuthService{}
 
-func New(userRepository user_repo.UserRepository, tokenService token_serv.TokenService) AppAuthService {
-	return AppAuthService{
+func Default(userRepository user_repo.UserRepository, tokenService token_serv.TokenService) DefaultAuthService {
+	return DefaultAuthService{
 		userRepository: userRepository,
 		tokenService:   tokenService,
 	}
 }
 
-func (service AppAuthService) RegisterUser(username string, password string, email string) (returnedUser *entities.User, returnedErr app_error.AppError) {
+func (service DefaultAuthService) RegisterUser(username string, password string, email string) (returnedUser *entities.User, returnedErr app_error.AppError) {
 
 	if utf8.RuneCountInString(password) < 6 {
 		encounteredError := app_error.New(http.StatusUnprocessableEntity, "","Password had an insufficient length (minimum 6 characters)")
@@ -55,7 +54,7 @@ func (service AppAuthService) RegisterUser(username string, password string, ema
 }
 
 // return : user, login_token, err
-func (service AppAuthService) LoginUser(username string, password string) (entities.User, string, app_error.AppError) {
+func (service DefaultAuthService) LoginUser(username string, password string) (entities.User, string, app_error.AppError) {
 	var user entities.User
 	var err error
 
@@ -77,7 +76,7 @@ func (service AppAuthService) LoginUser(username string, password string) (entit
 	return user, token, nil
 }
 
-func (service AppAuthService) GetLoggedInUser(data interface{}) (entities.User, app_error.AppError) {
+func (service DefaultAuthService) GetLoggedInUser(data interface{}) (entities.User, app_error.AppError) {
 	var user entities.User
 	var err app_error.AppError
 

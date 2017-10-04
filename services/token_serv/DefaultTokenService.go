@@ -1,36 +1,35 @@
-package app_token_serv
+package token_serv
 
 import (
 	"time"
 
 	"yellowroad_library/database/entities"
-	"yellowroad_library/services/token_serv"
 
 	"github.com/dgrijalva/jwt-go"
 	"yellowroad_library/utils/app_error"
 )
 
-type AppTokenService struct {
+type DefaultTokenService struct {
 	signingMethod        jwt.SigningMethod
 	secretKey            []byte
 	expiryDurationInDays int
 }
 //ensure interface implementation
-var _ token_serv.TokenService = AppTokenService{}
+var _ TokenService = DefaultTokenService{}
 
-func New() AppTokenService {
+func Default() DefaultTokenService {
 	//TODO : change secret key to use something from the settings
-	return AppTokenService{
+	return DefaultTokenService{
 		signingMethod:        jwt.SigningMethodHS256, //default this for now
 		secretKey:            []byte("blubber"),      //default this for now
 		expiryDurationInDays: 365,                    //default this for now
 	}
 }
 
-func (service AppTokenService) ValidateTokenString(tokenString string) (token_serv.LoginClaim, app_error.AppError) {
-	var claims token_serv.LoginClaim
+func (service DefaultTokenService) ValidateTokenString(tokenString string) (LoginClaim, app_error.AppError) {
+	var claims LoginClaim
 
-	token, err := jwt.ParseWithClaims(tokenString, &token_serv.LoginClaim{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &LoginClaim{}, func(token *jwt.Token) (interface{}, error) {
 		return service.secretKey, nil
 	})
 
@@ -38,18 +37,18 @@ func (service AppTokenService) ValidateTokenString(tokenString string) (token_se
 		return claims, app_error.Wrap(err)
 	}
 
-	if claims, ok := token.Claims.(*token_serv.LoginClaim); ok && token.Valid {
+	if claims, ok := token.Claims.(*LoginClaim); ok && token.Valid {
 		return *claims, nil
 	}
 
 	return claims, nil
 }
 
-func (service AppTokenService) CreateTokenString(user entities.User) (string, app_error.AppError) {
+func (service DefaultTokenService) CreateTokenString(user entities.User) (string, app_error.AppError) {
 	nowTimestamp := time.Now().Unix()
 	expiryDate := time.Now().AddDate(0, 0, service.expiryDurationInDays).Unix()
 
-	claims := token_serv.LoginClaim{
+	claims := LoginClaim{
 		user.ID,
 		jwt.StandardClaims{
 			ExpiresAt: expiryDate,

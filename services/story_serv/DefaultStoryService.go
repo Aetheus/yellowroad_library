@@ -1,28 +1,27 @@
-package app_story_serv
+package story_serv
 
 import (
-	"yellowroad_library/services/story_serv"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/services/story_serv/story_save"
 )
 
-type AppStoryService struct {
+type DefaultStoryService struct {
 	chapterRepo chapter_repo.ChapterRepository
 }
-var _ story_serv.StoryService = AppStoryService{}
+var _ StoryService = DefaultStoryService{}
 
-func New(chapterRepo chapter_repo.ChapterRepository) AppStoryService{
-	return AppStoryService{
+func Default(chapterRepo chapter_repo.ChapterRepository) DefaultStoryService {
+	return DefaultStoryService{
 		chapterRepo : chapterRepo,
 	}
 }
 
-func (this AppStoryService) NavigateToChapter(request story_serv.PathRequest, encodedSaveString string) (story_serv.PathResponse,app_error.AppError) {
+func (this DefaultStoryService) NavigateToChapter(request PathRequest, encodedSaveString string) (PathResponse,app_error.AppError) {
 
 	destinationChapter, err := this.chapterRepo.FindWithinBook(request.DestinationChapterId,request.BookId)
 	if (err != nil) {
-		return story_serv.PathResponse{},err
+		return PathResponse{},err
 	}
 
 	saveIsEmpty := false
@@ -34,7 +33,7 @@ func (this AppStoryService) NavigateToChapter(request story_serv.PathRequest, en
 
 	//if the save is empty and we're not on the first chapter, then consider ourselves to be in freemode
 	if (request.IsFreeMode || saveIsEmpty && !destinationChapterIsFirstChapter) {
-		response := story_serv.NewPathResponse(destinationChapter,story_save.Save{})
+		response := NewPathResponse(destinationChapter,story_save.Save{})
 		return response, nil
 	}
 
@@ -44,11 +43,11 @@ func (this AppStoryService) NavigateToChapter(request story_serv.PathRequest, en
 	}else {
 		currentSave, err = story_save.DecodeSaveString(encodedSaveString)
 		if (err != nil){
-			return story_serv.PathResponse{}, err
+			return PathResponse{}, err
 		}
 	}
 
 	//TODO: actually do something here - get the chapter path, use it to validate/update the story save, etc
-	response := story_serv.NewPathResponse(destinationChapter,currentSave)
+	response := NewPathResponse(destinationChapter,currentSave)
 	return response, nil
 }

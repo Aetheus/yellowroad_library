@@ -1,4 +1,4 @@
-package app_token_serv
+package token_serv
 
 import (
 	"testing"
@@ -14,7 +14,7 @@ var user = 	entities.User{
 
 
 func TestCreateTokenString(t *testing.T) {
-	var appTokenServ AppTokenService = New()
+	var appTokenServ DefaultTokenService = Default()
 	tokenString, err := appTokenServ.CreateTokenString(user)
 	if err != nil {
 		t.Errorf("Error occured:\n -Context Message: %s\n - EndpointMessage: %s", err.Error(), err.EndpointMessage())
@@ -27,7 +27,7 @@ func TestCreateTokenString(t *testing.T) {
 }
 
 func TestValidateTokenString(t *testing.T) {
-	var appTokenServ AppTokenService = New()
+	var appTokenServ DefaultTokenService = Default()
 	tokenString, _ := appTokenServ.CreateTokenString(user)
 
 	claim, err := appTokenServ.ValidateTokenString(tokenString)

@@ -10,16 +10,12 @@ import (
 	"yellowroad_library/services/auth_serv"
 	"yellowroad_library/services/token_serv"
 	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
-	"yellowroad_library/services/auth_serv/app_auth_serv"
-	"yellowroad_library/services/token_serv/app_token_serv"
 
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
 	"yellowroad_library/services/book_serv"
-	"yellowroad_library/services/book_serv/app_book_serv"
 	"yellowroad_library/services/story_serv"
-	"yellowroad_library/services/story_serv/app_story_serv"
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
 	"yellowroad_library/database/repo/chapterpath_repo"
@@ -82,7 +78,7 @@ func (ac AppContainer) GetConfiguration() config.Configuration {
 
 func (ac AppContainer) GetAuthService() auth_serv.AuthService {
 	if ac.authService == nil {
-		var AuthService auth_serv.AuthService = app_auth_serv.New(ac.GetUserRepository(), ac.GetTokenService())
+		var AuthService auth_serv.AuthService = auth_serv.Default(ac.GetUserRepository(), ac.GetTokenService())
 		ac.authService = &AuthService
 	}
 
@@ -91,7 +87,7 @@ func (ac AppContainer) GetAuthService() auth_serv.AuthService {
 
 func (ac AppContainer) GetTokenService() token_serv.TokenService {
 	if ac.tokenService == nil {
-		var tokenService token_serv.TokenService = app_token_serv.New()
+		var tokenService token_serv.TokenService = token_serv.Default()
 		ac.tokenService = &tokenService
 	}
 
@@ -100,7 +96,7 @@ func (ac AppContainer) GetTokenService() token_serv.TokenService {
 
 func (ac AppContainer) GetBookService() book_serv.BookService {
 	if ac.bookService == nil {
-		var bookService book_serv.BookService = app_book_serv.New(ac.GetBookRepository(),ac.GetUserRepository())
+		var bookService book_serv.BookService = book_serv.Default(ac.GetBookRepository(),ac.GetUserRepository())
 		ac.bookService = &bookService
 	}
 
@@ -109,7 +105,7 @@ func (ac AppContainer) GetBookService() book_serv.BookService {
 
 func (ac AppContainer) GetStoryService() story_serv.StoryService {
 	if ac.storyService == nil {
-		var storyService story_serv.StoryService = app_story_serv.New(ac.GetChapterRepository())
+		var storyService story_serv.StoryService = story_serv.Default(ac.GetChapterRepository())
 		ac.storyService = &storyService
 	}
 
