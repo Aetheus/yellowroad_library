@@ -10,8 +10,6 @@ import (
 	"yellowroad_library/utils/api_response"
 )
 
-
-
 type loginForm struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
