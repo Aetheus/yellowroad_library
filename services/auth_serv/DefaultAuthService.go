@@ -5,7 +5,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"errors"
-	"unicode/utf8"
 
 	"yellowroad_library/database/entities"
 	"yellowroad_library/database/repo/user_repo"
@@ -28,30 +27,6 @@ func Default(userRepository user_repo.UserRepository, tokenService token_serv.To
 	}
 }
 
-func (service DefaultAuthService) RegisterUser(username string, password string, email string) (returnedUser *entities.User, returnedErr app_error.AppError) {
-
-	if utf8.RuneCountInString(password) < 6 {
-		encounteredError := app_error.New(http.StatusUnprocessableEntity, "","Password had an insufficient length (minimum 6 characters)")
-		return nil, encounteredError
-	}
-
-	hashedPassword, encounteredError := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if encounteredError != nil {
-		return nil, app_error.Wrap(encounteredError)
-	}
-
-	var user = entities.User{
-		Username: username,
-		Password: string(hashedPassword),
-		Email:    email,
-	}
-
-	if err := service.userRepository.Insert(&user); err != nil {
-		return nil, app_error.Wrap(err)
-	}
-
-	return &user, nil
-}
 
 // return : user, login_token, err
 func (service DefaultAuthService) LoginUser(username string, password string) (entities.User, string, app_error.AppError) {

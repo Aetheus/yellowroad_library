@@ -12,6 +12,7 @@ import (
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/database/repo/chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/services/auth_serv/user_registration_serv"
 )
 
 /*Container :
@@ -26,6 +27,8 @@ and pass these to the Repositories (and will almost definitely need to do so)
 type Container interface {
 	//services
 	GetAuthService() auth_serv.AuthService
+		UserRegistrationService(work *uow.UnitOfWork,autocommit bool) user_registration_serv.UserRegistrationService
+
 	GetTokenService() token_serv.TokenService
 	GetBookService() book_serv.BookService
 	GetStoryService() story_serv.StoryService

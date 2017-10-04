@@ -6,7 +6,7 @@ import (
 )
 
 type AuthService interface {
-	RegisterUser(username string, password string, email string) (*entities.User, app_error.AppError)
+
 	LoginUser(username string, password string) (entities.User, string, app_error.AppError)
 
 	//TODO: unfortunately, unless we want a tonne of boilerplate, this is the "quickest" data

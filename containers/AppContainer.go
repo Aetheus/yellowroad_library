@@ -21,6 +21,7 @@ import (
 	"yellowroad_library/database/repo/chapterpath_repo"
 	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/services/auth_serv/user_registration_serv"
 )
 
 type AppContainer struct {
@@ -84,6 +85,17 @@ func (ac AppContainer) GetAuthService() auth_serv.AuthService {
 
 	return *ac.authService
 }
+func (ac AppContainer) UserRegistrationService(work *uow.UnitOfWork, autocommit bool) user_registration_serv.UserRegistrationService {
+	var workVal uow.UnitOfWork
+	if (work == nil){
+		workVal = ac.UnitOfWork()
+	}else {
+		workVal = *work
+	}
+
+	userRegistrationService := user_registration_serv.Default(workVal,autocommit)
+	return userRegistrationService
+}
 
 func (ac AppContainer) GetTokenService() token_serv.TokenService {
 	if ac.tokenService == nil {
@@ -96,7 +108,7 @@ func (ac AppContainer) GetTokenService() token_serv.TokenService {
 
 func (ac AppContainer) GetBookService() book_serv.BookService {
 	if ac.bookService == nil {
-		var bookService book_serv.BookService = book_serv.Default(ac.GetBookRepository(),ac.GetUserRepository())
+		var bookService book_serv.BookService = book_serv.Default(ac.GetBookRepository(), ac.GetUserRepository())
 		ac.bookService = &bookService
 	}
 
@@ -116,6 +128,10 @@ func (ac AppContainer) GetStoryService() story_serv.StoryService {
 /***********************************************************************************************/
 //Repositories
 
+func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
+	return uow.NewAppUnitOfWork(ac.GetDbConn())
+}
+
 func (ac AppContainer) GetUserRepository() user_repo.UserRepository {
 	return gorm_user_repo.New(ac.GetDbConn())
 }
@@ -132,9 +148,7 @@ func (ac AppContainer) GetChapterPathRepository() chapterpath_repo.ChapterPathRe
 	return gorm_chapterpath_repo.New(ac.GetDbConn())
 }
 
-func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
-	return uow.NewAppUnitOfWork(ac.GetDbConn())
-}
+
 
 /***********************************************************************************************/
 /***********************************************************************************************/
