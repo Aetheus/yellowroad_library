@@ -12,7 +12,7 @@ func Register(
 ) {
 
 	routerGroup.POST("/login", Login(container.GetAuthService()))
-	routerGroup.POST("/register", SignUp(container.GetAuthService()))
+	routerGroup.POST("/register", SignUpHandler(container))
 
 	// routerGroup.GET("/secure/secret", gin.HandlerFunc(authMiddleware), func(c *gin.Context) {
 

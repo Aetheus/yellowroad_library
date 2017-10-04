@@ -10,35 +10,7 @@ import (
 	"yellowroad_library/utils/api_response"
 )
 
-type signUpForm struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email string `json:"email"`
-}
-func SignUp(authService auth_serv.AuthService) gin.HandlerFunc {
-	return func (c *gin.Context) {
-		form := signUpForm{}
 
-		if err := c.BindJSON(&form) ; err != nil {
-			var err = app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
-			c.JSON(api_response.ConvertErrWithCode(err))
-			return
-		}
-
-		user, err := authService.RegisterUser(form.Username,form.Password,form.Email)
-		if (err != nil) {
-			c.JSON(api_response.ConvertErrWithCode(err))
-			return
-		}
-
-		c.JSON(api_response.SuccessWithCode(
-			gin.H {
-				"user" : user,
-			},
-		))
-		return
-	}
-}
 
 type loginForm struct {
 	Username string `json:"username"`
