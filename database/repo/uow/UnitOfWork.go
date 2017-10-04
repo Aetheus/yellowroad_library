@@ -19,8 +19,8 @@ type UnitOfWork interface {
 	ChapterPathRepo() (chapterpath_repo.ChapterPathRepository)
 	UserRepo() (user_repo.UserRepository)
 
-	SaveChanges() (app_error.AppError)
-	Dispose() (app_error.AppError)
+	Commit() (app_error.AppError)
+	Rollback() (app_error.AppError)
 }
 
 
@@ -40,7 +40,7 @@ func NewAppUnitOfWork(db *gorm.DB) UnitOfWork{
 	}
 }
 
-func (this AppUnitOfWork) SaveChanges() (app_error.AppError) {
+func (this AppUnitOfWork) Commit() (app_error.AppError) {
 	this.transaction.Commit()
 
 	if(this.transaction.Error != nil){
@@ -50,7 +50,7 @@ func (this AppUnitOfWork) SaveChanges() (app_error.AppError) {
 	return nil
 }
 
-func (this AppUnitOfWork) Dispose() (app_error.AppError) {
+func (this AppUnitOfWork) Rollback() (app_error.AppError) {
 	currentNumErrors := len(this.transaction.GetErrors())
 	this.transaction.Rollback()
 	newNumErrors := len(this.transaction.GetErrors())
