@@ -2,7 +2,7 @@ package story_route
 
 import (
 	"yellowroad_library/containers"
-
+	"yellowroad_library/http/routes/story_route/book_crud"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,14 +13,14 @@ func Register(
 
 	//Book related
 	{
-		routerGroup.GET("/", FetchBooks(container.GetBookRepository()))
-		routerGroup.GET("/:book_id", FetchSingleBook(container.GetBookRepository()))
+		routerGroup.GET("/", book_crud.FetchBooks(container.GetBookRepository()))
+		routerGroup.GET("/:book_id", book_crud.FetchSingleBook(container.GetBookRepository()))
 		routesRequiringLogin := routerGroup.Group("", gin.HandlerFunc(container.GetAuthMiddleware()) )
 		{
-			routesRequiringLogin.POST("", CreateBook(container.GetAuthService(), container.GetBookService()))
-			routesRequiringLogin.DELETE("/:book_id", DeleteBook(container.GetAuthService(), container.GetBookRepository(), container.GetBookService()))
+			routesRequiringLogin.POST("", book_crud.CreateBookHandler(container))
+			routesRequiringLogin.DELETE("/:book_id", book_crud.DeleteBookHandler(container))
 		}
-		routerGroup.PUT("/:book_id", UpdateBook(container.GetBookRepository()))
+		routerGroup.PUT("/:book_id", book_crud.UpdateBook(container.GetBookRepository()))
 	}
 
 

@@ -14,7 +14,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
-	"yellowroad_library/services/book_serv"
 	"yellowroad_library/services/story_serv"
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
@@ -22,13 +21,14 @@ import (
 	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/services/auth_serv/user_registration_serv"
+	"yellowroad_library/services/book_serv/book_create"
+	"yellowroad_library/services/book_serv/book_delete"
 )
 
 type AppContainer struct {
 	dbConn        *gorm.DB
 	tokenService  *token_serv.TokenService
 	authService   *auth_serv.AuthService
-	bookService	  *book_serv.BookService
 	storyService  *story_serv.StoryService
 	configuration config.Configuration
 }
@@ -106,13 +106,28 @@ func (ac AppContainer) GetTokenService() token_serv.TokenService {
 	return *ac.tokenService
 }
 
-func (ac AppContainer) GetBookService() book_serv.BookService {
-	if ac.bookService == nil {
-		var bookService book_serv.BookService = book_serv.Default(ac.GetBookRepository(), ac.GetUserRepository())
-		ac.bookService = &bookService
+func (ac AppContainer) BookCreateService(work uow.UnitOfWork, autocommit bool) book_create.BookCreateService {
+	var workVal uow.UnitOfWork
+	if (work == nil){
+		workVal = ac.UnitOfWork()
+	}else {
+		workVal = work
 	}
 
-	return *ac.bookService
+	service := book_create.Default(workVal,autocommit)
+	return service
+}
+
+func (ac AppContainer) BookDeleteService(work uow.UnitOfWork, autocommit bool) book_delete.BookDeleteService {
+	var workVal uow.UnitOfWork
+	if (work == nil){
+		workVal = ac.UnitOfWork()
+	}else {
+		workVal = work
+	}
+
+	service := book_delete.Default(workVal,autocommit)
+	return service
 }
 
 func (ac AppContainer) GetStoryService() story_serv.StoryService {

@@ -6,13 +6,14 @@ import (
 	"yellowroad_library/http/middleware/auth_middleware"
 	"yellowroad_library/services/auth_serv"
 	"yellowroad_library/services/token_serv"
-	"yellowroad_library/services/book_serv"
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/services/story_serv"
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/database/repo/chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/services/auth_serv/user_registration_serv"
+	"yellowroad_library/services/book_serv/book_create"
+	"yellowroad_library/services/book_serv/book_delete"
 )
 
 /*Container :
@@ -30,7 +31,8 @@ type Container interface {
 		UserRegistrationService(work *uow.UnitOfWork,autocommit bool) user_registration_serv.UserRegistrationService
 
 	GetTokenService() token_serv.TokenService
-	GetBookService() book_serv.BookService
+		BookCreateService(work uow.UnitOfWork, autocommit bool) book_create.BookCreateService
+		BookDeleteService(work uow.UnitOfWork, autocommit bool) book_delete.BookDeleteService
 	GetStoryService() story_serv.StoryService
 
 	//repo
