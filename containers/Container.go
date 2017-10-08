@@ -25,17 +25,18 @@ and pass these to the Repositories (and will almost definitely need to do so)
 */
 type Container interface {
 	//services
-	GetAuthService() auth_serv.AuthService
-	GetTokenService() token_serv.TokenService
-	GetBookService() book_serv.BookService
-	GetStoryService() story_serv.StoryService
+	AuthServiceFactory() func(uow.UnitOfWork) auth_serv.AuthService
+	TokenService() token_serv.TokenService
+	BookServiceFactory() func(uow.UnitOfWork) book_serv.BookService
+	StoryServiceFactory() func(uow.UnitOfWork) story_serv.StoryService
 
 	//repo
 	GetUserRepository() user_repo.UserRepository
 	GetBookRepository() book_repo.BookRepository
 	GetChapterRepository() chapter_repo.ChapterRepository
 	GetChapterPathRepository() chapterpath_repo.ChapterPathRepository
-	UnitOfWork() uow.UnitOfWork
+	UnitOfWorkFactory() func() uow.UnitOfWork
+
 
 	//middleware
 	GetAuthMiddleware() auth_middleware.AuthMiddleware

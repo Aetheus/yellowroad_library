@@ -12,6 +12,7 @@ import (
 	"yellowroad_library/services/token_serv"
 	"yellowroad_library/utils/app_error"
 	"net/http"
+	"yellowroad_library/database/repo/uow"
 )
 
 type DefaultAuthService struct {
@@ -21,9 +22,9 @@ type DefaultAuthService struct {
 //ensure interface implementation
 var _ AuthService = DefaultAuthService{}
 
-func Default(userRepository user_repo.UserRepository, tokenService token_serv.TokenService) DefaultAuthService {
+func Default(work uow.UnitOfWork, tokenService token_serv.TokenService) DefaultAuthService {
 	return DefaultAuthService{
-		userRepository: userRepository,
+		userRepository: work.UserRepo(),
 		tokenService:   tokenService,
 	}
 }

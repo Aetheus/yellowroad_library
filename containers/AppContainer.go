@@ -76,16 +76,13 @@ func (ac AppContainer) GetConfiguration() config.Configuration {
 /***********************************************************************************************/
 //Services
 
-func (ac AppContainer) GetAuthService() auth_serv.AuthService {
-	if ac.authService == nil {
-		var AuthService auth_serv.AuthService = auth_serv.Default(ac.GetUserRepository(), ac.GetTokenService())
-		ac.authService = &AuthService
+func (ac AppContainer) AuthServiceFactory() func(uow.UnitOfWork) auth_serv.AuthService {
+	return func(work uow.UnitOfWork) auth_serv.AuthService{
+		return auth_serv.Default(work, ac.TokenService());
 	}
-
-	return *ac.authService
 }
 
-func (ac AppContainer) GetTokenService() token_serv.TokenService {
+func (ac AppContainer) TokenService() token_serv.TokenService {
 	if ac.tokenService == nil {
 		var tokenService token_serv.TokenService = token_serv.Default()
 		ac.tokenService = &tokenService
@@ -94,22 +91,20 @@ func (ac AppContainer) GetTokenService() token_serv.TokenService {
 	return *ac.tokenService
 }
 
-func (ac AppContainer) GetBookService() book_serv.BookService {
-	if ac.bookService == nil {
-		var bookService book_serv.BookService = book_serv.Default(ac.GetBookRepository(),ac.GetUserRepository())
-		ac.bookService = &bookService
-	}
-
-	return *ac.bookService
+func (ac AppContainer) BookServiceFactory() func(uow.UnitOfWork) book_serv.BookService {
+	return book_serv.Default;
+	//return func(work uow.UnitOfWork) book_serv.BookService {
+	//	var bookService = book_serv.Default(work)
+	//	return bookService
+	//}
 }
 
-func (ac AppContainer) GetStoryService() story_serv.StoryService {
-	if ac.storyService == nil {
-		var storyService story_serv.StoryService = story_serv.Default(ac.GetChapterRepository())
-		ac.storyService = &storyService
-	}
-
-	return *ac.storyService
+func (ac AppContainer) StoryServiceFactory() func(uow.UnitOfWork) story_serv.StoryService {
+	return story_serv.Default;
+	//return func(work uow.UnitOfWork) story_serv.StoryService{
+	//	var storyService = story_serv.Default(work)
+	//	return storyService
+	//}
 }
 
 /***********************************************************************************************/
@@ -132,16 +127,22 @@ func (ac AppContainer) GetChapterPathRepository() chapterpath_repo.ChapterPathRe
 	return gorm_chapterpath_repo.New(ac.GetDbConn())
 }
 
-func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
-	return uow.NewAppUnitOfWork(ac.GetDbConn())
+func (ac AppContainer) UnitOfWorkFactory() func() uow.UnitOfWork {
+	return func() uow.UnitOfWork{
+		return uow.NewAppUnitOfWork(ac.GetDbConn())
+	}
 }
+
+//func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
+//	return uow.NewAppUnitOfWork(ac.GetDbConn())
+//}
 
 /***********************************************************************************************/
 /***********************************************************************************************/
 //Middleware
 
 func (ac AppContainer) GetAuthMiddleware() auth_middleware.AuthMiddleware {
-	return auth_middleware.New(ac.GetTokenService())
+	return auth_middleware.New(ac.TokenService())
 }
 
 /***********************************************************************************************/

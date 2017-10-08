@@ -7,6 +7,7 @@ import (
 	"yellowroad_library/database/entities"
 	"net/http"
 	"yellowroad_library/database"
+	"yellowroad_library/database/repo/uow"
 )
 
 type DefaultBookService struct {
@@ -16,10 +17,11 @@ type DefaultBookService struct {
 //ensure interface implementation
 var _ BookService = DefaultBookService{}
 
-func Default(bookRepo book_repo.BookRepository, userRepo user_repo.UserRepository ) DefaultBookService {
+func Default(work uow.UnitOfWork) BookService {
+
 	return DefaultBookService{
-		bookRepo : bookRepo,
-		userRepo : userRepo,
+		bookRepo : work.BookRepo(),
+		userRepo : work.UserRepo(),
 	}
 }
 
@@ -35,14 +37,19 @@ func (this DefaultBookService) CreateBook(creator entities.User, book *entities.
 	return nil
 }
 
-func (this DefaultBookService) DeleteBook(instigator entities.User, book *entities.Book) app_error.AppError{
+func (this DefaultBookService) DeleteBook(book_id int, instigator entities.User) app_error.AppError{
+	book, err := this.bookRepo.FindById(book_id)
+	if  err != nil{
+		return app_error.Wrap(err)
+	}
+
 	//TODO: if we implement a "contributors" system, then this should do more checking later on
 	if (book.CreatorId != instigator.ID){
 		return app_error.New(http.StatusUnauthorized,
-				"","You are not authorized to delete this book!")
+			"","You are not authorized to delete this book!")
 	}
 
-	if err := this.bookRepo.Delete(book); err != nil {
+	if err := this.bookRepo.Delete(&book); err != nil {
 		return app_error.Wrap(err)
 	}
 

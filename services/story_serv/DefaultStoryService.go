@@ -4,6 +4,7 @@ import (
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/services/story_serv/story_save"
+	"yellowroad_library/database/repo/uow"
 )
 
 type DefaultStoryService struct {
@@ -11,9 +12,9 @@ type DefaultStoryService struct {
 }
 var _ StoryService = DefaultStoryService{}
 
-func Default(chapterRepo chapter_repo.ChapterRepository) DefaultStoryService {
+func Default(work uow.UnitOfWork) StoryService {
 	return DefaultStoryService{
-		chapterRepo : chapterRepo,
+		chapterRepo : work.ChapterRepo(),
 	}
 }
 
