@@ -23,6 +23,7 @@ type UnitOfWork interface {
 	Rollback() (app_error.AppError)
 }
 
+type SimpleUnitOfWorkFactory func() UnitOfWork
 
 type AppUnitOfWork struct {
 	bookRepo *book_repo.BookRepository

@@ -17,6 +17,7 @@ func Default(work uow.UnitOfWork) StoryService {
 		chapterRepo : work.ChapterRepo(),
 	}
 }
+var _ StoryServiceFactory = Default
 
 func (this DefaultStoryService) NavigateToChapter(request PathRequest, encodedSaveString string) (PathResponse,app_error.AppError) {
 

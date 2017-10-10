@@ -24,6 +24,7 @@ func Default(work uow.UnitOfWork) BookService {
 		userRepo : work.UserRepo(),
 	}
 }
+var _ BookServiceFactory = Default
 
 func (this DefaultBookService) CreateBook(creator entities.User, book *entities.Book) app_error.AppError {
 	//TODO: do some extra checking here (eg: check if the creator is banned or not, etc)

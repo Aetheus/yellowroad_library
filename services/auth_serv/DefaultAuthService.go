@@ -22,12 +22,13 @@ type DefaultAuthService struct {
 //ensure interface implementation
 var _ AuthService = DefaultAuthService{}
 
-func Default(work uow.UnitOfWork, tokenService token_serv.TokenService) DefaultAuthService {
+func Default(work uow.UnitOfWork, tokenService token_serv.TokenService) AuthService {
 	return DefaultAuthService{
 		userRepository: work.UserRepo(),
 		tokenService:   tokenService,
 	}
 }
+var _ AuthServiceFactory = Default
 
 func (service DefaultAuthService) RegisterUser(username string, password string, email string) (returnedUser *entities.User, returnedErr app_error.AppError) {
 
