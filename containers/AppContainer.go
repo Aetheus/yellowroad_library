@@ -76,22 +76,24 @@ func (ac AppContainer) GetConfiguration() config.Configuration {
 /***********************************************************************************************/
 //Services
 
-func (ac AppContainer) AuthServiceFactory() func(uow.UnitOfWork) auth_serv.AuthService {
+func (ac AppContainer) AuthServiceFactory() auth_serv.AppliedAuthServiceFactory {
 	return func(work uow.UnitOfWork) auth_serv.AuthService{
 		return auth_serv.Default(work, ac.TokenService());
 	}
 }
 
+//only needs to be resolved once, since all it needs is Configuration and that isn't dynamic,
+//so no need to return a factory.
 func (ac AppContainer) TokenService() token_serv.TokenService {
 	if ac.tokenService == nil {
-		var tokenService token_serv.TokenService = token_serv.Default()
+		var tokenService token_serv.TokenService = token_serv.Default(ac.GetConfiguration())
 		ac.tokenService = &tokenService
 	}
 
 	return *ac.tokenService
 }
 
-func (ac AppContainer) BookServiceFactory() func(uow.UnitOfWork) book_serv.BookService {
+func (ac AppContainer) BookServiceFactory() book_serv.BookServiceFactory {
 	return book_serv.Default;
 	//return func(work uow.UnitOfWork) book_serv.BookService {
 	//	var bookService = book_serv.Default(work)
@@ -99,7 +101,7 @@ func (ac AppContainer) BookServiceFactory() func(uow.UnitOfWork) book_serv.BookS
 	//}
 }
 
-func (ac AppContainer) StoryServiceFactory() func(uow.UnitOfWork) story_serv.StoryService {
+func (ac AppContainer) StoryServiceFactory() story_serv.StoryServiceFactory {
 	return story_serv.Default;
 	//return func(work uow.UnitOfWork) story_serv.StoryService{
 	//	var storyService = story_serv.Default(work)
@@ -127,7 +129,7 @@ func (ac AppContainer) GetChapterPathRepository() chapterpath_repo.ChapterPathRe
 	return gorm_chapterpath_repo.New(ac.GetDbConn())
 }
 
-func (ac AppContainer) UnitOfWorkFactory() func() uow.UnitOfWork {
+func (ac AppContainer) UnitOfWorkFactory() uow.SimpleUnitOfWorkFactory {
 	return func() uow.UnitOfWork{
 		return uow.NewAppUnitOfWork(ac.GetDbConn())
 	}
