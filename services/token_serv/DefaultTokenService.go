@@ -7,6 +7,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"yellowroad_library/utils/app_error"
+	"yellowroad_library/config"
 )
 
 type DefaultTokenService struct {
@@ -17,7 +18,7 @@ type DefaultTokenService struct {
 //ensure interface implementation
 var _ TokenService = DefaultTokenService{}
 
-func Default() DefaultTokenService {
+func Default(configuration config.Configuration) DefaultTokenService {
 	//TODO : change secret key to use something from the settings
 	return DefaultTokenService{
 		signingMethod:        jwt.SigningMethodHS256, //default this for now
