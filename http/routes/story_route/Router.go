@@ -10,24 +10,49 @@ func Register(
 	routerGroup *gin.RouterGroup,
 	container containers.Container,
 ) {
+	workFactory := container.UnitOfWorkFactory()
+	bookServFactory := container.BookServiceFactory()
+	authServFactory := container.AuthServiceFactory()
+	storyServFactory := container.StoryServiceFactory()
 
 	//Book related
 	{
-		routerGroup.GET("/", FetchBooks(container.GetBookRepository()))
-		routerGroup.GET("/:book_id", FetchSingleBook(container.GetBookRepository()))
+		routerGroup.GET("/", func (c *gin.Context){
+			FetchBooks(c, workFactory())
+		})
+
+		routerGroup.GET("/:book_id", func(c *gin.Context) {
+			FetchSingleBook(c,workFactory())
+		})
+
 		routesRequiringLogin := routerGroup.Group("", gin.HandlerFunc(container.GetAuthMiddleware()) )
 		{
-			routesRequiringLogin.POST("", CreateBook(container.GetAuthService(), container.GetBookService()))
-			routesRequiringLogin.DELETE("/:book_id", DeleteBook(container.GetAuthService(), container.GetBookRepository(), container.GetBookService()))
+			//func(c *gin.Context) { }
+			routesRequiringLogin.POST("",func(c *gin.Context) {
+				work := workFactory()
+				CreateBook(c, work, authServFactory(work), bookServFactory(work) )
+			})
+
+			routesRequiringLogin.DELETE("/:book_id", func(c *gin.Context){
+				work := workFactory()
+				DeleteBook(c, work, authServFactory(work), bookServFactory(work) )
+			})
+
+			routerGroup.PUT("/:book_id", func(c *gin.Context){
+				work := workFactory()
+				UpdateBook(c, work, authServFactory(work), bookServFactory(work) )
+			})
 		}
-		routerGroup.PUT("/:book_id", UpdateBook(container.GetBookRepository()))
+
 	}
 
 
 	//Chapter/Story related
 	{
-		routerGroup.GET("/:book_id/:chapter_id", NavigateToSingleChapter(container.GetStoryService()))
-
+		routerGroup.GET("/:book_id/:chapter_id", func(c *gin.Context){
+			work := workFactory()
+			NavigateToSingleChapter(c,work,storyServFactory(work))
+		})
 	}
 
 }
