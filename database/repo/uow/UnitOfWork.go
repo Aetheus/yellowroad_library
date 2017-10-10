@@ -19,6 +19,7 @@ type UnitOfWork interface {
 	ChapterPathRepo() (chapterpath_repo.ChapterPathRepository)
 	UserRepo() (user_repo.UserRepository)
 
+	Finish() (app_error.AppError) //for use in a defer; calls rollback if the transaction had a commit error or hasn't been commited yet
 	Commit() (app_error.AppError)
 	Rollback() (app_error.AppError)
 }
@@ -31,6 +32,10 @@ type AppUnitOfWork struct {
 	chapterPathRepo *chapterpath_repo.ChapterPathRepository
 	userRepo *user_repo.UserRepository
 
+	hasCommitted bool
+	hasCommitErrors bool
+	hasRolledback bool
+
 	transaction *gorm.DB
 }
 var _ UnitOfWork = AppUnitOfWork{}
@@ -38,14 +43,26 @@ func NewAppUnitOfWork(db *gorm.DB) UnitOfWork{
 	transaction := db.Begin();
 	return AppUnitOfWork{
 		transaction: transaction,
+		hasCommitted: false,
+		hasCommitErrors : false,
+		hasRolledback : false,
 	}
+}
+
+func (this AppUnitOfWork) Finish() (app_error.AppError) {
+	if(!this.hasCommitted || this.hasCommitErrors && !this.hasRolledback ){
+		this.Rollback()
+	}
+	return nil
 }
 
 func (this AppUnitOfWork) Commit() (app_error.AppError) {
 	this.transaction.Commit()
+	this.hasCommitted = true
 
 	if(this.transaction.Error != nil){
 		return app_error.Wrap(this.transaction.Error)
+		this.hasCommitErrors = true
 	}
 
 	return nil
@@ -53,7 +70,10 @@ func (this AppUnitOfWork) Commit() (app_error.AppError) {
 
 func (this AppUnitOfWork) Rollback() (app_error.AppError) {
 	currentNumErrors := len(this.transaction.GetErrors())
+
 	this.transaction.Rollback()
+	this.hasRolledback = true
+
 	newNumErrors := len(this.transaction.GetErrors())
 
 	if (currentNumErrors != newNumErrors) {
