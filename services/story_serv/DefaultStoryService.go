@@ -2,26 +2,30 @@ package story_serv
 
 import (
 	"yellowroad_library/utils/app_error"
-	"yellowroad_library/database/repo/chapter_repo"
+	//"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/services/story_serv/story_save"
 	"yellowroad_library/database/repo/uow"
 )
 
 type DefaultStoryService struct {
-	chapterRepo chapter_repo.ChapterRepository
+	work uow.UnitOfWork
 }
 var _ StoryService = DefaultStoryService{}
 
 func Default(work uow.UnitOfWork) StoryService {
 	return DefaultStoryService{
-		chapterRepo : work.ChapterRepo(),
+		work: work,
 	}
 }
 var _ StoryServiceFactory = Default
 
+func (this DefaultStoryService) SetUnitOfWork(work uow.UnitOfWork) {
+	this.work = work
+}
+
 func (this DefaultStoryService) NavigateToChapter(request PathRequest, encodedSaveString string) (PathResponse,app_error.AppError) {
 
-	destinationChapter, err := this.chapterRepo.FindWithinBook(request.DestinationChapterId,request.BookId)
+	destinationChapter, err := this.work.ChapterRepo().FindWithinBook(request.DestinationChapterId,request.BookId)
 	if (err != nil) {
 		return PathResponse{},err
 	}
