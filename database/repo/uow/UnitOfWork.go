@@ -13,13 +13,17 @@ import (
 	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
 )
 
+type WorkFragment interface {
+	SetUnitOfWork(work UnitOfWork)
+}
+
 type UnitOfWork interface {
 	BookRepo() (book_repo.BookRepository)
 	ChapterRepo() (chapter_repo.ChapterRepository)
 	ChapterPathRepo() (chapterpath_repo.ChapterPathRepository)
 	UserRepo() (user_repo.UserRepository)
 
-	Finish() (app_error.AppError) //for use in a defer; calls rollback if the transaction had a commit error or hasn't been commited yet
+	Auto([]WorkFragment, func() app_error.AppError) app_error.AppError
 	Commit() (app_error.AppError)
 	Rollback() (app_error.AppError)
 }
@@ -49,12 +53,26 @@ func NewAppUnitOfWork(db *gorm.DB) UnitOfWork{
 	}
 }
 
-func (this AppUnitOfWork) Finish() (app_error.AppError) {
-	if(!this.hasCommitted || this.hasCommitErrors && !this.hasRolledback ){
-		this.Rollback()
+func (this AppUnitOfWork) Auto(fragments []WorkFragment,callback func() app_error.AppError) app_error.AppError {
+	for _, fragment := range fragments {
+		fragment.SetUnitOfWork(this)
 	}
-	return nil
+
+	err := callback()
+	if (err != nil) {
+		rollbackErr := this.Rollback()
+
+		if(rollbackErr != nil){
+			return rollbackErr
+		}else {
+			return err
+		}
+	}
+
+	commitErr := this.Commit()
+	return commitErr
 }
+
 
 func (this AppUnitOfWork) Commit() (app_error.AppError) {
 	this.transaction.Commit()

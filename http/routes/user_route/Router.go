@@ -10,9 +10,19 @@ func Register(
 	routerGroup *gin.RouterGroup,
 	container containers.Container,
 ) {
+	workFactory := container.UnitOfWorkFactory()
+	authServFactory := container.AuthServiceFactory()
 
-	routerGroup.POST("/login", Login(container.GetAuthService()))
-	routerGroup.POST("/register", SignUp(container.GetAuthService()))
+	routerGroup.POST("/login", func (c *gin.Context){
+		work := workFactory();
+		authServ := authServFactory(work)
+		Login(c,work, authServ)
+	})
+	routerGroup.POST("/register", func(c *gin.Context){
+		work := workFactory();
+		authServ := authServFactory(work)
+		SignUp(c,work, authServ)
+	})
 
 	// routerGroup.GET("/secure/secret", gin.HandlerFunc(authMiddleware), func(c *gin.Context) {
 

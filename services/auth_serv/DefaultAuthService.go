@@ -8,7 +8,6 @@ import (
 	"unicode/utf8"
 
 	"yellowroad_library/database/entities"
-	"yellowroad_library/database/repo/user_repo"
 	"yellowroad_library/services/token_serv"
 	"yellowroad_library/utils/app_error"
 	"net/http"
@@ -16,43 +15,49 @@ import (
 )
 
 type DefaultAuthService struct {
-	userRepository user_repo.UserRepository
-	tokenService   token_serv.TokenService
+	work uow.UnitOfWork
+	tokenService token_serv.TokenService
 }
 //ensure interface implementation
 var _ AuthService = DefaultAuthService{}
 
 func Default(work uow.UnitOfWork, tokenService token_serv.TokenService) AuthService {
 	return DefaultAuthService{
-		userRepository: work.UserRepo(),
-		tokenService:   tokenService,
+		work,
+		tokenService,
 	}
 }
 var _ AuthServiceFactory = Default
 
-func (service DefaultAuthService) RegisterUser(username string, password string, email string) (returnedUser *entities.User, returnedErr app_error.AppError) {
+func (this DefaultAuthService) SetUnitOfWork(work uow.UnitOfWork) {
+	this.work = work
+}
+
+func (service DefaultAuthService) RegisterUser(username string, password string, email string) (returnedUser entities.User, returnedErr app_error.AppError) {
+
+	var user entities.User
 
 	if utf8.RuneCountInString(password) < 6 {
 		encounteredError := app_error.New(http.StatusUnprocessableEntity, "","Password had an insufficient length (minimum 6 characters)")
-		return nil, encounteredError
+		return user, encounteredError
 	}
 
 	hashedPassword, encounteredError := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if encounteredError != nil {
-		return nil, app_error.Wrap(encounteredError)
+		return user, app_error.Wrap(encounteredError)
 	}
 
-	var user = entities.User{
+	user = entities.User{
 		Username: username,
 		Password: string(hashedPassword),
 		Email:    email,
 	}
 
-	if err := service.userRepository.Insert(&user); err != nil {
-		return nil, app_error.Wrap(err)
+	if err := service.work.UserRepo().Insert(&user); err != nil {
+		return user, app_error.Wrap(err)
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 // return : user, login_token, err
@@ -61,7 +66,7 @@ func (service DefaultAuthService) LoginUser(username string, password string) (e
 	var err error
 
 	//TODO : email as well
-	user, err = service.userRepository.FindByUsername(username)
+	user, err = service.work.UserRepo().FindByUsername(username)
 	if err != nil {
 		return user, "", app_error.Wrap(err)
 	}
@@ -93,7 +98,7 @@ func (service DefaultAuthService) GetLoggedInUser(data interface{}) (entities.Us
 		return user, app_error.Wrap(err)
 	}
 
-	user, err = service.userRepository.FindById(tokenClaim.UserID)
+	user, err = service.work.UserRepo().FindById(tokenClaim.UserID)
 	return user, err
 }
 

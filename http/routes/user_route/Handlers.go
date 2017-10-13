@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/utils/api_response"
+	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/database/entities"
 )
 
 type signUpForm struct {
@@ -15,56 +17,81 @@ type signUpForm struct {
 	Password string `json:"password"`
 	Email string `json:"email"`
 }
-func SignUp(authService auth_serv.AuthService) gin.HandlerFunc {
-	return func (c *gin.Context) {
+func SignUp(
+	c *gin.Context,
+	work uow.UnitOfWork,
+	authService auth_serv.AuthService,
+)  {
+
+	var user entities.User
+	err := work.Auto([]uow.WorkFragment{authService}, func() app_error.AppError {
 		form := signUpForm{}
 
 		if err := c.BindJSON(&form) ; err != nil {
 			var err = app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
-			c.JSON(api_response.ConvertErrWithCode(err))
-			return
+			return err
 		}
 
-		user, err := authService.RegisterUser(form.Username,form.Password,form.Email)
-		if (err != nil) {
-			c.JSON(api_response.ConvertErrWithCode(err))
-			return
+		var registrationErr app_error.AppError
+		user, registrationErr = authService.RegisterUser(form.Username,form.Password,form.Email)
+		if (registrationErr != nil) {
+			return registrationErr
 		}
 
+		return nil
+	});
+
+
+	if(err != nil){
+		c.JSON(api_response.ConvertErrWithCode(err))
+	} else {
 		c.JSON(api_response.SuccessWithCode(
 			gin.H {
 				"user" : user,
 			},
 		))
-		return
 	}
+
 }
 
 type loginForm struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
-func Login(authService auth_serv.AuthService) gin.HandlerFunc {
-	return func(c *gin.Context) {
+func Login(
+	c *gin.Context,
+	work uow.UnitOfWork,
+	authService auth_serv.AuthService,
+) {
+
+	var user entities.User
+	var loginToken string
+	err := work.Auto([]uow.WorkFragment{authService}, func() app_error.AppError {
 		form := loginForm{}
 		if err := c.BindJSON(&form); err != nil {
 			var err  = app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
-			c.JSON(api_response.ConvertErrWithCode(err))
-			return
+			return err
 		}
 
-		user, loginToken, err := authService.LoginUser(form.Username, form.Password)
-		if (err != nil){
-			c.JSON(api_response.ConvertErrWithCode(err))
-			return
+		var loginErr app_error.AppError
+		user, loginToken, loginErr = authService.LoginUser(form.Username, form.Password)
+		if (loginErr != nil){
+			return loginErr
 		}
 
+		return nil
+	});
+
+
+	if(err != nil){
+		c.JSON(api_response.ConvertErrWithCode(err))
+	} else {
 		c.JSON(api_response.SuccessWithCode(
 			gin.H{
 				"user" : user,
 				"token" : loginToken,
 			},
 		))
-		return
 	}
+
 }

@@ -6,40 +6,50 @@ import (
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/utils/api_response"
 	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/utils/app_error"
 )
 
-func NavigateToSingleChapter(c *gin.Context, work uow.UnitOfWork, service story_serv.StoryService) {
-	bookId, err := gin_tools.GetIntParam("book_id",c)
-	if (err != nil){
+func NavigateToSingleChapter(
+	c *gin.Context,
+	work uow.UnitOfWork,
+	storyService story_serv.StoryService,
+) {
+
+
+	var newSaveString string
+	var pathResponse story_serv.PathResponse
+	err := work.Auto([]uow.WorkFragment{storyService}, func() app_error.AppError {
+		bookId, err := gin_tools.GetIntParam("book_id",c)
+		if (err != nil){
+			return err
+		}
+
+		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
+		if (err != nil){
+			return err
+		}
+
+		chapterPathId := gin_tools.GetIntQueryOrDefault("chapter_path_id", 0,c)			//chapter path can be ignored if we're on freemode
+		isFreeMode := gin_tools.GetBoolQueryOrDefault("freemode",false,c)			//free mode is off by default
+		saveString := c.Query("save")
+
+		pathRequest := story_serv.NewPathRequest(isFreeMode, bookId, chapterId, chapterPathId)
+		pathResponse, err = storyService.NavigateToChapter(pathRequest,saveString)
+		if (err != nil) {
+			return err
+		}
+
+		newSaveString , _ = pathResponse.NewSave.Encode()
+		return nil
+	})
+
+
+	if(err != nil){
 		c.JSON(api_response.ConvertErrWithCode(err))
-		return
+	} else {
+		c.JSON(api_response.SuccessWithCode(gin.H{
+			"chapter" : pathResponse.DestinationChapter,
+			"save" : newSaveString,
+		}))
 	}
-
-	chapterId, err := gin_tools.GetIntParam("chapter_id",c)
-	if (err != nil){
-		c.JSON(api_response.ConvertErrWithCode(err))
-		return
-	}
-
-	//chapter path can be ignored if we're on freemode
-	chapterPathId := gin_tools.GetIntQueryOrDefault("chapter_path_id", 0,c)
-
-	//free mode is off by default
-	isFreeMode := gin_tools.GetBoolQueryOrDefault("freemode",false,c)
-
-	saveString := c.Query("save")
-
-	pathRequest := story_serv.NewPathRequest(isFreeMode, bookId, chapterId, chapterPathId)
-	pathResponse, err := service.NavigateToChapter(pathRequest,saveString)
-	if (err != nil) {
-		c.JSON(api_response.ConvertErrWithCode(err))
-		return
-	}
-
-	saveString , _ = pathResponse.NewSave.Encode()
-	c.JSON(api_response.SuccessWithCode(gin.H{
-		"chapter" : pathResponse.DestinationChapter,
-		"save" : saveString,
-	}))
-	return
 }

@@ -9,6 +9,7 @@ import (
 
 type StoryService interface {
 	NavigateToChapter(request PathRequest, encodedSaveString string) (response PathResponse, err app_error.AppError)
+	SetUnitOfWork(work uow.UnitOfWork)
 }
 
 type StoryServiceFactory func(uow.UnitOfWork) StoryService

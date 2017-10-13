@@ -14,41 +14,56 @@ import (
 )
 
 func FetchSingleBook(c *gin.Context,work uow.UnitOfWork)  {
-	bookRepo := work.BookRepo()
 
-	book_id, err := gin_tools.GetIntParam("book_id", c)
-	if err != nil {
+	var book entities.Book
+	err := work.Auto([]uow.WorkFragment{}, func() app_error.AppError {
+		bookRepo := work.BookRepo()
+
+		book_id, err := gin_tools.GetIntParam("book_id", c)
+		if err != nil {
+			c.JSON(api_response.ConvertErrWithCode(err))
+			return err
+		}
+
+		var findErr app_error.AppError
+		book, findErr = bookRepo.FindById(book_id)
+		if findErr != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if ( err != nil ){
 		c.JSON(api_response.ConvertErrWithCode(err))
-		return
+	}else {
+		c.JSON(api_response.SuccessWithCode(book))
 	}
-
-	book, findErr := bookRepo.FindById(book_id)
-	if findErr != nil {
-		c.JSON(api_response.ConvertErrWithCode(findErr))
-		return
-	}
-
-	work.Commit()
-	c.JSON(api_response.SuccessWithCode(book))
-	return
 }
 
 func FetchBooks(c *gin.Context, work uow.UnitOfWork) {
-	repository := work.BookRepo()
 
-	page := gin_tools.GetIntQueryOrDefault("page",1,c)
-	perpage := gin_tools.GetIntQueryOrDefault("perpage",15,c)
+	var results []entities.Book
+	err := work.Auto([]uow.WorkFragment{}, func() app_error.AppError {
+		repository := work.BookRepo()
 
-	//TODO: actually get some search options
-	results, err := repository.Paginate(page,perpage, book_repo.SearchOptions{})
-	if err != nil {
+		page := gin_tools.GetIntQueryOrDefault("page",1,c)
+		perpage := gin_tools.GetIntQueryOrDefault("perpage",15,c)
+
+		//TODO: actually get some search options
+		var paginateErr app_error.AppError
+		results, paginateErr = repository.Paginate(page,perpage, book_repo.SearchOptions{})
+		if paginateErr != nil {
+			return paginateErr
+		}
+		return nil
+	})
+
+	if ( err != nil ){
 		c.JSON(api_response.ConvertErrWithCode(err))
-		return
+	}else {
+		c.JSON(api_response.SuccessWithCode(results))
 	}
-
-	work.Commit()
-	c.JSON(api_response.SuccessWithCode(results))
-	return
 }
 
 type createBookForm struct {
@@ -58,40 +73,45 @@ type createBookForm struct {
 func CreateBook (
 	c *gin.Context,
 	work uow.UnitOfWork,
-	authService auth_serv.AuthService, bookService book_serv.BookService,
+	authService auth_serv.AuthService,
+	bookService book_serv.BookService,
 ) {
-	var user entities.User
-	var formData createBookForm
+	var book entities.Book
+	err := work.Auto([]uow.WorkFragment{authService,bookService}, func() app_error.AppError {
+		var formData createBookForm
 
-	//Get logged in user
-	user, err := authService.GetLoggedInUser(c.Copy());
-	if err != nil {
+		//Get logged in user
+		user, err := authService.GetLoggedInUser(c.Copy());
+		if err != nil {
+			return err
+		}
+
+		//Get form data to create book with
+		if err := c.BindJSON(&formData); err != nil {
+			var err app_error.AppError = app_error.Wrap(err)
+			return err
+		}
+
+		//Create the book
+		book = entities.Book {
+			CreatorId: user.ID,
+			Title: formData.Title,
+			Description: formData.Description,
+		}
+		if err := bookService.CreateBook(user, &book); err != nil {
+			return err
+		}
+		return nil
+	})
+
+
+	if ( err != nil ){
 		c.JSON(api_response.ConvertErrWithCode(err))
-		return
+	}else {
+		c.JSON(api_response.SuccessWithCode(
+			gin.H{"book": book},
+		))
 	}
-
-	//Get form data to create book with
-	if err := c.BindJSON(&formData); err != nil {
-		var err app_error.AppError = app_error.Wrap(err)
-		c.JSON( api_response.ConvertErrWithCode(err) )
-		return
-	}
-
-	//Create the book
-	book := entities.Book {
-		CreatorId: user.ID,
-		Title: formData.Title,
-		Description: formData.Description,
-	}
-	if err := bookService.CreateBook(user, &book); err != nil {
-		c.JSON(api_response.ConvertErrWithCode(err))
-		return
-	}
-
-	work.Commit()
-	c.JSON(api_response.SuccessWithCode(
-		gin.H{"book": book},
-	))
 }
 
 
@@ -102,27 +122,31 @@ func DeleteBook(
 	authService auth_serv.AuthService,
 	bookService book_serv.BookService,
 ) {
-	book_id, err := gin_tools.GetIntParam("book_id",c)
-	if err != nil {
-		c.JSON(api_response.ConvertErrWithCode(err))
-		return
-	}
 
-	user, err := authService.GetLoggedInUser(c.Copy())
-	if err != nil {
-		c.JSON(api_response.ConvertErrWithCode(err))
-		return
-	}
+	err := work.Auto([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
+		book_id, err := gin_tools.GetIntParam("book_id",c)
+		if err != nil {
+			return err
+		}
 
-	err = bookService.DeleteBook(book_id,user)
-	if err != nil {
-		c.JSON(api_response.ConvertErrWithCode(err))
-		return
-	}
+		user, err := authService.GetLoggedInUser(c.Copy())
+		if err != nil {
+			return err
+		}
 
-	work.Commit()
-	c.JSON(api_response.SuccessWithCode(gin.H{}))
-	return
+		err = bookService.DeleteBook(book_id,user)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+
+	if ( err != nil ){
+		c.JSON(api_response.ConvertErrWithCode(err))
+	}else {
+		c.JSON(api_response.SuccessWithCode(gin.H{}))
+	}
 }
 
 //TODO : actually validate if you can update the book
@@ -132,35 +156,38 @@ func UpdateBook (
 	authService auth_serv.AuthService,
 	bookService book_serv.BookService,
 ) {
-	bookRepo := work.BookRepo()
 
-	book_id, err := gin_tools.GetIntParam("book_id",c)
-	if err != nil {
+	var book entities.Book
+	err := work.Auto([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
+		bookRepo := work.BookRepo()
+
+		book_id, err := gin_tools.GetIntParam("book_id",c)
+		if err != nil {
+			return err
+		}
+
+		book, err = bookRepo.FindById(book_id)
+		if err != nil {
+			return err
+		}
+
+		bookForm := entities.BookForm{}
+		bindErr := c.BindJSON(&bookForm)
+		if bindErr != nil {
+			return app_error.Wrap(bindErr)
+		}
+
+		bookForm.Apply(&book)
+		err = bookRepo.Update(&book)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if ( err != nil ){
 		c.JSON(api_response.ConvertErrWithCode(err))
-		return
+	}else {
+		c.JSON(http.StatusOK, gin.H{"book": book})
 	}
-
-	book, err := bookRepo.FindById(book_id)
-	if err != nil {
-		c.JSON(api_response.ConvertErrWithCode(err))
-		return
-	}
-
-	bookForm := entities.BookForm{}
-	bindErr := c.BindJSON(&bookForm)
-	if bindErr != nil {
-		c.JSON(api_response.ConvertErrWithCode(app_error.Wrap(bindErr)))
-		return
-	}
-
-	bookForm.Apply(&book)
-	err = bookRepo.Update(&book)
-	if err != nil {
-		c.JSON(api_response.ConvertErrWithCode(err))
-		return
-	}
-
-	work.Commit()
-	c.JSON(http.StatusOK, gin.H{ "book" : book })
-	return
 }

@@ -2,8 +2,6 @@ package book_serv
 
 import (
 	"yellowroad_library/utils/app_error"
-	"yellowroad_library/database/repo/book_repo"
-	"yellowroad_library/database/repo/user_repo"
 	"yellowroad_library/database/entities"
 	"net/http"
 	"yellowroad_library/database"
@@ -11,8 +9,7 @@ import (
 )
 
 type DefaultBookService struct {
-	bookRepo book_repo.BookRepository
-	userRepo user_repo.UserRepository
+	work  uow.UnitOfWork
 }
 //ensure interface implementation
 var _ BookService = DefaultBookService{}
@@ -20,18 +17,21 @@ var _ BookService = DefaultBookService{}
 func Default(work uow.UnitOfWork) BookService {
 
 	return DefaultBookService{
-		bookRepo : work.BookRepo(),
-		userRepo : work.UserRepo(),
+		work: work,
 	}
 }
 var _ BookServiceFactory = Default
 
+
+func (this DefaultBookService) SetUnitOfWork(work uow.UnitOfWork) {
+	this.work = work
+}
 func (this DefaultBookService) CreateBook(creator entities.User, book *entities.Book) app_error.AppError {
 	//TODO: do some extra checking here (eg: check if the creator is banned or not, etc)
 	book.CreatorId = creator.ID
 	book.FirstChapterId = database.NullInt{Int:0}
 
-	if err := this.bookRepo.Insert(book); err != nil {
+	if err := this.work.BookRepo().Insert(book); err != nil {
 		return app_error.Wrap(err)
 	}
 
@@ -39,7 +39,7 @@ func (this DefaultBookService) CreateBook(creator entities.User, book *entities.
 }
 
 func (this DefaultBookService) DeleteBook(book_id int, instigator entities.User) app_error.AppError{
-	book, err := this.bookRepo.FindById(book_id)
+	book, err := this.work.BookRepo().FindById(book_id)
 	if  err != nil{
 		return app_error.Wrap(err)
 	}
@@ -50,7 +50,7 @@ func (this DefaultBookService) DeleteBook(book_id int, instigator entities.User)
 			"","You are not authorized to delete this book!")
 	}
 
-	if err := this.bookRepo.Delete(&book); err != nil {
+	if err := this.work.BookRepo().Delete(&book); err != nil {
 		return app_error.Wrap(err)
 	}
 
