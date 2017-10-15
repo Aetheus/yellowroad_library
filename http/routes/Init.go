@@ -9,7 +9,7 @@ import (
 	"yellowroad_library/http/routes/user_route"
 )
 
-func Init(container containers.Container) {
+func Init(container containers.Container) AppRouter {
 	var ginEngine = gin.Default()
 	var r = newAppRouter(ginEngine, container)
 	var portString = fmt.Sprintf(":%d", container.GetConfiguration().Web.Port)
@@ -18,4 +18,5 @@ func Init(container containers.Container) {
 	r.Route("/api/users", user_route.Register)
 
 	ginEngine.Run(portString)
+	return r
 }

@@ -4,22 +4,16 @@ import "testing"
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/jinzhu/gorm"
-	"yellowroad_library/database/repo"
+	"yellowroad_library/test_utils"
 	"yellowroad_library/database/entities"
-	"yellowroad_library/config"
+	book_repo "yellowroad_library/database/repo/book_repo"
 )
-
-//this is relative to the test script location, not to the main package
-const pathToConfigFile = "../../config_for_mocks.json"
-var configFile = config.Load(pathToConfigFile)
 
 func TestGormBookRepository(t *testing.T) {
 	// Only pass t into top-level Convey calls
-	Convey("Given a book repository", t, repo.WithGormDBConnection(configFile,func(gormDB *gorm.DB){
-		var book_repo GormBookRepository = New(gormDB)
-
-
-
+	Convey("Given a book repository", t, test_utils.WithGormDBConnection(func(gormDB *gorm.DB){
+		var transaction = gormDB.Begin()
+		var bookRepo book_repo.BookRepository = New(transaction);
 
 		Convey("Inserting a book entity should work", func (){
 			newBook := entities.Book {
@@ -27,11 +21,11 @@ func TestGormBookRepository(t *testing.T) {
 				Title: "test title",
 				Description: "test description",
 			}
-			err := book_repo.Insert(&newBook)
+			err := bookRepo.Insert(&newBook)
 			So(err, ShouldBeNil)
 
 			Convey("Finding the inserted book by ID should work", func () {
-				found_book, err := book_repo.FindById(newBook.ID)
+				found_book, err := bookRepo.FindById(newBook.ID)
 				So(err, ShouldBeNil)
 				So(found_book.ID, ShouldEqual, newBook.ID)
 
@@ -45,13 +39,13 @@ func TestGormBookRepository(t *testing.T) {
 
 					currentUpdatedAt := found_book.UpdatedAt
 
-					err := book_repo.Update(&found_book)
+					err := bookRepo.Update(&found_book)
 					So(err, ShouldBeNil)
 					So(found_book.UpdatedAt, ShouldNotEqual, currentUpdatedAt)
 
 
 					Convey("Deleting the inserted book should work", func (){
-						err := book_repo.Delete(&found_book)
+						err := bookRepo.Delete(&found_book)
 						So(err, ShouldBeNil)
 					})
 
@@ -62,21 +56,10 @@ func TestGormBookRepository(t *testing.T) {
 
 
 		Reset(func (){
-			//
+			transaction.Rollback()
+			So(transaction.Error,ShouldBeNil)
 		})
 
 	}))
 
 }
-
-//func() {
-//
-//
-//	Convey("When the Book Repository is created", func() {
-//
-//
-//
-//
-//	})
-//
-//}

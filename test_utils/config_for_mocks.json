@@ -1,0 +1,14 @@
+{
+  "Database" : {
+    "Driver" : "postgres",
+    "Host" : "127.0.0.1",
+    "Username" : "librarian",
+    "Password" : "password",
+    "Database" : "library",
+    "SSLMode" : "disable",
+    "MigrationsDir" : "file:///home/adrian/go/src/yellowroad_library/database/migrations"
+  },
+  "Web" : {
+    "Port" : 8080
+  }
+}

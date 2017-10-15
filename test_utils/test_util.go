@@ -1,4 +1,4 @@
-package repo
+package test_utils
 
 import (
 	"fmt"
@@ -7,9 +7,16 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+//this is relative to the test script location, not to the main package
 
-func WithGormDBConnection (configuration config.Configuration,onward func(*gorm.DB)) func(){
+
+
+func WithGormDBConnection (onward func(*gorm.DB)) func(){
+
 	return func(){
+		So(APP_ROOT, ShouldNotEqual, "")
+		pathToConfigFile := APP_ROOT+"/test_utils/config_for_mocks.json"
+		configuration := config.Load(pathToConfigFile)
 		dbSettings := configuration.Database
 
 		var connectionString = fmt.Sprintf(
