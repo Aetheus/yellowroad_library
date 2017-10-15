@@ -11,12 +11,13 @@ import (
 func WithGormDBConnection (onward func(*gorm.DB)) func(){
 
 	return func(){
-		So(APP_ROOT, ShouldNotEqual, "")
 		pathToConfigFile := APP_ROOT+"/test_utils/config_for_mocks.json"
-		configuration := config.Load(pathToConfigFile)
-		dbSettings := configuration.Database
+		configuration, configErr := config.Load(pathToConfigFile)
+		So(configErr, ShouldBeNil)
 
-		var connectionString = fmt.Sprintf(
+
+		dbSettings := configuration.Database
+		connectionString := fmt.Sprintf(
 			"host=%s user=%s dbname=%s sslmode=%s password=%s",
 			dbSettings.Host,
 			dbSettings.Username,

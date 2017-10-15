@@ -6,11 +6,18 @@ import (
 	"yellowroad_library/database/migrations"
 	"yellowroad_library/http/routes"
 )
-var configuration = config.Load("./config.json")
-var container = containers.NewAppContainer(configuration)
+
 
 func main() {
-	err := migrations.Migrate(configuration)
+	var err error
+
+	configuration, err:= config.Load("./config.json")
+	if (err != nil){
+		panic(err)
+	}
+
+	container := containers.NewAppContainer(configuration)
+	err = migrations.Migrate(configuration)
 	if (err != nil){
 		panic(err)
 	}

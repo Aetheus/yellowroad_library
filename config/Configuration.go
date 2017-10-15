@@ -2,8 +2,9 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"yellowroad_library/utils/app_error"
+	"errors"
 )
 
 /*Configuration :
@@ -33,22 +34,22 @@ func (config Configuration) isValid() (isValid bool, reason string) {
 	return true, ""
 }
 
-func Load(pathToConfigFile string) Configuration {
+func Load(pathToConfigFile string) (Configuration, app_error.AppError) {
+	var config Configuration
+
 	raw, err := ioutil.ReadFile(pathToConfigFile)
 	if err != nil {
-		fmt.Println(err.Error())
-		panic(err.Error())
+		return config, app_error.Wrap(err)
 	}
 
-	var config Configuration
 	if err := json.Unmarshal(raw, &config); err != nil {
-		fmt.Println(err.Error())
-		panic(err.Error)
+		return config, app_error.Wrap(err)
 	}
 
 	if isValidConfig, reason := config.isValid(); !isValidConfig {
-		panic(reason)
+		err := errors.New(reason)
+		return config, app_error.Wrap(err)
 	}
 
-	return config
+	return config, nil
 }
