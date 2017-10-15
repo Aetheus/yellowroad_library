@@ -7,10 +7,10 @@ import (
 
 type ChapterPath struct {
 	FromChapterId int
-	//FromChapters []Chapter `gorm:"ForeignKey:ToChapterId"`
+	FromChapter Chapter `gorm:"ForeignKey:FromChapterId"`
 
 	ToChapterId int
-	ToChapters []Chapter `gorm:"ForeignKey:ToChapterId"`
+	ToChapter Chapter `gorm:"ForeignKey:ToChapterId"`
 
 	Effects database.Jsonb
 	Requirements database.Jsonb
@@ -23,7 +23,7 @@ type ChapterPath struct {
 }
 
 var ChapterPathAssociations = []string{
-	"ToChapterId",
+	"ToChapter", "FromChapter",
 }
 
 //for GORM
