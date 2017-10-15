@@ -7,9 +7,6 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-//this is relative to the test script location, not to the main package
-
-
 
 func WithGormDBConnection (onward func(*gorm.DB)) func(){
 
