@@ -17,4 +17,13 @@ Service | All "**business logic**" is handled by Services, which make use of Rep
 Repository | All the nitty-gritty **database handling** is handled by Repositories, which take and return *Model structs*, which are POGS (plain old Go structs)
 
 
+-------
+#Note for testing
+Before running any tests, be it with `go test` or `goconvey`, be sure to export the `library_app_root` environment variable first. 
+
+E.g: `export library_app_root=/home/YourUsername/go/src/yellowroad_library && goconvey`
+
+It should be set to the root of this application, where this very MD file is located (e.g: /home/YourUsername/go/src/yellowroad_library )
+
+--------
 More details (like a description of what the app actually is) to come ... 
