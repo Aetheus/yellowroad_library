@@ -29,24 +29,30 @@ func TestGormUserRepository(t *testing.T){
 			})
 
 			Convey("Finding the new user by ID should work", func (){
-				found_user, err := userRepo.FindById(seneca.ID)
+				foundUser, err := userRepo.FindById(seneca.ID)
+				So(err, ShouldBeNil)
+				So(foundUser.ID, ShouldEqual, seneca.ID)
+			})
+
+			Convey("Updating the new user with valid fields should work", func (){
+				currentUpdatedAt := seneca.UpdatedAt
+				newEmail := "seneca_the_younger@deadromanphilosophers.com"
+				seneca.Email = newEmail
+				err := userRepo.Update(&seneca)
 				So(err, ShouldBeNil)
 
-				Convey("Updating the new user should work", func (){
-					newEmail := "seneca_the_younger@deadromanphilosophers.com"
-					found_user.Email = newEmail
-					err := userRepo.Update(&found_user)
-					So(err, ShouldBeNil)
+				found_user_again, _ := userRepo.FindById(seneca.ID)
+				So(found_user_again.Email,ShouldEqual, newEmail)
+				So(found_user_again.UpdatedAt, ShouldNotEqual, currentUpdatedAt)
 
-					found_user_again, _ := userRepo.FindById(seneca.ID)
-					So(found_user_again.Email,ShouldEqual, newEmail)
 
-					Convey ("Deleting the new user should work", func (){
-						err := userRepo.Delete(&seneca)
-						So(err,ShouldBeNil)
-					})
-				})
+			})
 
+			Convey ("Deleting the new user should work", func (){
+				currentDeletedAt := seneca.DeletedAt
+				err := userRepo.Delete(&seneca)
+				So(err,ShouldBeNil)
+				So(seneca.DeletedAt, ShouldNotEqual, currentDeletedAt)
 			})
 
 		})
