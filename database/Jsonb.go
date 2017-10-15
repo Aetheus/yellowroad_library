@@ -12,7 +12,11 @@ type Jsonb struct {
 }
 
 func (j Jsonb) Value() (driver.Value, error) {
-	return j.MarshalJSON()
+	val, err:= j.MarshalJSON()
+	stringVal := string(val)
+
+	return stringVal, err
+	//return j.MarshalJSON()
 }
 
 func (j *Jsonb) Scan(value interface{}) error {
