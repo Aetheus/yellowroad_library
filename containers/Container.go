@@ -12,6 +12,7 @@ import (
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/database/repo/chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/services/chapter_serv"
 )
 
 /*Container :
@@ -28,6 +29,7 @@ type Container interface {
 	TokenService() token_serv.TokenService
 	AuthServiceFactory() auth_serv.AppliedAuthServiceFactory
 	BookServiceFactory() book_serv.BookServiceFactory
+	ChapterServiceFactory() func (work uow.UnitOfWork) chapter_serv.ChapterService
 	StoryServiceFactory() story_serv.StoryServiceFactory
 
 	//repo

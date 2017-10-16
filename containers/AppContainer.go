@@ -21,6 +21,7 @@ import (
 	"yellowroad_library/database/repo/chapterpath_repo"
 	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/services/chapter_serv"
 )
 
 type AppContainer struct {
@@ -99,6 +100,10 @@ func (ac AppContainer) BookServiceFactory() book_serv.BookServiceFactory {
 	//	var bookService = book_serv.Default(work)
 	//	return bookService
 	//}
+}
+
+func (ac AppContainer) ChapterServiceFactory() func (work uow.UnitOfWork) chapter_serv.ChapterService {
+	return chapter_serv.Default;
 }
 
 func (ac AppContainer) StoryServiceFactory() story_serv.StoryServiceFactory {
