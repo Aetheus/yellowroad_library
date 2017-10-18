@@ -19,10 +19,10 @@ type Chapter struct {
 	Body      string
 
 	BookId    int
-	Book	  *Book `gorm:"ForeignKey:BookId"`
+	Book	  *Book `gorm:"ForeignKey:BookId" json:",omitempty"`
 
 	CreatorId int
-	Creator	  *User	`gorm:"ForeignKey:CreatorId"`
+	Creator	  *User	`gorm:"ForeignKey:CreatorId" json:",omitempty"`
 
 	//housekeeping attributes
 	ID        int
@@ -41,9 +41,13 @@ type ChapterForm struct {
 	Title *string
 	Body *string
 	BookId *int
+
+	//optional
+	FromChapterPath *ChapterPathForm
 }
 func (this ChapterForm) Apply(chapter *Chapter){
 	if(this.Title != nil) { chapter.Title = *this.Title }
 	if(this.Body != nil) { chapter.Body = *this.Body }
 	if(this.BookId != nil) { chapter.BookId = *this.BookId }
 }
+
