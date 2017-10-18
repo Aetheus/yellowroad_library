@@ -7,7 +7,7 @@ import (
 )
 
 type ChapterService interface {
-	CreateChapter(instigator entities.User, chapter *entities.Chapter) app_error.AppError
+	CreateChapter(instigator entities.User, book_id int, chapter *entities.Chapter) app_error.AppError
 	UpdateChapter(instigator entities.User, chapter *entities.Chapter) app_error.AppError
 	DeleteChapter(instigator entities.User, chapter_id int) app_error.AppError
 	SetUnitOfWork(work uow.UnitOfWork)

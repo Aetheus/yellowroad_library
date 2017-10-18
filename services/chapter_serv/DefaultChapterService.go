@@ -29,12 +29,15 @@ func (this DefaultChapterService) crudAuthorityCheck(instigatorId int,bookId int
 	return nil
 }
 
-func (this DefaultChapterService) CreateChapter(instigator entities.User, chapter *entities.Chapter) app_error.AppError {
-	err := this.crudAuthorityCheck(instigator.ID, chapter.BookId)
+func (this DefaultChapterService) CreateChapter(instigator entities.User, book_id int , chapter *entities.Chapter) app_error.AppError {
+	err := this.crudAuthorityCheck(instigator.ID, book_id)
 	if(err != nil){
 		return err
 	}
 
+
+	chapter.BookId = book_id
+	chapter.CreatorId = instigator.ID
 	err = this.work.ChapterRepo().Insert(chapter)
 	if err != nil {
 		return err
