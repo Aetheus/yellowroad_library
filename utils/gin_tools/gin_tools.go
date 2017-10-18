@@ -17,6 +17,15 @@ func GetIntParam(key string,c *gin.Context) (int, app_error.AppError){
 	}
 }
 
+func GetIntParamOrDefault(key string,defaultVal int, c *gin.Context) int{
+	value, err := GetIntParam(key, c)
+	if (err != nil){
+		return defaultVal
+	} else {
+		return value
+	}
+}
+
 func GetIntQuery(key string, c *gin.Context) (int, app_error.AppError) {
 	if value, convErr := strconv.Atoi(c.Query(key)); convErr != nil {
 		appErr := app_error.New(http.StatusUnprocessableEntity,
