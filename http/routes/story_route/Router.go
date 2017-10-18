@@ -14,8 +14,9 @@ func Register(
 	bookServFactory := container.BookServiceFactory()
 	authServFactory := container.AuthServiceFactory()
 	storyServFactory := container.StoryServiceFactory()
+	chapterServFactory := container.ChapterServiceFactory()
 
-	//Book related
+	//Book CRUD related
 	{
 		routerGroup.GET("/", func (c *gin.Context){
 			FetchBooks(c, workFactory())
@@ -43,13 +44,25 @@ func Register(
 				UpdateBook(c, work, authServFactory(work), bookServFactory(work) )
 			})
 		}
+	}
 
+	//Chapter CRUD related
+	{
+		routesRequiringLogin := routerGroup.Group("", gin.HandlerFunc(container.GetAuthMiddleware()) )
+		{
+			routesRequiringLogin.POST("/:book_id/chapter", func (c *gin.Context){
+				work := workFactory()
+				CreateChapter(c,work, authServFactory(work), chapterServFactory(work))
+			})
+		}
 	}
 
 
-	//Chapter/Story related
+
+
+	//Story related
 	{
-		routerGroup.GET("/:book_id/:chapter_id", func(c *gin.Context){
+		routerGroup.GET("/:book_id/chapter/:chapter_id/game", func(c *gin.Context){
 			work := workFactory()
 			NavigateToSingleChapter(c,work,storyServFactory(work))
 		})
