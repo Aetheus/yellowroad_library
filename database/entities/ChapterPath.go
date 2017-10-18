@@ -30,3 +30,17 @@ var ChapterPathAssociations = []string{
 func (ChapterPath) TableName () string {
 	return "chapter_paths"
 }
+
+type ChapterPathForm struct {
+	FromChapterId *int
+	ToChapterId *int
+	Effects *database.Jsonb
+	Requirements *database.Jsonb
+}
+
+func (this ChapterPathForm) Apply(path *ChapterPath){
+	if (this.FromChapterId != nil) { path.FromChapterId = *this.FromChapterId }
+	if (this.ToChapterId != nil) { path.ToChapterId = *this.ToChapterId }
+	if (this.Effects != nil) { path.Effects = *this.Effects }
+	if (this.Requirements != nil) { path.Requirements = *this.Requirements }
+}
