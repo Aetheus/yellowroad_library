@@ -11,10 +11,10 @@ type Book struct {
 	Permissions    string
 
 	FirstChapterId database.NullInt  `sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
-	FirstChapter   *Chapter `gorm:"ForeignKey:FirstChapterId"`
+	FirstChapter   *Chapter `gorm:"ForeignKey:FirstChapterId" json:",omitempty"`
 
 	CreatorId      int
-	Creator		   *User	`gorm:"ForeignKey:CreatorId"`
+	Creator		   *User	`gorm:"ForeignKey:CreatorId" json:",omitempty"`
 
 	//housekeeping attributes
 	ID        int
