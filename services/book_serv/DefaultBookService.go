@@ -11,6 +11,7 @@ import (
 type DefaultBookService struct {
 	work  uow.UnitOfWork
 }
+
 //ensure interface implementation
 var _ BookService = DefaultBookService{}
 
@@ -26,26 +27,52 @@ var _ BookServiceFactory = Default
 func (this DefaultBookService) SetUnitOfWork(work uow.UnitOfWork) {
 	this.work = work
 }
-func (this DefaultBookService) CreateBook(creator entities.User, book *entities.Book) app_error.AppError {
-	//TODO: do some extra checking here (eg: check if the creator is banned or not, etc)
+func (this DefaultBookService) CreateBook(creator entities.User, form entities.BookCreationForm) (entities.Book,app_error.AppError) {
+	var book entities.Book
+
+	form.Apply(&book)
 	book.CreatorId = creator.ID
 	book.FirstChapterId = database.NullInt{Int:0}
 
-	if err := this.work.BookRepo().Insert(book); err != nil {
-		return app_error.Wrap(err)
+	if err := this.work.BookRepo().Insert(&book); err != nil {
+		return book, app_error.Wrap(err)
 	}
 
-	return nil
+	return book, nil
 }
 
-func (this DefaultBookService) DeleteBook(book_id int, instigator entities.User) app_error.AppError{
+func (this DefaultBookService) UpdateBook(currentUser entities.User,book_id int,form entities.BookUpdateForm) (entities.Book,app_error.AppError){
+	var book entities.Book
+
+	book, err := this.work.BookRepo().FindById(book_id)
+	if (err != nil){
+		return book, err
+	}
+
+	//TODO: if we implement a "contributors" system, then this should do more checking later on
+	if (book.CreatorId != currentUser.ID){
+		return book, app_error.New(http.StatusUnauthorized, "","You are not authorized to delete this book!")
+	}
+
+
+	form.Apply(&book)
+	err = this.work.BookRepo().Update(&book)
+	if (err != nil){
+		return book, err
+	}
+
+	return book, nil
+}
+
+
+func (this DefaultBookService) DeleteBook(currentUser entities.User, book_id int) app_error.AppError{
 	book, err := this.work.BookRepo().FindById(book_id)
 	if  err != nil{
 		return app_error.Wrap(err)
 	}
 
 	//TODO: if we implement a "contributors" system, then this should do more checking later on
-	if (book.CreatorId != instigator.ID){
+	if (book.CreatorId != currentUser.ID){
 		return app_error.New(http.StatusUnauthorized,
 			"","You are not authorized to delete this book!")
 	}

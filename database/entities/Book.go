@@ -28,14 +28,23 @@ var BookAssociations = []string{
 	"Creator",
 }
 
-//fields that we allow to edit in our handlers (e.g: for the "update" routes of CRUD)
-type BookForm struct {
+
+type BookCreationForm struct {
 	Title *string
 	Description *string
-	FirstChapterId *int
+	//FirstChapterId *int
 }
-func (this BookForm) Apply(book *Book){
+func (this BookCreationForm) Apply(book *Book){
 	if (this.Title != nil) { book.Title = *this.Title }
 	if (this.Description != nil ) {book.Description = *this.Description}
-	if (this.FirstChapterId != nil ) {book.FirstChapterId = database.NullInt{Int : *this.FirstChapterId}}
+	//if (this.FirstChapterId != nil ) {book.FirstChapterId = database.NullInt{Int : *this.FirstChapterId}}
+}
+
+type BookUpdateForm struct {
+	Title *string
+	Description *string
+}
+func (this BookUpdateForm) Apply(book *Book){
+	if (this.Title != nil) { book.Title = *this.Title }
+	if (this.Description != nil ) {book.Description = *this.Description}
 }

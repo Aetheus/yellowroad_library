@@ -92,6 +92,8 @@ func (service DefaultAuthService) GetLoggedInUser(data interface{}) (entities.Us
 		err := errors.New("Provided data was not a gin context struct");
 		return user, app_error.Wrap(err)
 	}
+	//incase we pass it to any goroutines
+	context = context.Copy()
 
 	tokenClaim, err := getTokenClaim(context)
 	if err != nil {

@@ -9,7 +9,6 @@ import (
 	"yellowroad_library/utils/api_response"
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/utils/gin_tools"
-	"net/http"
 	"yellowroad_library/database/repo/uow"
 )
 
@@ -66,10 +65,7 @@ func FetchBooks(c *gin.Context, work uow.UnitOfWork) {
 	}
 }
 
-type createBookForm struct {
-	Title string
-	Description string
-}
+
 func CreateBook (
 	c *gin.Context,
 	work uow.UnitOfWork,
@@ -78,7 +74,7 @@ func CreateBook (
 ) {
 	var book entities.Book
 	err := work.Auto([]uow.WorkFragment{authService,bookService}, func() app_error.AppError {
-		var formData createBookForm
+		var form entities.BookCreationForm
 
 		//Get logged in user
 		user, err := authService.GetLoggedInUser(c.Copy());
@@ -87,18 +83,13 @@ func CreateBook (
 		}
 
 		//Get form data to create book with
-		if err := c.BindJSON(&formData); err != nil {
+		if err := c.BindJSON(&form); err != nil {
 			var err app_error.AppError = app_error.Wrap(err)
 			return err
 		}
 
-		//Create the book
-		book = entities.Book {
-			CreatorId: user.ID,
-			Title: formData.Title,
-			Description: formData.Description,
-		}
-		if err := bookService.CreateBook(user, &book); err != nil {
+		book, err = bookService.CreateBook(user, form)
+		if err != nil {
 			return err
 		}
 		return nil
@@ -134,7 +125,7 @@ func DeleteBook(
 			return err
 		}
 
-		err = bookService.DeleteBook(book_id,user)
+		err = bookService.DeleteBook(user, book_id)
 		if err != nil {
 			return err
 		}
@@ -159,26 +150,24 @@ func UpdateBook (
 
 	var book entities.Book
 	err := work.Auto([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
-		bookRepo := work.BookRepo()
+		var form entities.BookUpdateForm
 
 		book_id, err := gin_tools.GetIntParam("book_id",c)
 		if err != nil {
 			return err
 		}
 
-		book, err = bookRepo.FindById(book_id)
+		err = gin_tools.JSON(&form,c)
 		if err != nil {
 			return err
 		}
 
-		bookForm := entities.BookForm{}
-		bindErr := c.BindJSON(&bookForm)
-		if bindErr != nil {
-			return app_error.Wrap(bindErr)
+		user, err := authService.GetLoggedInUser(c)
+		if err != nil {
+			return err
 		}
 
-		bookForm.Apply(&book)
-		err = bookRepo.Update(&book)
+		book, err = bookService.UpdateBook(user,book_id,form)
 		if err != nil {
 			return err
 		}
@@ -188,6 +177,6 @@ func UpdateBook (
 	if ( err != nil ){
 		c.JSON(api_response.ConvertErrWithCode(err))
 	}else {
-		c.JSON(http.StatusOK, gin.H{"book": book})
+		c.JSON(api_response.SuccessWithCode(gin.H{"book": book}))
 	}
 }
