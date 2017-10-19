@@ -19,7 +19,7 @@ func CreateChapter(
 	authService auth_serv.AuthService,
 	chapterService chapter_serv.ChapterService,
 ) {
-	var chapterForm entities.ChapterForm
+	var form entities.ChapterCreationForm
 	var newChapter entities.Chapter
 	var chapterPath entities.ChapterPath
 
@@ -28,25 +28,26 @@ func CreateChapter(
 		if (err != nil){
 			return err
 		}
-		bindErr := c.BindJSON(&chapterForm)
-		if (bindErr != nil){
-			return app_error.Wrap(bindErr)
+
+		err = gin_tools.JSON(&form,c)
+		if (err != nil) {
+			return err
 		}
+
 		user, err := authService.GetLoggedInUser(c)
 		if (err != nil){
 			return err
 		}
 
 		//create the book
-		chapterForm.Apply(&newChapter)
-		err = chapterService.CreateChapter(user, book_id, &newChapter)
+		newChapter, err = chapterService.CreateChapter(user, book_id, form)
 		if (err != nil) {
 			return err
 		}
 
 		//create the path, if necessary
-		if (chapterForm.FromChapterPath != nil){
-			chapterForm.FromChapterPath.Apply(&chapterPath)
+		if (form.FromChapterPath != nil){
+			form.FromChapterPath.Apply(&chapterPath)
 			chapterPath.ToChapterId = newChapter.ID
 			err = chapterService.CreatePathBetweenChapters(user,&chapterPath)
 			if (err != nil){
@@ -63,6 +64,45 @@ func CreateChapter(
 		c.JSON(api_response.SuccessWithCode(gin.H{
 			"chapter" : newChapter,
 			"path_to_chapter" : chapterPath,
+		}))
+	}
+}
+
+func UpdateChapter (
+	c *gin.Context,
+	work uow.UnitOfWork,
+	authService auth_serv.AuthService,
+	chapterService chapter_serv.ChapterService,
+) {
+	var updatedChapter entities.Chapter
+	var chapterForm entities.ChapterUpdateForm
+
+	err := work.Auto([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
+		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
+		if (err != nil){
+			return err
+		}
+
+		err = gin_tools.JSON(&chapterForm,c)
+		if (err != nil) {
+			return err
+		}
+
+		currentUser, err := authService.GetLoggedInUser(c)
+		if (err != nil){
+			return err
+		}
+
+		updatedChapter, err = chapterService.UpdateChapter(currentUser,chapterId, chapterForm)
+		return nil
+	})
+
+
+	if ( err != nil ){
+		c.JSON(api_response.ConvertErrWithCode(err))
+	}else {
+		c.JSON(api_response.SuccessWithCode(gin.H{
+			"chapter" : updatedChapter,
 		}))
 	}
 }

@@ -29,21 +29,26 @@ func (this DefaultChapterService) crudAuthorityCheck(instigatorId int,bookId int
 	return nil
 }
 
-func (this DefaultChapterService) CreateChapter(instigator entities.User, book_id int , chapter *entities.Chapter) app_error.AppError {
+func (this DefaultChapterService) CreateChapter(
+	instigator entities.User, book_id int , form entities.ChapterCreationForm,
+) (entities.Chapter,app_error.AppError) {
+	var newChapter entities.Chapter
+
 	err := this.crudAuthorityCheck(instigator.ID, book_id)
-	if(err != nil){
-		return err
+	if (err != nil){
+		return newChapter, err
 	}
 
+	form.Apply(&newChapter)
+	newChapter.BookId = book_id
+	newChapter.CreatorId = instigator.ID
 
-	chapter.BookId = book_id
-	chapter.CreatorId = instigator.ID
-	err = this.work.ChapterRepo().Insert(chapter)
+	err = this.work.ChapterRepo().Insert(&newChapter)
 	if err != nil {
-		return err
+		return newChapter, err
 	}
 
-	return nil
+	return newChapter, nil
 }
 
 func (this DefaultChapterService) DeleteChapter(instigator entities.User, chapter_id int) app_error.AppError {
@@ -65,18 +70,26 @@ func (this DefaultChapterService) DeleteChapter(instigator entities.User, chapte
 	return nil
 }
 
-func (this DefaultChapterService) UpdateChapter(instigator entities.User, chapter *entities.Chapter) app_error.AppError {
-	err := this.crudAuthorityCheck(instigator.ID, chapter.BookId)
+func (this DefaultChapterService) UpdateChapter(
+	instigator entities.User, chapter_id int, form entities.ChapterUpdateForm,
+) (entities.Chapter,app_error.AppError) {
+	var chapter entities.Chapter
+
+	//TODO : do a permission check
+	//err := this.crudAuthorityCheck(instigator.ID, chapter.BookId)
+
+	chapter, err := this.work.ChapterRepo().FindById(chapter_id)
 	if(err != nil){
-		return err
+		return chapter, err
+	}
+	form.Apply(&chapter)
+
+	err = this.work.ChapterRepo().Update(&chapter)
+	if(err != nil){
+		return chapter, err
 	}
 
-	err = this.work.ChapterRepo().Update(chapter)
-	if(err != nil){
-		return err
-	}
-
-	return nil
+	return chapter, nil
 }
 
 

@@ -51,3 +51,12 @@ func GetBoolQueryOrDefault(key string, defaultVal bool, c *gin.Context) bool{
 	}
 	return convertedVal
 }
+
+func JSON(formPointer interface{}, c *gin.Context) (app_error.AppError){
+	bindErr := c.BindJSON(formPointer)
+	if (bindErr != nil) {
+		return app_error.Wrap(bindErr).SetHttpCode(http.StatusUnprocessableEntity)
+	}
+
+	return nil
+}

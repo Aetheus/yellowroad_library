@@ -54,6 +54,11 @@ func Register(
 				work := workFactory()
 				CreateChapter(c,work, authServFactory(work), chapterServFactory(work))
 			})
+
+			routesRequiringLogin.PUT("/:book_id/chapter/:chapter_id", func (c *gin.Context){
+				work := workFactory()
+				UpdateChapter(c,work, authServFactory(work), chapterServFactory(work))
+			})
 		}
 	}
 

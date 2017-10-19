@@ -36,8 +36,18 @@ var ChapterAssociations = []string{
 	"Creator",
 }
 
-//fields that we allow to edit in our handlers (e.g: for the "update" routes of CRUD)
-type ChapterForm struct {
+//fields that we allow for updating
+type ChapterUpdateForm struct {
+	Title *string
+	Body *string
+}
+func (this ChapterUpdateForm) Apply(chapter *Chapter){
+	if(this.Title != nil) { chapter.Title = *this.Title }
+	if(this.Body != nil) { chapter.Body = *this.Body }
+}
+
+//fields that we allow during creation
+type ChapterCreationForm struct {
 	Title *string
 	Body *string
 	BookId *int
@@ -45,9 +55,8 @@ type ChapterForm struct {
 	//optional
 	FromChapterPath *ChapterPathForm
 }
-func (this ChapterForm) Apply(chapter *Chapter){
+func (this ChapterCreationForm) Apply(chapter *Chapter){
 	if(this.Title != nil) { chapter.Title = *this.Title }
 	if(this.Body != nil) { chapter.Body = *this.Body }
 	if(this.BookId != nil) { chapter.BookId = *this.BookId }
 }
-

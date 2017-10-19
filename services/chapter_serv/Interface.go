@@ -7,9 +7,9 @@ import (
 )
 
 type ChapterService interface {
-	CreateChapter(instigator entities.User, book_id int, chapter *entities.Chapter) app_error.AppError
-	UpdateChapter(instigator entities.User, chapter *entities.Chapter) app_error.AppError
-	DeleteChapter(instigator entities.User, chapter_id int) app_error.AppError
+	CreateChapter(currentUser entities.User, bookID int, form entities.ChapterCreationForm) (entities.Chapter,app_error.AppError)
+	UpdateChapter(currentUser entities.User, chapterID int, form entities.ChapterUpdateForm) (entities.Chapter,app_error.AppError)
+	DeleteChapter(currentUser entities.User, chapterID int) app_error.AppError
 	SetUnitOfWork(work uow.UnitOfWork)
 
 	DeletePathBetweenChapters(instigator entities.User, path_id int) app_error.AppError
