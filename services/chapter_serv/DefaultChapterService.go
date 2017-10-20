@@ -110,7 +110,7 @@ func (this DefaultChapterService) CreatePathBetweenChapters(
 	}
 	toChapter, err := chapterRepo.FindById(path.ToChapterId)
 	if (err != nil) {
-		return err
+		return path, err
 	}
 	if(fromChapter.BookId != toChapter.BookId){
 		errMessage := "These two chapters aren't a part of the same book!"
@@ -150,6 +150,8 @@ func (this DefaultChapterService) UpdatePathBetweenChapters(
 	if (err != nil){
 		return path, err
 	}
+
+	return path, nil
 }
 
 func (this DefaultChapterService)  DeletePathBetweenChapters(instigator entities.User,path_id int) app_error.AppError {
