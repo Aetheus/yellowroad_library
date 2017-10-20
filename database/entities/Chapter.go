@@ -53,7 +53,7 @@ type ChapterCreationForm struct {
 	BookId *int
 
 	//optional
-	FromChapterPath *ChapterPathForm
+	FromChapterPath *ChapterPath_CreationForm
 }
 func (this ChapterCreationForm) Apply(chapter *Chapter){
 	if(this.Title != nil) { chapter.Title = *this.Title }

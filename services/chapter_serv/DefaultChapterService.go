@@ -94,14 +94,19 @@ func (this DefaultChapterService) UpdateChapter(
 
 
 //TODO refactor this to use goroutines so the various checks can take advantage of concurrency instead of being performed in serial
-func (this DefaultChapterService)  CreatePathBetweenChapters(instigator entities.User,path *entities.ChapterPath) app_error.AppError {
+func (this DefaultChapterService) CreatePathBetweenChapters(
+	instigator entities.User,form *entities.ChapterPath_CreationForm,
+) (entities.ChapterPath, app_error.AppError) {
 	var chapterRepo = this.work.ChapterRepo()
 	var chapterPathRepo = this.work.ChapterPathRepo()
+
+	var path entities.ChapterPath
+	form.Apply(&path)
 
 	//check if these two chapters exist
 	fromChapter, err := chapterRepo.FindById(path.FromChapterId)
 	if (err != nil) {
-		return err
+		return path, err
 	}
 	toChapter, err := chapterRepo.FindById(path.ToChapterId)
 	if (err != nil) {
@@ -109,7 +114,7 @@ func (this DefaultChapterService)  CreatePathBetweenChapters(instigator entities
 	}
 	if(fromChapter.BookId != toChapter.BookId){
 		errMessage := "These two chapters aren't a part of the same book!"
-		return app_error.New(http.StatusUnprocessableEntity,"",errMessage)
+		return path, app_error.New(http.StatusUnprocessableEntity,"",errMessage)
 	}
 
 	//TODO implement check if a path between the two chapters already exists
@@ -119,15 +124,32 @@ func (this DefaultChapterService)  CreatePathBetweenChapters(instigator entities
 	//standard CRUD check
 	err = this.crudAuthorityCheck(instigator.ID,fromChapter.BookId)
 	if (err != nil){
-		return err
+		return path, err
 	}
 
-	err = chapterPathRepo.Insert(path)
+	err = chapterPathRepo.Insert(&path)
 	if (err != nil){
-		 return err
+		 return path, err
 	}
 
-	return nil
+	return path, nil
+}
+
+func (this DefaultChapterService) UpdatePathBetweenChapters(
+	instigator entities.User, path_id int, form *entities.ChapterPath_UpdateForm,
+) (entities.ChapterPath, app_error.AppError) {
+	var chapterRepo = this.work.ChapterPathRepo()
+	var path entities.ChapterPath
+	path, err := chapterRepo.FindById(path_id)
+	if (err != nil) {
+		return path, err
+	}
+	form.Apply(&path)
+
+	err = chapterRepo.Update(&path)
+	if (err != nil){
+		return path, err
+	}
 }
 
 func (this DefaultChapterService)  DeletePathBetweenChapters(instigator entities.User,path_id int) app_error.AppError {

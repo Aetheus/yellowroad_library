@@ -47,9 +47,8 @@ func CreateChapter(
 
 		//create the path, if necessary
 		if (form.FromChapterPath != nil){
-			form.FromChapterPath.Apply(&chapterPath)
-			chapterPath.ToChapterId = newChapter.ID
-			err = chapterService.CreatePathBetweenChapters(user,&chapterPath)
+			form.FromChapterPath.ToChapterId = &newChapter.ID
+			chapterPath,err = chapterService.CreatePathBetweenChapters(user,form.FromChapterPath)
 			if (err != nil){
 				return err
 			}
