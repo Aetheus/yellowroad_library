@@ -59,6 +59,11 @@ func Register(
 				work := workFactory()
 				UpdateChapter(c,work, authServFactory(work), chapterServFactory(work))
 			})
+
+			routesRequiringLogin.DELETE("/:book_id/chapter/:chapter_id", func (c *gin.Context){
+				work := workFactory()
+				DeleteChapter(c,work, authServFactory(work), chapterServFactory(work))
+			})
 		}
 	}
 
