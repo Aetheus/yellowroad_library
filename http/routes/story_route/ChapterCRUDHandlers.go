@@ -106,3 +106,35 @@ func UpdateChapter (
 		}))
 	}
 }
+
+func DeleteChapter(
+	c *gin.Context,
+	work uow.UnitOfWork,
+	authService auth_serv.AuthService,
+	chapterService chapter_serv.ChapterService,
+){
+	err := work.Auto([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
+		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
+		if (err != nil){
+			return err
+		}
+
+		user, err := authService.GetLoggedInUser(c)
+		if (err != nil){
+			return err
+		}
+
+		err = chapterService.DeleteChapter(user,chapterId)
+		if(err != nil){
+			return err
+		}
+
+		return nil
+	})
+
+	if ( err != nil ){
+		c.JSON(api_response.ConvertErrWithCode(err))
+	}else {
+		c.JSON(api_response.SuccessWithCode(gin.H{}))
+	}
+}
