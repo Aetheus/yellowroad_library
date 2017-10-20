@@ -7,8 +7,8 @@ import (
 )
 
 type BookService interface {
-	CreateBook(currentUser entities.User, form entities.BookCreationForm) (entities.Book,app_error.AppError)
-	UpdateBook(currentUser entities.User, book_id int, form entities.BookUpdateForm) (entities.Book,app_error.AppError)
+	CreateBook(currentUser entities.User, form entities.Book_CreationForm) (entities.Book,app_error.AppError)
+	UpdateBook(currentUser entities.User, book_id int, form entities.Book_UpdateForm) (entities.Book,app_error.AppError)
 	DeleteBook(currentUser entities.User, book_id int) app_error.AppError
 	SetUnitOfWork(work uow.UnitOfWork)
 }

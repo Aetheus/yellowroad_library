@@ -74,7 +74,7 @@ func CreateBook (
 ) {
 	var book entities.Book
 	err := work.Auto([]uow.WorkFragment{authService,bookService}, func() app_error.AppError {
-		var form entities.BookCreationForm
+		var form entities.Book_CreationForm
 
 		//Get logged in user
 		user, err := authService.GetLoggedInUser(c.Copy());
@@ -150,7 +150,7 @@ func UpdateBook (
 
 	var book entities.Book
 	err := work.Auto([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
-		var form entities.BookUpdateForm
+		var form entities.Book_UpdateForm
 
 		book_id, err := gin_tools.GetIntParam("book_id",c)
 		if err != nil {

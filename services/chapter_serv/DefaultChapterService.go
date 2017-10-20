@@ -30,7 +30,7 @@ func (this DefaultChapterService) crudAuthorityCheck(instigatorId int,bookId int
 }
 
 func (this DefaultChapterService) CreateChapter(
-	instigator entities.User, book_id int , form entities.ChapterCreationForm,
+	instigator entities.User, book_id int , form entities.Chapter_CreationForm,
 ) (entities.Chapter,app_error.AppError) {
 	var newChapter entities.Chapter
 
@@ -71,7 +71,7 @@ func (this DefaultChapterService) DeleteChapter(instigator entities.User, chapte
 }
 
 func (this DefaultChapterService) UpdateChapter(
-	instigator entities.User, chapter_id int, form entities.ChapterUpdateForm,
+	instigator entities.User, chapter_id int, form entities.Chapter_UpdateForm,
 ) (entities.Chapter,app_error.AppError) {
 	var chapter entities.Chapter
 

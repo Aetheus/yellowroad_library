@@ -27,7 +27,7 @@ var _ BookServiceFactory = Default
 func (this DefaultBookService) SetUnitOfWork(work uow.UnitOfWork) {
 	this.work = work
 }
-func (this DefaultBookService) CreateBook(creator entities.User, form entities.BookCreationForm) (entities.Book,app_error.AppError) {
+func (this DefaultBookService) CreateBook(creator entities.User, form entities.Book_CreationForm) (entities.Book,app_error.AppError) {
 	var book entities.Book
 
 	form.Apply(&book)
@@ -41,7 +41,7 @@ func (this DefaultBookService) CreateBook(creator entities.User, form entities.B
 	return book, nil
 }
 
-func (this DefaultBookService) UpdateBook(currentUser entities.User,book_id int,form entities.BookUpdateForm) (entities.Book,app_error.AppError){
+func (this DefaultBookService) UpdateBook(currentUser entities.User,book_id int,form entities.Book_UpdateForm) (entities.Book,app_error.AppError){
 	var book entities.Book
 
 	book, err := this.work.BookRepo().FindById(book_id)

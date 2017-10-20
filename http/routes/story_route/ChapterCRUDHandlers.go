@@ -19,7 +19,7 @@ func CreateChapter(
 	authService auth_serv.AuthService,
 	chapterService chapter_serv.ChapterService,
 ) {
-	var form entities.ChapterCreationForm
+	var form entities.Chapter_CreationForm
 	var newChapter entities.Chapter
 	var chapterPath entities.ChapterPath
 
@@ -74,7 +74,7 @@ func UpdateChapter (
 	chapterService chapter_serv.ChapterService,
 ) {
 	var updatedChapter entities.Chapter
-	var chapterForm entities.ChapterUpdateForm
+	var chapterForm entities.Chapter_UpdateForm
 
 	err := work.Auto([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)

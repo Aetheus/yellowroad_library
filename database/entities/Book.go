@@ -29,22 +29,22 @@ var BookAssociations = []string{
 }
 
 
-type BookCreationForm struct {
+type Book_CreationForm struct {
 	Title *string
 	Description *string
 	//FirstChapterId *int
 }
-func (this BookCreationForm) Apply(book *Book){
+func (this Book_CreationForm) Apply(book *Book){
 	if (this.Title != nil) { book.Title = *this.Title }
 	if (this.Description != nil ) {book.Description = *this.Description}
 	//if (this.FirstChapterId != nil ) {book.FirstChapterId = database.NullInt{Int : *this.FirstChapterId}}
 }
 
-type BookUpdateForm struct {
+type Book_UpdateForm struct {
 	Title *string
 	Description *string
 }
-func (this BookUpdateForm) Apply(book *Book){
+func (this Book_UpdateForm) Apply(book *Book){
 	if (this.Title != nil) { book.Title = *this.Title }
 	if (this.Description != nil ) {book.Description = *this.Description}
 }

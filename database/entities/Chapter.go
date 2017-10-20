@@ -37,17 +37,17 @@ var ChapterAssociations = []string{
 }
 
 //fields that we allow for updating
-type ChapterUpdateForm struct {
+type Chapter_UpdateForm struct {
 	Title *string
 	Body *string
 }
-func (this ChapterUpdateForm) Apply(chapter *Chapter){
+func (this Chapter_UpdateForm) Apply(chapter *Chapter){
 	if(this.Title != nil) { chapter.Title = *this.Title }
 	if(this.Body != nil) { chapter.Body = *this.Body }
 }
 
 //fields that we allow during creation
-type ChapterCreationForm struct {
+type Chapter_CreationForm struct {
 	Title *string
 	Body *string
 	BookId *int
@@ -55,7 +55,7 @@ type ChapterCreationForm struct {
 	//optional
 	FromChapterPath *ChapterPath_CreationForm
 }
-func (this ChapterCreationForm) Apply(chapter *Chapter){
+func (this Chapter_CreationForm) Apply(chapter *Chapter){
 	if(this.Title != nil) { chapter.Title = *this.Title }
 	if(this.Body != nil) { chapter.Body = *this.Body }
 	if(this.BookId != nil) { chapter.BookId = *this.BookId }
