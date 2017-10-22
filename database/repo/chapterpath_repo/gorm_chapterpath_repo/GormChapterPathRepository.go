@@ -48,6 +48,27 @@ func (this GormChapterPathRepository) FindById(id int) (entities.ChapterPath, ap
 	return chapterPath, nil
 }
 
+func (this GormChapterPathRepository) FindByChapterIds(fromChapterId int, toChapterId int) (entities.ChapterPath, app_error.AppError) {
+	var chapterPath entities.ChapterPath
+	var err app_error.AppError
+
+	queryResult := preloadAssociations(this.db).
+		Where("from_chapter_id = ?", fromChapterId).
+		Or("to_chapter_id", toChapterId).
+		First(&chapterPath)
+
+	if queryResult.Error != nil {
+		if queryResult.RecordNotFound() {
+			err = app_error.Wrap(queryResult.Error).SetHttpCode(http.StatusNotFound).SetEndpointMessage("No path found")
+		} else {
+			err = app_error.Wrap(queryResult.Error)
+		}
+		return chapterPath, err
+	}
+
+	return chapterPath, nil
+}
+
 func (this GormChapterPathRepository) Update(chapter_path *entities.ChapterPath) app_error.AppError {
 	queryResult := this.db.
 					Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!

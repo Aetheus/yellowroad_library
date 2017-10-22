@@ -6,7 +6,8 @@ import (
 )
 
 type ChapterPathRepository interface {
-	FindById(int) (entities.ChapterPath, app_error.AppError)
+	FindById(chapterId int) (entities.ChapterPath, app_error.AppError)
+	FindByChapterIds(fromChapterId int, toChapterId int) (entities.ChapterPath, app_error.AppError)
 	Update(*entities.ChapterPath) app_error.AppError
 	Insert(*entities.ChapterPath) app_error.AppError
 	Delete(*entities.ChapterPath) app_error.AppError
