@@ -95,7 +95,7 @@ func (this DefaultChapterService) UpdateChapter(
 
 //TODO refactor this to use goroutines so the various checks can take advantage of concurrency instead of being performed in serial
 func (this DefaultChapterService) CreatePathBetweenChapters(
-	instigator entities.User,form *entities.ChapterPath_CreationForm,
+	instigator entities.User,form entities.ChapterPath_CreationForm,
 ) (entities.ChapterPath, app_error.AppError) {
 	var chapterRepo = this.work.ChapterRepo()
 	var chapterPathRepo = this.work.ChapterPathRepo()
@@ -136,7 +136,7 @@ func (this DefaultChapterService) CreatePathBetweenChapters(
 }
 
 func (this DefaultChapterService) UpdatePathBetweenChapters(
-	instigator entities.User, path_id int, form *entities.ChapterPath_UpdateForm,
+	instigator entities.User, path_id int, form entities.ChapterPath_UpdateForm,
 ) (entities.ChapterPath, app_error.AppError) {
 	var chapterRepo = this.work.ChapterPathRepo()
 	var path entities.ChapterPath

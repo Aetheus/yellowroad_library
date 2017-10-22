@@ -12,7 +12,7 @@ type ChapterService interface {
 	DeleteChapter(currentUser entities.User, chapterID int) app_error.AppError
 	SetUnitOfWork(work uow.UnitOfWork)
 
-	CreatePathBetweenChapters(instigator entities.User, form *entities.ChapterPath_CreationForm) (entities.ChapterPath, app_error.AppError)
-	UpdatePathBetweenChapters(instigator entities.User, path_id int, form *entities.ChapterPath_UpdateForm) (entities.ChapterPath, app_error.AppError)
+	CreatePathBetweenChapters(instigator entities.User, form entities.ChapterPath_CreationForm) (entities.ChapterPath, app_error.AppError)
+	UpdatePathBetweenChapters(instigator entities.User, path_id int, form entities.ChapterPath_UpdateForm) (entities.ChapterPath, app_error.AppError)
 	DeletePathBetweenChapters(instigator entities.User, path_id int) app_error.AppError
 }

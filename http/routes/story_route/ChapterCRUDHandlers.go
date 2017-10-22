@@ -48,7 +48,7 @@ func CreateChapter(
 		//create the path, if necessary
 		if (form.FromChapterPath != nil){
 			form.FromChapterPath.ToChapterId = &newChapter.ID
-			chapterPath,err = chapterService.CreatePathBetweenChapters(user,form.FromChapterPath)
+			chapterPath,err = chapterService.CreatePathBetweenChapters(user,*form.FromChapterPath)
 			if (err != nil){
 				return err
 			}
@@ -135,5 +135,46 @@ func DeleteChapter(
 		c.JSON(api_response.ConvertErrWithCode(err))
 	}else {
 		c.JSON(api_response.SuccessWithCode(gin.H{}))
+	}
+}
+
+func CreatePathAwayFromThisChapter(
+	c *gin.Context,
+	work uow.UnitOfWork,
+	authService auth_serv.AuthService,
+	chapterService chapter_serv.ChapterService,
+) {
+	var newPath entities.ChapterPath
+	var form entities.ChapterPath_CreationForm
+
+	workErr := work.Auto([]uow.WorkFragment{ authService, chapterService }, func () app_error.AppError{
+		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
+		if (err != nil){
+			return err
+		}
+
+		err = gin_tools.JSON(&form,c)
+		if (err != nil){
+			return err
+		}
+		form.FromChapterId = &chapterId
+
+		currentUser, err := authService.GetLoggedInUser(c)
+		if (err != nil){
+			return err
+		}
+
+		newPath, err = chapterService.CreatePathBetweenChapters(currentUser, form)
+		if (err != nil) {
+			return err
+		}
+
+		return nil
+	})
+
+	if (workErr != nil){
+		c.JSON(api_response.ConvertErrWithCode(workErr))
+	}else{
+		c.JSON(api_response.SuccessWithCode(newPath))
 	}
 }

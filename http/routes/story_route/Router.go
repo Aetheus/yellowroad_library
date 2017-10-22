@@ -64,13 +64,18 @@ func Register(
 				work := workFactory()
 				DeleteChapter(c,work, authServFactory(work), chapterServFactory(work))
 			})
+
+			routesRequiringLogin.POST("/:book_id/chapter/:chapter_id/paths", func(c *gin.Context){
+				work := workFactory()
+				CreatePathAwayFromThisChapter(c, work, authServFactory(work), chapterServFactory(work))
+			})
 		}
 	}
 
 
 
 
-	//Story related
+	//Game related
 	{
 		routerGroup.GET("/:book_id/chapter/:chapter_id/game", func(c *gin.Context){
 			work := workFactory()
