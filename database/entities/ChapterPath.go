@@ -14,6 +14,7 @@ type ChapterPath struct {
 
 	Effects database.Jsonb
 	Requirements database.Jsonb
+	Description string
 
 	//housekeeping attributes
 	ID        int
@@ -36,6 +37,7 @@ type ChapterPath_CreationForm struct {
 	ToChapterId *int
 	Effects *database.Jsonb
 	Requirements *database.Jsonb
+	Description *string
 }
 
 func (this ChapterPath_CreationForm) Apply(path *ChapterPath){
@@ -43,13 +45,16 @@ func (this ChapterPath_CreationForm) Apply(path *ChapterPath){
 	if (this.ToChapterId != nil) { path.ToChapterId = *this.ToChapterId }
 	if (this.Effects != nil) { path.Effects = *this.Effects }
 	if (this.Requirements != nil) { path.Requirements = *this.Requirements }
+	if (this.Description != nil) { path.Description = *this.Description }
 }
 
 type ChapterPath_UpdateForm struct {
 	Effects *database.Jsonb
 	Requirements *database.Jsonb
+	Description *string
 }
 func (this ChapterPath_UpdateForm) Apply(path *ChapterPath){
 	if (this.Effects != nil) { path.Effects = *this.Effects }
 	if (this.Requirements != nil) { path.Requirements = *this.Requirements }
+	if (this.Description != nil) { path.Description = *this.Description }
 }
