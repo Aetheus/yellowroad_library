@@ -53,8 +53,7 @@ func (this GormChapterPathRepository) FindByChapterIds(fromChapterId int, toChap
 	var err app_error.AppError
 
 	queryResult := preloadAssociations(this.db).
-		Where("from_chapter_id = ?", fromChapterId).
-		Or("to_chapter_id", toChapterId).
+		Where("from_chapter_id = ? AND to_chapter_id = ?", fromChapterId, toChapterId).
 		First(&chapterPath)
 
 	if queryResult.Error != nil {
