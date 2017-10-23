@@ -103,7 +103,7 @@ func (this DefaultChapterService) CreatePathBetweenChapters(
 	var path entities.ChapterPath
 	form.Apply(&path)
 
-	//check if these two chapters exist
+	//check if these two chapters exist and are in the same book
 	fromChapter, err := chapterRepo.FindById(path.FromChapterId)
 	if (err != nil) {
 		return path, err
@@ -117,9 +117,15 @@ func (this DefaultChapterService) CreatePathBetweenChapters(
 		return path, app_error.New(http.StatusUnprocessableEntity,"",errMessage)
 	}
 
-	//TODO implement check if a path between the two chapters already exists
 	//check if a chapter path between these two chapters already exists
-	//chapterPathRepo
+	_, err = chapterPathRepo.FindByChapterIds(path.FromChapterId, path.ToChapterId)
+	if (err == nil){
+		//if they found an existing path between these chapters, then quit now since its a duplicate
+		return path, app_error.New(http.StatusConflict, "","A path already exists between these two chapters!")
+	} else if (err != nil && err.HttpCode() != http.StatusNotFound){
+		//if there was an error and the error WASN'T a "not found" error, then also quit now
+		return path, err
+	}
 
 	//standard CRUD check
 	err = this.crudAuthorityCheck(instigator.ID,fromChapter.BookId)
