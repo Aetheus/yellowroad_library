@@ -14,8 +14,6 @@ func NavigateToSingleChapter(
 	work uow.UnitOfWork,
 	storyService story_serv.StoryService,
 ) {
-
-
 	var newSaveString string
 	var pathResponse story_serv.PathResponse
 	err := work.Auto([]uow.WorkFragment{storyService}, func() app_error.AppError {
@@ -29,9 +27,10 @@ func NavigateToSingleChapter(
 			return err
 		}
 
-		chapterPathId := gin_tools.GetIntQueryOrDefault("chapter_path_id", 0,c)			//chapter path can be ignored if we're on freemode
-		isFreeMode := gin_tools.GetBoolQueryOrDefault("freemode",false,c)			//free mode is off by default
 		saveString := c.Query("save")
+
+		chapterPathId := gin_tools.GetIntQueryOrDefault("chapter_path_id", 0,c)	//chapter path can be ignored if we're on freemode
+		isFreeMode := gin_tools.GetBoolQueryOrDefault("freemode",false,c)			//free mode is off by default
 
 		pathRequest := story_serv.NewPathRequest(isFreeMode, bookId, chapterId, chapterPathId)
 		pathResponse, err = storyService.NavigateToChapter(pathRequest,saveString)
@@ -39,7 +38,10 @@ func NavigateToSingleChapter(
 			return err
 		}
 
-		newSaveString , _ = pathResponse.NewSave.Encode()
+		newSaveString , err = pathResponse.NewSave.EncodedSaveString()
+		if (err != nil) {
+			return err
+		}
 		return nil
 	})
 

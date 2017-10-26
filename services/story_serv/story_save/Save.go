@@ -9,18 +9,23 @@ import (
 )
 
 type Save struct {
-	jsonString string
+	JsonString string
 }
 func New() Save{
 	return Save {}
 }
 
-//TODO: implement this
-func (this Save) Encode() (encodedSaveString string, err app_error.AppError) {
-	return "{\"place\":\"holder\"}", nil
+func (this Save) EncodedSaveString() (encodedSaveString string, err app_error.AppError) {
+	compressedSave, compressErr := zlibToBytes(this.JsonString)
+	if (compressErr != nil){
+		err = app_error.Wrap(compressErr)
+		return encodedSaveString, err
+	}
+
+	base64EncodedCompressedSave := base64.StdEncoding.EncodeToString(compressedSave)
+	return base64EncodedCompressedSave, err
 }
 
-//TODO: implement this
 func DecodeSaveString(encodedSaveString string) (Save, app_error.AppError){
 	//encodedSave is a base64 encoded, zlib string of a JSON object
 	//1. A JSON object is stringified, then compressed to the zlib (not gzip!) format using zlib.
@@ -44,8 +49,23 @@ func DecodeSaveString(encodedSaveString string) (Save, app_error.AppError){
 		return decodedSave, invalidSaveError
 	}
 
-	decodedSave.jsonString = saveString
+	decodedSave.JsonString = saveString
 	return decodedSave, nil
+}
+
+func zlibToBytes(inputValue string) (returnValue []byte, err error){
+	var resultBuffer bytes.Buffer
+	writer := zlib.NewWriter(&resultBuffer)
+
+	_, err = writer.Write([]byte(inputValue))
+	writer.Close()
+	if (err != nil) {
+		return returnValue, err
+	}
+
+	returnValue = resultBuffer.Bytes();
+
+	return returnValue, nil
 }
 
 
