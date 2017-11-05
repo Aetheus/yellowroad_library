@@ -48,7 +48,41 @@ func TestGormBookRepository(t *testing.T) {
 
 		})
 
+		Convey("Applying a valid patch to the save should produce an appropriate resulting JSON string", func (){
+			expectedResultJsonString := `	{
+												"Name" : "Martha Stewart",
+												"Class" : "Archer",
+												"HP"    : 25,
+												"Inventory" : {
+													"minor_potion_healing" : { "quantity" : 1 }
+												},
+												"Morale" : 50
+											}`
 
+			var expectedResultDocument interface{}
+			unmarshalErr := json.Unmarshal([]byte(expectedResultJsonString), &expectedResultDocument)
+			So(unmarshalErr, ShouldBeNil)
+
+			err := initialSaveData.ApplyEffect(`
+				{
+					"/Morale" : {
+						"op" : "INCR",
+						"arg" : -50
+					},
+					"/HP" : {
+						"op" : "INCR",
+						"arg" : -25
+					}
+				}
+			`)
+			So(err, ShouldBeNil)
+
+			var actualResultDocument interface{}
+			unmarshalErr = json.Unmarshal([]byte(initialSaveData.JsonString), &actualResultDocument)
+			So(unmarshalErr, ShouldBeNil)
+
+			So(reflect.DeepEqual(expectedResultDocument,actualResultDocument), ShouldBeTrue)
+		})
 
 	})
 

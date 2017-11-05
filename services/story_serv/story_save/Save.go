@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"bytes"
 	"compress/zlib"
+	jmutate "github.com/Aetheus/jmutate_go"
 )
 
 type Save struct {
@@ -13,6 +14,21 @@ type Save struct {
 }
 func New() Save{
 	return Save {}
+}
+
+func (this *Save) ApplyEffect(effectAsJsonString string) app_error.AppError {
+	mutation, err := jmutate.New([]byte(effectAsJsonString))
+	if err != nil {
+		return app_error.Wrap(err)
+	}
+
+	newSaveJson, err := mutation.Apply([]byte(this.JsonString))
+	if (err != nil) {
+		return app_error.Wrap(err)
+	}
+
+	this.JsonString = string(newSaveJson)
+	return nil
 }
 
 func (this Save) EncodedSaveString() (encodedSaveString string, err app_error.AppError) {
