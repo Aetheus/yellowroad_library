@@ -7,6 +7,7 @@ import (
 	"yellowroad_library/utils/api_response"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/utils/app_error"
+	"encoding/json"
 )
 
 func NavigateToSingleChapter(
@@ -16,6 +17,11 @@ func NavigateToSingleChapter(
 ) {
 	var newSaveString string
 	var pathResponse story_serv.PathResponse
+	var saveData struct {
+		Raw  json.RawMessage
+		Code string
+	}
+
 	err := work.Auto([]uow.WorkFragment{storyService}, func() app_error.AppError {
 		bookId, err := gin_tools.GetIntParam("book_id",c)
 		if (err != nil){
@@ -42,6 +48,9 @@ func NavigateToSingleChapter(
 		if (err != nil) {
 			return err
 		}
+		saveData.Code = newSaveString
+		saveData.Raw = []byte(pathResponse.NewSave.JsonString)
+
 		return nil
 	})
 
@@ -51,7 +60,7 @@ func NavigateToSingleChapter(
 	} else {
 		c.JSON(api_response.SuccessWithCode(gin.H{
 			"chapter" : pathResponse.DestinationChapter,
-			"save" : newSaveString,
+			"save" : saveData,
 		}))
 	}
 }
