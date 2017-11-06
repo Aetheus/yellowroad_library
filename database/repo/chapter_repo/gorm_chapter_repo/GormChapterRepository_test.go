@@ -15,7 +15,7 @@ import (
 
 func TestGormChapterRepository (t *testing.T) {
 
-	Convey("Given a GormChapterRepository, BookRepository and UserRepository", t, test_utils.WithGormDBConnection(func(gormDB *gorm.DB){
+	Convey("Given a GormChapterRepository, BookRepository and UserRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		transaction := gormDB.Begin()
 
 		var chapterRepo = New(transaction)

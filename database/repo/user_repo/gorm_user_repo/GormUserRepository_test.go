@@ -10,7 +10,7 @@ import (
 
 
 func TestGormUserRepository(t *testing.T){
-	Convey("Given a User Repository", t, test_utils.WithGormDBConnection(func(gormDB *gorm.DB){
+	Convey("Given a User Repository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		transaction := gormDB.Begin()
 		userRepo := New(transaction)
 

@@ -8,7 +8,7 @@ import (
 )
 
 
-func WithGormDBConnection (onward func(*gorm.DB)) func(){
+func WithRealGormDBConnection(onward func(*gorm.DB)) func(){
 
 	return func(){
 		pathToConfigFile := APP_ROOT+"/test_utils/config_for_mocks.json"
