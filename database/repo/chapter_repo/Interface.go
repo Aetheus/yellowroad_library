@@ -5,6 +5,8 @@ import (
 	"yellowroad_library/utils/app_error"
 )
 
+
+//go:generate moq -out Mock.go . ChapterRepository
 type ChapterRepository interface {
 	FindById(int) (entities.Chapter, app_error.AppError)
 	FindWithinBook(chapter_id int, book_id int) (entities.Chapter, app_error.AppError)

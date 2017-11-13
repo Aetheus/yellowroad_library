@@ -17,6 +17,7 @@ type WorkFragment interface {
 	SetUnitOfWork(work UnitOfWork)
 }
 
+//go:generate moq -out Mock.go . UnitOfWork
 type UnitOfWork interface {
 	BookRepo() (book_repo.BookRepository)
 	ChapterRepo() (chapter_repo.ChapterRepository)

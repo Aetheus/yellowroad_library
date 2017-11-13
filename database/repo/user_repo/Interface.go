@@ -5,6 +5,7 @@ import (
 	"yellowroad_library/utils/app_error"
 )
 
+//go:generate moq -out Mock.go . UserRepository
 type UserRepository interface {
 	FindById(int) (entities.User, app_error.AppError)
 	FindByUsername(string) (entities.User, app_error.AppError)
