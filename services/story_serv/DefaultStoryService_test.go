@@ -12,7 +12,92 @@ import (
 	"encoding/json"
 	"yellowroad_library/database"
 	"github.com/jinzhu/gorm"
+	"yellowroad_library/utils/app_error"
+	"yellowroad_library/database/repo/chapterpath_repo"
+	"yellowroad_library/database/repo/chapter_repo"
 )
+
+func createMockUnitOfWork(
+	mock_user_id int, mock_book_id int, mock_first_chapter_id int, mock_second_chapter_id int,
+	first_to_second_chapter_path_id int,
+) uow.UnitOfWork {
+	return &uow.UnitOfWorkMock{
+		AutoFunc: func(in1 []uow.WorkFragment, in2 func() app_error.AppError) app_error.AppError {
+			return nil
+		},
+		CommitFunc: func() app_error.AppError {
+			return nil
+		},
+		RollbackFunc: func() app_error.AppError {
+			return nil
+		},
+		ChapterPathRepoFunc: func() chapterpath_repo.ChapterPathRepository {
+			panic("TODO: mock out the ChapterPathRepo method")
+			return &chapterpath_repo.ChapterPathRepositoryMock{
+				FindByIdFunc: func(chapterId int) (entities.ChapterPath, app_error.AppError) {
+					switch(chapterId) {
+					case first_to_second_chapter_path_id : return entities.ChapterPath{
+						FromChapterId: mock_first_chapter_id,
+						ToChapterId:   mock_second_chapter_id,
+						Effects : database.Jsonb {json.RawMessage(`{
+							"/morale": {"op":"SET","arg":50 },
+							"/health": {"op":"SET","arg":-5  }
+						}`),},
+						Requirements : database.Jsonb {json.RawMessage(`{}`),},
+					}, nil
+					default :
+						panic("unexpected behaviour")
+					}
+				},
+			}
+		},
+		ChapterRepoFunc: func() chapter_repo.ChapterRepository {
+			return &chapter_repo.ChapterRepositoryMock {
+				FindWithinBookFunc :func(chapter_id int, book_id int) (entities.Chapter, app_error.AppError){
+					if chapter_id == mock_first_chapter_id && book_id == mock_book_id {
+						return entities.Chapter{
+							Title :     "First things first ... ",
+							Body :      "You wake up. You're hungry. What's for breakfast? Bacon and eggs? Or Salad?",
+							BookId :    mock_book_id,
+							Book : &entities.Book {
+								Title :       "Game of Thrones, Season XIIVIIXII",
+								Description : "From the best selling author of Game of Thrones, Season XIIVIIXI",
+								CreatorId :   mock_user_id,
+							},
+							CreatorId : mock_user_id,
+							Creator   : &entities.User {
+								ID:        mock_user_id,
+								Username : "Robert Baratheon",
+								Password : "onanopenfield",
+								Email:     "bobbyb@rightfulkingofwesteros.com",
+							},
+						}, nil
+					} else if chapter_id == mock_second_chapter_id && book_id == mock_book_id {
+						return entities.Chapter{
+							Title :     "Bacon & Eggs",
+							Body :      "It tastes good. You can feel the cholesterol starting to gum up your arteries, but eh, whatever. What next?",
+							BookId :    mock_book_id,
+							Book : &entities.Book {
+								Title :       "Game of Thrones, Season XIIVIIXII",
+								Description : "From the best selling author of Game of Thrones, Season XIIVIIXI",
+								CreatorId :   mock_user_id,
+							},
+							CreatorId : mock_user_id,
+							Creator   : &entities.User {
+								ID:        mock_user_id,
+								Username : "Robert Baratheon",
+								Password : "onanopenfield",
+								Email:     "bobbyb@rightfulkingofwesteros.com",
+							},
+						}, nil
+					} else {
+						panic("TODO: unexpected arguments")
+					}
+				},
+			}
+		},
+	}
+}
 
 
 //TODO : rather than actually create and insert all these elements because we use real repos,
@@ -152,11 +237,12 @@ func createAuthorAndBookAndChaptersAndChapterPaths(work uow.UnitOfWork) (
 func TestGormBookRepository(t *testing.T) {
 	// Only pass t into top-level Convey calls
 	Convey("Given a UnitOfWork", t, test_utils.WithRealGormDBConnection(func(db *gorm.DB){
-		work := uow.NewAppUnitOfWork(db)
-
-		Convey("Given a valid dataset", func (){
-			dataset, err := createAuthorAndBookAndChaptersAndChapterPaths(work)
-			So(err,ShouldBeNil)
+		mock_user_id := 1
+		mock_book_id := 20
+		mock_first_chapter_id := 15
+		mock_second_chapter_id := 17
+		first_to_second_chapter_path_id := 21
+		work := createMockUnitOfWork(mock_user_id, mock_book_id, mock_first_chapter_id, mock_second_chapter_id, first_to_second_chapter_path_id)
 
 			Convey("Given a DefaultStoryService", func(){
 				storyServ := Default(work)
@@ -164,8 +250,8 @@ func TestGormBookRepository(t *testing.T) {
 				Convey("Navigating to the first chapter should produce no error", func (){
 					pathRequest := PathRequest{
 						IsFreeMode : false,
-						BookId : dataset.book.ID,
-						DestinationChapterId : dataset.firstChapter.ID,
+						BookId : mock_book_id,
+						DestinationChapterId : mock_first_chapter_id,
 					}
 					encodedSaveString := ""
 
@@ -175,22 +261,21 @@ func TestGormBookRepository(t *testing.T) {
 					Convey("Navigating to the second chapter from the first one should produce no error", func (){
 						pathRequest := PathRequest{
 							IsFreeMode : false,
-							BookId : dataset.book.ID,
-							DestinationChapterId : dataset.secondChapter.ID,
-							ChapterPathId: dataset.pathBetweenFirstAndSecondChapter.ID,
+							BookId : mock_book_id,
+							DestinationChapterId : mock_second_chapter_id,
+							ChapterPathId: first_to_second_chapter_path_id,
 						}
 						encodedSaveString, err := firstChapterResponse.NewSave.EncodedSaveString()
 						So(err, ShouldBeNil)
 
-						_, err = storyServ.NavigateToChapter(pathRequest, encodedSaveString)
+						response, err := storyServ.NavigateToChapter(pathRequest, encodedSaveString)
 						So(err, ShouldBeNil)
+						So(response.NewSave.JsonString, ShouldNotEqual, "")
+						So(response.NewSave.JsonString, ShouldNotEqual, "{}")
 					})
 				})
 
-
-
 			});
-		})
 
 		Reset(func(){
 			err := work.Rollback()
