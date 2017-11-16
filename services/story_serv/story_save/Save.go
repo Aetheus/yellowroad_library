@@ -13,7 +13,9 @@ type Save struct {
 	JsonString string
 }
 func New() Save{
-	return Save {}
+	return Save {
+		JsonString : "{}",
+	}
 }
 
 func (this *Save) ApplyEffect(effectAsJsonString string) app_error.AppError {
