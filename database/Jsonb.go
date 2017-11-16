@@ -19,6 +19,10 @@ func (j Jsonb) Value() (driver.Value, error) {
 	//return j.MarshalJSON()
 }
 
+func (j Jsonb) ToString() string {
+	return string(j.RawMessage)
+}
+
 func (j *Jsonb) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
