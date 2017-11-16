@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/Aetheus/jmutate_go"
   packages = ["."]
-  revision = "325a846cb9b7ba47fbe447ad445a7aab9b3011c6"
+  revision = "a006ac083105487312efe20b88ef8db54e13a21e"
 
 [[projects]]
   name = "github.com/ansel1/merry"
