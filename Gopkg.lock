@@ -46,7 +46,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/gopherjs/gopherjs"
-  packages = ["js"]
+  packages = ["compiler","compiler/analysis","compiler/astutil","compiler/filter","compiler/prelude","compiler/typesutil","js"]
   revision = "444abdf920945de5d4a977b572bcc6c674d1e4eb"
 
 [[projects]]
@@ -92,6 +92,18 @@
   version = "v0.0.3"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/neelance/astrewrite"
+  packages = ["."]
+  revision = "99348263ae862cc230986ce88deaddbf7edcc034"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/santhosh-tekuri/jsonschema"
+  packages = [".","formats","loader"]
+  revision = "1d461e6faf3a8748e96af0d198ed535a3b28b35d"
+
+[[projects]]
   name = "github.com/smartystreets/assertions"
   packages = [".","internal/go-render/render","internal/oglematchers"]
   revision = "ff1918e1e5a13a74014644ae7c1e0ba2f791364d"
@@ -122,6 +134,12 @@
   revision = "8eb05f94d449fdf134ec24630ce69ada5b469c1c"
 
 [[projects]]
+  branch = "master"
+  name = "golang.org/x/tools"
+  packages = ["go/gcimporter15","go/types/typeutil"]
+  revision = "6d70fb2e85323e81c89374331d3d2b93304faa36"
+
+[[projects]]
   name = "gopkg.in/go-playground/validator.v8"
   packages = ["."]
   revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
@@ -136,6 +154,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7ca74d31b01f5feb7bda4f6f0624caf47dd19c6d060f6535c5a81967fe1044e8"
+  inputs-digest = "c54925d30c497c20aee138b872edfe99b2cd9b67b8a96ee802ab09e85de06677"
   solver-name = "gps-cdcl"
   solver-version = 1
