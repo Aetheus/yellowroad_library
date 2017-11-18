@@ -1,12 +1,14 @@
 package story_save
 
-import "yellowroad_library/utils/app_error"
 import (
 	"encoding/base64"
 	"net/http"
 	"bytes"
 	"compress/zlib"
 	jmutate "github.com/Aetheus/jmutate_go"
+	"yellowroad_library/utils/app_error"
+	"github.com/santhosh-tekuri/jsonschema"
+	"strings"
 )
 
 type Save struct {
@@ -16,6 +18,34 @@ func New() Save{
 	return Save {
 		JsonString : "{}",
 	}
+}
+
+func newJsonSchema(requirementsAsJsonString string) (schema *jsonschema.Schema,err error) {
+	schema_compiler := jsonschema.NewCompiler()
+	if err = schema_compiler.AddResource("schema.json", strings.NewReader(requirementsAsJsonString)); err != nil {
+		return nil, err
+	}
+	schema, err = schema_compiler.Compile("schema.json")
+	if (err != nil) {
+		return nil, err
+	}
+
+	return
+}
+
+func (this Save) ValidateRequirements(requirementsAsJsonString string) (err app_error.AppError) {
+	schema, compileErr := newJsonSchema(requirementsAsJsonString)
+	if(compileErr != nil) {
+		err = app_error.Wrap(compileErr)
+		return
+	}
+
+	if validationErr := schema.Validate(strings.NewReader(this.JsonString)); validationErr != nil {
+		err = app_error.Wrap(validationErr)
+		return
+	}
+
+	return
 }
 
 func (this *Save) ApplyEffect(effectAsJsonString string) app_error.AppError {

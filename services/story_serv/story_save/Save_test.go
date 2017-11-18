@@ -84,6 +84,44 @@ func TestGormBookRepository(t *testing.T) {
 			So(reflect.DeepEqual(expectedResultDocument,actualResultDocument), ShouldBeTrue)
 		})
 
+		Convey("Given a valid (JSON Schema) requirement that the Save fulfills", func(){
+			jsonSchema := `
+				{
+					"type": "object",
+					"required": [
+						"Name",
+						"Class"
+					]
+				}
+			`
+
+			err := initialSaveData.ValidateRequirements(jsonSchema)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("Given a valid (JSON Schema) requirement that the Save does not fulfill", func(){
+			jsonSchema := `
+				{
+					"type": "object",
+					"required": [
+						"Kill Count"
+					]
+				}
+			`
+
+			err := initialSaveData.ValidateRequirements(jsonSchema)
+			So(err, ShouldNotBeNil)
+
+		})
+
+		Convey("Given an improperly formatted requirement", func(){
+			jsonSchema := `
+				{ "doorknob" : "pasta"
+			`
+
+			err := initialSaveData.ValidateRequirements(jsonSchema)
+			So(err, ShouldNotBeNil)
+		})
 	})
 
 }
