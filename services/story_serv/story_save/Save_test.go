@@ -7,7 +7,7 @@ import (
 	"reflect"
 )
 
-func TestGormBookRepository(t *testing.T) {
+func TestSave(t *testing.T) {
 	Convey("Given a valid JSON string in a Save struct", t, func(){
 		validJsonString := `{
 								"Name" : "Martha Stewart",
