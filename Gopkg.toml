@@ -60,3 +60,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/santhosh-tekuri/jsonschema"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/xeipuuv/gojsonschema"

@@ -7,8 +7,10 @@ import (
 	"compress/zlib"
 	jmutate "github.com/Aetheus/jmutate_go"
 	"yellowroad_library/utils/app_error"
-	"github.com/santhosh-tekuri/jsonschema"
+	"github.com/xeipuuv/gojsonschema"
 	"strings"
+	"github.com/santhosh-tekuri/jsonschema"
+	"fmt"
 )
 
 type Save struct {
@@ -38,19 +40,35 @@ func (this Save) ValidateRequirements(requirementsAsJsonString string) (err app_
 		return nil
 	}
 
-	schema, compileErr := newJsonSchema(requirementsAsJsonString)
-	if(compileErr != nil) {
-		err = app_error.Wrap(compileErr).
-				SetHttpCode(http.StatusBadRequest).
-				SetEndpointMessage("Server could not process the requirements. Contact the author?")
+	//schema, compileErr := newJsonSchema(requirementsAsJsonString)
+	//if(compileErr != nil) {
+	//	err = app_error.Wrap(compileErr).
+	//			SetHttpCode(http.StatusBadRequest).
+	//			SetEndpointMessage("Server could not process the requirements. Contact the author?")
+	//	return
+	//}
+	//if validationErr := schema.Validate(strings.NewReader(this.JsonString)); validationErr != nil {
+	//	err = app_error.Wrap(validationErr).
+	//		SetHttpCode(http.StatusBadRequest).
+	//		SetEndpointMessage("The save did not satisfy the requirements of this path!")
+	//	return
+	//}
+
+	schemaLoader := gojsonschema.NewStringLoader(requirementsAsJsonString)
+	documentLoader := gojsonschema.NewStringLoader(this.JsonString)
+
+	result, validationErr := gojsonschema.Validate(schemaLoader,documentLoader)
+	if (validationErr != nil ){
+		err = app_error.Wrap(validationErr)
 		return
 	}
 
-	if validationErr := schema.Validate(strings.NewReader(this.JsonString)); validationErr != nil {
-		err = app_error.Wrap(validationErr).
-			SetHttpCode(http.StatusBadRequest).
-			SetEndpointMessage("The save did not satisfy the requirements of this path!")
-		return
+	if !result.Valid(){
+		reason := ""
+		for _, desc := range result.Errors(){
+			reason = reason + fmt.Sprintf("- %s\n", desc)
+		}
+		err = app_error.New(http.StatusUnprocessableEntity,"",reason)
 	}
 
 	return

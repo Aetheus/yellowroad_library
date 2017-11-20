@@ -46,7 +46,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/gopherjs/gopherjs"
-  packages = ["compiler","compiler/analysis","compiler/astutil","compiler/filter","compiler/prelude","compiler/typesutil","js"]
+  packages = ["js"]
   revision = "444abdf920945de5d4a977b572bcc6c674d1e4eb"
 
 [[projects]]
@@ -93,12 +93,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/neelance/astrewrite"
-  packages = ["."]
-  revision = "99348263ae862cc230986ce88deaddbf7edcc034"
-
-[[projects]]
-  branch = "master"
   name = "github.com/santhosh-tekuri/jsonschema"
   packages = [".","formats","loader"]
   revision = "1d461e6faf3a8748e96af0d198ed535a3b28b35d"
@@ -123,6 +117,24 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/xeipuuv/gojsonpointer"
+  packages = ["."]
+  revision = "6fe8760cad3569743d51ddbb243b26f8456742dc"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/xeipuuv/gojsonreference"
+  packages = ["."]
+  revision = "e02fc20de94c78484cd5ffb007f8af96be030a45"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/xeipuuv/gojsonschema"
+  packages = ["."]
+  revision = "212d8a0df7acfab8bdd190a7a69f0ab7376edcc8"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/crypto"
   packages = ["bcrypt","blowfish"]
   revision = "bd6f299fb381e4c3393d1c4b1f0b94f5e77650c8"
@@ -132,12 +144,6 @@
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "8eb05f94d449fdf134ec24630ce69ada5b469c1c"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/tools"
-  packages = ["go/gcimporter15","go/types/typeutil"]
-  revision = "6d70fb2e85323e81c89374331d3d2b93304faa36"
 
 [[projects]]
   name = "gopkg.in/go-playground/validator.v8"
@@ -154,6 +160,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c54925d30c497c20aee138b872edfe99b2cd9b67b8a96ee802ab09e85de06677"
+  inputs-digest = "6acce3c827ba7de6f6bdf9e5f0911bd087b4a0446cedd97c5bd948b10c46e34f"
   solver-name = "gps-cdcl"
   solver-version = 1
