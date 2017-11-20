@@ -68,6 +68,7 @@ func (this Save) ValidateRequirements(requirementsAsJsonString string) (err app_
 		for _, desc := range result.Errors(){
 			reason = reason + fmt.Sprintf("- %s\n", desc)
 		}
+		reason = strings.TrimRight(reason,"\n")
 		err = app_error.New(http.StatusUnprocessableEntity,"",reason)
 	}
 

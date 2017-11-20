@@ -104,7 +104,7 @@ func TestSave(t *testing.T) {
 				{
 					"type": "object",
 					"required": [
-						"Kill Count"
+						"KillCount",
 					]
 				}
 			`
