@@ -55,7 +55,9 @@ func createMockUnitOfWork(
 								"/morale": {"op":"SET","arg":50 },
 								"/health": {"op":"SET","arg":-5  }
 							}`),},
-							Requirements : database.Jsonb {json.RawMessage(`{}`)},
+							Requirements : database.Jsonb {json.RawMessage(`{
+								"type" : "object"
+							}`)},
 						}, nil
 						case second_to_third_a_chapter_path_id : return entities.ChapterPath{
 							ID : second_to_third_a_chapter_path_id,

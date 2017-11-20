@@ -60,6 +60,11 @@ func (this DefaultStoryService) NavigateToChapter(request PathRequest, encodedSa
 			return PathResponse{}, err
 		}
 
+		err = currentSave.ValidateRequirements(chapterPath.Requirements.ToString())
+		if (err != nil) {
+			return PathResponse{}, err
+		}
+
 		effect := chapterPath.Effects.ToString()
 		err = currentSave.ApplyEffect(effect)
 		if (err != nil) {

@@ -34,14 +34,22 @@ func newJsonSchema(requirementsAsJsonString string) (schema *jsonschema.Schema,e
 }
 
 func (this Save) ValidateRequirements(requirementsAsJsonString string) (err app_error.AppError) {
+	if strings.Trim(requirementsAsJsonString, " ") == ""{
+		return nil
+	}
+
 	schema, compileErr := newJsonSchema(requirementsAsJsonString)
 	if(compileErr != nil) {
-		err = app_error.Wrap(compileErr)
+		err = app_error.Wrap(compileErr).
+				SetHttpCode(http.StatusBadRequest).
+				SetEndpointMessage("Server could not process the requirements. Contact the author?")
 		return
 	}
 
 	if validationErr := schema.Validate(strings.NewReader(this.JsonString)); validationErr != nil {
-		err = app_error.Wrap(validationErr)
+		err = app_error.Wrap(validationErr).
+			SetHttpCode(http.StatusBadRequest).
+			SetEndpointMessage("The save did not satisfy the requirements of this path!")
 		return
 	}
 
