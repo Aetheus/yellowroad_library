@@ -21,7 +21,7 @@ Repository | All the nitty-gritty **database handling** is handled by Repositori
 #Note for testing
 Before running any tests, be it with `go test` or `goconvey`, be sure to export the `library_app_root` environment variable first. 
 
-E.g: `export library_app_root=/home/YourUsername/go/src/yellowroad_library && goconvey`
+If you're in the project directory, simply: ``export library_app_root=`pwd` && goconvey``
 
 It should be set to the root of this application, where this very MD file is located (e.g: /home/YourUsername/go/src/yellowroad_library )
 
