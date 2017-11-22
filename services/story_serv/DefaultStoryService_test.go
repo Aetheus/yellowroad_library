@@ -230,6 +230,38 @@ func TestDefaultStoryService_NavigateToChapter(t *testing.T) {
 							So(newSaveDocument["health"], ShouldEqual, -5)
 							So(newSaveDocument["morale"], ShouldEqual, 50)
 						})
+
+						Convey("Navigating to third chapter A from the second chapter should produce an error since it doesn't fulfill the requirements", func (){
+							pathRequest := PathRequest {
+								IsFreeMode : false,
+								BookId : mock_book_id,
+								DestinationChapterId:mock_third_chapter_a_id,
+								ChapterPathId : second_to_third_a_chapter_path_id,
+							}
+							encodedSaveString,err := secondChapterResponse.NewSave.EncodedSaveString()
+							So(err, ShouldBeNil)
+
+							_, err = storyServ.NavigateToChapter(pathRequest, encodedSaveString)
+							So(err, ShouldNotBeNil)
+							So(err.Error(), ShouldEqual, "- health: Must be greater than or equal to 5")
+						})
+
+						Convey("Navigating to third chapter A from the second chapter with Free Mode set to true should produce no error", func (){
+							pathRequest := PathRequest {
+								IsFreeMode : true,
+								BookId : mock_book_id,
+								DestinationChapterId:mock_third_chapter_a_id,
+								ChapterPathId : second_to_third_a_chapter_path_id,
+							}
+							encodedSaveString,err := secondChapterResponse.NewSave.EncodedSaveString()
+							So(err, ShouldBeNil)
+
+							thirdChapterAResponse, err := storyServ.NavigateToChapter(pathRequest, encodedSaveString)
+							So(err, ShouldBeNil)
+							So(thirdChapterAResponse.DestinationChapter.ID, ShouldEqual, mock_third_chapter_a_id)
+							So(thirdChapterAResponse.DestinationChapter.Title, ShouldEqual,"Lounge around at home" )
+							So(thirdChapterAResponse.DestinationChapter.Body, ShouldEqual,"You decide to be a potato. You sit on a couch. You do nothing. You begin to feel relaxed. That is, until something draws your attention ..." )
+						})
 					})
 				})
 
