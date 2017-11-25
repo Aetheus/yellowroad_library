@@ -30,9 +30,10 @@ func (this DefaultChapterService) crudAuthorityCheck(instigatorId int,bookId int
 }
 
 func (this DefaultChapterService) CreateChapter(
-	instigator entities.User, book_id int , form entities.Chapter_CreationForm,
+	instigator entities.User, form entities.Chapter_CreationForm,
 ) (entities.Chapter,app_error.AppError) {
 	var newChapter entities.Chapter
+	book_id := *form.BookId
 
 	err := this.crudAuthorityCheck(instigator.ID, book_id)
 	if (err != nil){
@@ -90,6 +91,21 @@ func (this DefaultChapterService) UpdateChapter(
 	}
 
 	return chapter, nil
+}
+
+func (this DefaultChapterService) CreateChapterAndPath(
+	instigator entities.User,
+	chapter_form entities.Chapter_CreationForm,
+	path_form entities.ChapterPath_CreationForm,
+) (chapter entities.Chapter,chapter_path entities.ChapterPath, err app_error.AppError){
+	chapter, err = this.CreateChapter(instigator, chapter_form)
+	if (err != nil){
+		return
+	}
+	path_form.ToChapterId = &chapter.ID
+
+	chapter_path, err = this.CreatePathBetweenChapters(instigator,path_form)
+	return
 }
 
 

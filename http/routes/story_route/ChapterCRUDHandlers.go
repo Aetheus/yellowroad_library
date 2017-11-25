@@ -34,13 +34,16 @@ func CreateChapter(
 			return err
 		}
 
+		//ensures that the bookId is the book id of this route
+		form.BookId = &book_id
+
 		user, err := authService.GetLoggedInUser(c)
 		if (err != nil){
 			return err
 		}
 
 		//create the book
-		newChapter, err = chapterService.CreateChapter(user, book_id, form)
+		newChapter, err = chapterService.CreateChapter(user, form)
 		if (err != nil) {
 			return err
 		}
