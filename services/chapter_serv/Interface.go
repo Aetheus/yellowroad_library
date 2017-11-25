@@ -18,8 +18,7 @@ type ChapterService interface {
 
 	CreateChapterAndPath(
 		instigator entities.User,
-		chapter_form entities.Chapter_CreationForm,
-		path_form entities.ChapterPath_CreationForm,
+		form entities.Chapter_And_Path_CreationForm,
 	) (entities.Chapter, entities.ChapterPath, app_error.AppError)
 
 	SetUnitOfWork(work uow.UnitOfWork)

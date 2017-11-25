@@ -51,12 +51,14 @@ type Chapter_CreationForm struct {
 	Title *string
 	Body *string
 	BookId *int
-
-	//optional
-	FromChapterPath *ChapterPath_CreationForm
 }
 func (this Chapter_CreationForm) Apply(chapter *Chapter){
 	if(this.Title != nil) { chapter.Title = *this.Title }
 	if(this.Body != nil) { chapter.Body = *this.Body }
 	if(this.BookId != nil) { chapter.BookId = *this.BookId }
+}
+
+type Chapter_And_Path_CreationForm struct {
+	ChapterForm Chapter_CreationForm
+	ChapterPathForm ChapterPath_CreationForm
 }

@@ -19,7 +19,7 @@ func CreateChapter(
 	authService auth_serv.AuthService,
 	chapterService chapter_serv.ChapterService,
 ) {
-	var form entities.Chapter_CreationForm
+	var form entities.Chapter_And_Path_CreationForm
 	var newChapter entities.Chapter
 	var chapterPath entities.ChapterPath
 
@@ -35,26 +35,16 @@ func CreateChapter(
 		}
 
 		//ensures that the bookId is the book id of this route
-		form.BookId = &book_id
+		form.ChapterForm.BookId = &book_id
 
 		user, err := authService.GetLoggedInUser(c)
 		if (err != nil){
 			return err
 		}
 
-		//create the book
-		newChapter, err = chapterService.CreateChapter(user, form)
+		newChapter, chapterPath, err = chapterService.CreateChapterAndPath(user,form)
 		if (err != nil) {
 			return err
-		}
-
-		//create the path, if necessary
-		if (form.FromChapterPath != nil){
-			form.FromChapterPath.ToChapterId = &newChapter.ID
-			chapterPath,err = chapterService.CreatePathBetweenChapters(user,*form.FromChapterPath)
-			if (err != nil){
-				return err
-			}
 		}
 
 		return nil
