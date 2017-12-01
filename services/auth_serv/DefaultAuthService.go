@@ -66,9 +66,12 @@ func (service DefaultAuthService) LoginUser(username string, password string) (e
 	var err error
 
 	//TODO : email as well
-	user, err = service.work.UserRepo().FindByUsername(username)
-	if err != nil {
-		return user, "", app_error.Wrap(err)
+	user, findErr := service.work.UserRepo().FindByUsername(username)
+	if findErr != nil {
+		if (findErr.HttpCode() == http.StatusNotFound){
+			findErr = app_error.New(http.StatusUnauthorized, "","Incorrect username or password")
+		}
+		return user, "", findErr
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
