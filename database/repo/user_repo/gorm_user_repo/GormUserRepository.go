@@ -52,7 +52,7 @@ func (repo GormUserRepository) FindByUsername(username string) (entities.User, a
 		if queryResult.RecordNotFound() {
 			returnedErr = app_error.Wrap(queryResult.Error).
 							SetHttpCode(http.StatusNotFound).
-							SetEndpointMessage("Incorrect username or password")
+							SetEndpointMessage("User with a username of " + username + " does not exist")
 		} else {
 			returnedErr = app_error.Wrap(queryResult.Error)
 		}
