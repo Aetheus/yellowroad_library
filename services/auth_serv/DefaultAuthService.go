@@ -86,6 +86,15 @@ func (service DefaultAuthService) LoginUser(username string, password string) (e
 	return user, token, nil
 }
 
+func (service DefaultAuthService) VerifyToken(tokenString string) (user entities.User,err app_error.AppError) {
+	claim, err := service.tokenService.ValidateTokenString(tokenString)
+	if (err != nil){
+		return
+	}
+	user, err = service.work.UserRepo().FindById(claim.UserID)
+	return
+}
+
 func (service DefaultAuthService) GetLoggedInUser(data interface{}) (entities.User, app_error.AppError) {
 	var user entities.User
 	var err app_error.AppError

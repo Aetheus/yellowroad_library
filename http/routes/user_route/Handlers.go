@@ -51,7 +51,6 @@ func SignUp(
 			},
 		))
 	}
-
 }
 
 type loginForm struct {
@@ -93,5 +92,40 @@ func Login(
 			},
 		))
 	}
+}
 
+type verifyTokenForm struct {
+	TokenString string `json:"auth_token"`
+}
+func VerifyToken(
+	c *gin.Context,
+	work uow.UnitOfWork,
+	authService auth_serv.AuthService,
+) {
+	var user entities.User
+	var form verifyTokenForm
+
+	err := work.Auto([]uow.WorkFragment{authService}, func () (err app_error.AppError){
+		if formErr := c.BindJSON(&form); formErr != nil {
+			return app_error.Wrap(formErr).SetHttpCode(http.StatusUnprocessableEntity)
+		}
+
+		user, err = authService.VerifyToken(form.TokenString)
+		if (err != nil){
+			return err
+		}
+
+		return nil
+	})
+
+	if(err != nil){
+		c.JSON(api_response.ConvertErrWithCode(err))
+	} else {
+		c.JSON(api_response.SuccessWithCode(
+			gin.H{
+				"user" : user,
+				"token" : form.TokenString,
+			},
+		))
+	}
 }

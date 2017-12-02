@@ -23,6 +23,11 @@ func Register(
 		authServ := authServFactory(work)
 		SignUp(c,work, authServ)
 	})
+	routerGroup.POST("/verify", func(c *gin.Context){
+		work := workFactory();
+		authServ := authServFactory(work)
+		VerifyToken(c,work, authServ)
+	})
 
 	// routerGroup.GET("/secure/secret", gin.HandlerFunc(authMiddleware), func(c *gin.Context) {
 
