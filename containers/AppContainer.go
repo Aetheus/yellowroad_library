@@ -77,14 +77,6 @@ func (ac AppContainer) GetConfiguration() config.Configuration {
 /***********************************************************************************************/
 //Services
 
-func (ac AppContainer) AuthServiceFactory() auth_serv.AppliedAuthServiceFactory {
-	return func(work uow.UnitOfWork) auth_serv.AuthService{
-		return auth_serv.Default(work, ac.TokenService());
-	}
-}
-
-//only needs to be resolved once, since all it needs is Configuration and that isn't dynamic,
-//so no need to return a factory.
 func (ac AppContainer) TokenService() token_serv.TokenService {
 	if ac.tokenService == nil {
 		var tokenService token_serv.TokenService = token_serv.Default(ac.GetConfiguration())
@@ -94,24 +86,32 @@ func (ac AppContainer) TokenService() token_serv.TokenService {
 	return *ac.tokenService
 }
 
-func (ac AppContainer) BookServiceFactory() book_serv.BookServiceFactory {
-	return book_serv.Default;
-	//return func(work uow.UnitOfWork) book_serv.BookService {
-	//	var bookService = book_serv.Default(work)
-	//	return bookService
-	//}
+func (ac AppContainer) AuthService(work uow.UnitOfWork) auth_serv.AuthService{
+	if (work == nil){
+		work = ac.UnitOfWork()
+	}
+	return auth_serv.Default(work, ac.TokenService());
 }
 
-func (ac AppContainer) ChapterServiceFactory() func (work uow.UnitOfWork) chapter_serv.ChapterService {
-	return chapter_serv.Default;
+func (ac AppContainer) BookService(work uow.UnitOfWork) book_serv.BookService {
+	if (work == nil){
+		work = ac.UnitOfWork()
+	}
+	return book_serv.Default(work)
 }
 
-func (ac AppContainer) StoryServiceFactory() story_serv.StoryServiceFactory {
-	return story_serv.Default;
-	//return func(work uow.UnitOfWork) story_serv.StoryService{
-	//	var storyService = story_serv.Default(work)
-	//	return storyService
-	//}
+func (ac AppContainer) ChapterService(work uow.UnitOfWork) chapter_serv.ChapterService {
+	if (work == nil){
+		work = ac.UnitOfWork()
+	}
+	return chapter_serv.Default(work);
+}
+
+func (ac AppContainer) StoryService(work uow.UnitOfWork) story_serv.StoryService {
+	if (work == nil){
+		work = ac.UnitOfWork()
+	}
+	return story_serv.Default(work);
 }
 
 /***********************************************************************************************/
@@ -134,10 +134,8 @@ func (ac AppContainer) GetChapterPathRepository() chapterpath_repo.ChapterPathRe
 	return gorm_chapterpath_repo.New(ac.GetDbConn())
 }
 
-func (ac AppContainer) UnitOfWorkFactory() uow.SimpleUnitOfWorkFactory {
-	return func() uow.UnitOfWork{
-		return uow.NewAppUnitOfWork(ac.GetDbConn())
-	}
+func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
+	return uow.NewAppUnitOfWork(ac.GetDbConn())
 }
 
 //func (ac AppContainer) UnitOfWork() uow.UnitOfWork {

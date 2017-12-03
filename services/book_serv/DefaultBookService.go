@@ -21,8 +21,6 @@ func Default(work uow.UnitOfWork) BookService {
 		work: work,
 	}
 }
-var _ BookServiceFactory = Default
-
 
 func (this DefaultBookService) SetUnitOfWork(work uow.UnitOfWork) {
 	this.work = work

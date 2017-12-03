@@ -1,27 +1,30 @@
-package user_route
+package user_routes
 
 import (
 	"net/http"
-
-	"yellowroad_library/services/auth_serv"
 
 	"github.com/gin-gonic/gin"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/utils/api_response"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/database/entities"
+	"yellowroad_library/containers"
 )
+
+type UserRouteHandlers struct {
+	container containers.Container
+}
+
 
 type signUpForm struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email string `json:"email"`
 }
-func SignUp(
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-)  {
+func (this UserRouteHandlers) SignUp(c *gin.Context)  {
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
 
 	var user entities.User
 	err := work.Auto([]uow.WorkFragment{authService}, func() app_error.AppError {
@@ -57,11 +60,10 @@ type loginForm struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
-func Login(
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-) {
+func (this UserRouteHandlers) Login(c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
 
 	var user entities.User
 	var loginToken string
@@ -97,14 +99,13 @@ func Login(
 type verifyTokenForm struct {
 	TokenString string `json:"auth_token"`
 }
-func VerifyToken(
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-) {
+func (this UserRouteHandlers) VerifyToken(c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
+
 	var user entities.User
 	var form verifyTokenForm
-
 	err := work.Auto([]uow.WorkFragment{authService}, func () (err app_error.AppError){
 		if formErr := c.BindJSON(&form); formErr != nil {
 			return app_error.Wrap(formErr).SetHttpCode(http.StatusUnprocessableEntity)

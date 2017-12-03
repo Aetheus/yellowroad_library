@@ -13,4 +13,3 @@ type BookService interface {
 	SetUnitOfWork(work uow.UnitOfWork)
 }
 
-type BookServiceFactory func(uow.UnitOfWork) BookService

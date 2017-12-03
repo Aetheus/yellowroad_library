@@ -1,24 +1,25 @@
-package story_route
+package chapter_crud_routes
 
 import (
 	"github.com/gin-gonic/gin"
 	"yellowroad_library/database/repo/uow"
-	"yellowroad_library/services/chapter_serv"
 	"yellowroad_library/utils/app_error"
-	"yellowroad_library/services/auth_serv"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/api_response"
 	"yellowroad_library/utils/gin_tools"
+	"yellowroad_library/containers"
 )
 
+type ChapterCrudHandlers struct {
+	container containers.Container
+}
 
+func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
+	chapterService  := this.container.ChapterService(work)
 
-func CreateChapter(
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-	chapterService chapter_serv.ChapterService,
-) {
 	var form entities.Chapter_And_Path_CreationForm
 	var newChapter entities.Chapter
 	var chapterPath entities.ChapterPath
@@ -60,12 +61,12 @@ func CreateChapter(
 	}
 }
 
-func UpdateChapter (
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-	chapterService chapter_serv.ChapterService,
-) {
+func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
+	chapterService  := this.container.ChapterService(work)
+
 	var updatedChapter entities.Chapter
 	var chapterForm entities.Chapter_UpdateForm
 
@@ -99,12 +100,12 @@ func UpdateChapter (
 	}
 }
 
-func DeleteChapter(
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-	chapterService chapter_serv.ChapterService,
-){
+func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
+	chapterService  := this.container.ChapterService(work)
+
 	err := work.Auto([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
 		if (err != nil){
@@ -131,12 +132,12 @@ func DeleteChapter(
 	}
 }
 
-func CreatePathAwayFromThisChapter(
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-	chapterService chapter_serv.ChapterService,
-) {
+func (this ChapterCrudHandlers) CreatePathAwayFromThisChapter(c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
+	chapterService  := this.container.ChapterService(work)
+
 	var newPath entities.ChapterPath
 	var form entities.ChapterPath_CreationForm
 

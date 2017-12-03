@@ -1,18 +1,23 @@
-package story_route
+package book_crud_routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"yellowroad_library/services/auth_serv"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/entities"
-	"yellowroad_library/services/book_serv"
 	"yellowroad_library/utils/api_response"
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/containers"
 )
 
-func FetchSingleBook(c *gin.Context,work uow.UnitOfWork)  {
+type BookCrudHandlers struct {
+	container containers.Container
+}
+
+func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
+	//dependencies
+	work := this.container.UnitOfWork()
 
 	var book entities.Book
 	err := work.Auto([]uow.WorkFragment{}, func() app_error.AppError {
@@ -40,7 +45,9 @@ func FetchSingleBook(c *gin.Context,work uow.UnitOfWork)  {
 	}
 }
 
-func FetchBooks(c *gin.Context, work uow.UnitOfWork) {
+func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
 
 	var results []entities.Book
 	err := work.Auto([]uow.WorkFragment{}, func() app_error.AppError {
@@ -66,18 +73,18 @@ func FetchBooks(c *gin.Context, work uow.UnitOfWork) {
 }
 
 
-func CreateBook (
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-	bookService book_serv.BookService,
-) {
+func (this BookCrudHandlers) CreateBook (c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
+	bookService := this.container.BookService(work)
+
 	var book entities.Book
 	err := work.Auto([]uow.WorkFragment{authService,bookService}, func() app_error.AppError {
 		var form entities.Book_CreationForm
 
 		//Get logged in user
-		user, err := authService.GetLoggedInUser(c.Copy());
+		user, err := authService.GetLoggedInUser(c);
 		if err != nil {
 			return err
 		}
@@ -107,12 +114,11 @@ func CreateBook (
 
 
 
-func DeleteBook(
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-	bookService book_serv.BookService,
-) {
+func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
+	bookService := this.container.BookService(work)
 
 	err := work.Auto([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
 		book_id, err := gin_tools.GetIntParam("book_id",c)
@@ -120,7 +126,7 @@ func DeleteBook(
 			return err
 		}
 
-		user, err := authService.GetLoggedInUser(c.Copy())
+		user, err := authService.GetLoggedInUser(c)
 		if err != nil {
 			return err
 		}
@@ -140,13 +146,11 @@ func DeleteBook(
 	}
 }
 
-//TODO : actually validate if you can update the book
-func UpdateBook (
-	c *gin.Context,
-	work uow.UnitOfWork,
-	authService auth_serv.AuthService,
-	bookService book_serv.BookService,
-) {
+func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
+	authService := this.container.AuthService(work)
+	bookService := this.container.BookService(work)
 
 	var book entities.Book
 	err := work.Auto([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {

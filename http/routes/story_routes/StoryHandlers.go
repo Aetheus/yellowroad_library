@@ -1,4 +1,4 @@
-package story_route
+package story_routes
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,13 +8,18 @@ import (
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/utils/app_error"
 	"encoding/json"
+	"yellowroad_library/containers"
 )
 
-func NavigateToSingleChapter(
-	c *gin.Context,
-	work uow.UnitOfWork,
-	storyService story_serv.StoryService,
-) {
+type StoryHandlers struct {
+	container containers.Container
+}
+
+func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
+	//dependencies
+	work := this.container.UnitOfWork()
+	storyService := this.container.StoryService(work)
+
 	var newSaveString string
 	var pathResponse story_serv.PathResponse
 	var saveData struct {

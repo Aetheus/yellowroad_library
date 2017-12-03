@@ -17,7 +17,6 @@ func Default(work uow.UnitOfWork) StoryService {
 		work: work,
 	}
 }
-var _ StoryServiceFactory = Default
 
 func (this DefaultStoryService) SetUnitOfWork(work uow.UnitOfWork) {
 	this.work = work

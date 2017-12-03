@@ -27,7 +27,6 @@ func Default(work uow.UnitOfWork, tokenService token_serv.TokenService) AuthServ
 		tokenService,
 	}
 }
-var _ AuthServiceFactory = Default
 
 func (this DefaultAuthService) SetUnitOfWork(work uow.UnitOfWork) {
 	this.work = work

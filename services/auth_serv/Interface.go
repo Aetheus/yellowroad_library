@@ -4,7 +4,6 @@ import (
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/repo/uow"
-	"yellowroad_library/services/token_serv"
 )
 
 type AuthService interface {
@@ -20,10 +19,3 @@ type AuthService interface {
 	GetLoggedInUser(data interface{}) (entities.User, app_error.AppError)
 	SetUnitOfWork(work uow.UnitOfWork)
 }
-
-
-type AuthServiceFactory func (work uow.UnitOfWork, tokenService token_serv.TokenService) AuthService
-
-//since TokenService is a dependency that only needs to be resolved once,
-//we can have a factory that only requires the truly runtime parameter (UnitOfWork)
-type AppliedAuthServiceFactory func (work uow.UnitOfWork) AuthService

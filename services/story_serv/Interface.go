@@ -12,7 +12,6 @@ type StoryService interface {
 	SetUnitOfWork(work uow.UnitOfWork)
 }
 
-type StoryServiceFactory func(uow.UnitOfWork) StoryService
 
 //all the necessary parameters to find out if you can navigate to a chapter in a book
 type PathRequest struct {
