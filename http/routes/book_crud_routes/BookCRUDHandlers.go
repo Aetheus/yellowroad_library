@@ -20,7 +20,7 @@ func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
 	work := this.container.UnitOfWork()
 
 	var book entities.Book
-	err := work.Auto([]uow.WorkFragment{}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{}, func() app_error.AppError {
 		bookRepo := work.BookRepo()
 
 		book_id, err := gin_tools.GetIntParam("book_id", c)
@@ -50,7 +50,7 @@ func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
 	work := this.container.UnitOfWork()
 
 	var results []entities.Book
-	err := work.Auto([]uow.WorkFragment{}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{}, func() app_error.AppError {
 		repository := work.BookRepo()
 
 		page := gin_tools.GetIntQueryOrDefault("page",1,c)
@@ -80,7 +80,7 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 	bookService := this.container.BookService(work)
 
 	var book entities.Book
-	err := work.Auto([]uow.WorkFragment{authService,bookService}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{authService,bookService}, func() app_error.AppError {
 		var form entities.Book_CreationForm
 
 		//Get logged in user
@@ -120,7 +120,7 @@ func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 	authService := this.container.AuthService(work)
 	bookService := this.container.BookService(work)
 
-	err := work.Auto([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
 		book_id, err := gin_tools.GetIntParam("book_id",c)
 		if err != nil {
 			return err
@@ -153,7 +153,7 @@ func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 	bookService := this.container.BookService(work)
 
 	var book entities.Book
-	err := work.Auto([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
 		var form entities.Book_UpdateForm
 
 		book_id, err := gin_tools.GetIntParam("book_id",c)

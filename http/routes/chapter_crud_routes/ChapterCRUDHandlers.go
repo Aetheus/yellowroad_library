@@ -24,7 +24,7 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 	var newChapter entities.Chapter
 	var chapterPath entities.ChapterPath
 
-	err := work.Auto([]uow.WorkFragment{chapterService},func () app_error.AppError{
+	err := work.AutoCommit([]uow.WorkFragment{chapterService},func () app_error.AppError{
 		book_id, err := gin_tools.GetIntParam("book_id",c)
 		if (err != nil){
 			return err
@@ -70,7 +70,7 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 	var updatedChapter entities.Chapter
 	var chapterForm entities.Chapter_UpdateForm
 
-	err := work.Auto([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
 		if (err != nil){
 			return err
@@ -106,7 +106,7 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 	authService := this.container.AuthService(work)
 	chapterService  := this.container.ChapterService(work)
 
-	err := work.Auto([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
 		if (err != nil){
 			return err
@@ -141,7 +141,7 @@ func (this ChapterCrudHandlers) CreatePathAwayFromThisChapter(c *gin.Context) {
 	var newPath entities.ChapterPath
 	var form entities.ChapterPath_CreationForm
 
-	workErr := work.Auto([]uow.WorkFragment{ authService, chapterService }, func () app_error.AppError{
+	workErr := work.AutoCommit([]uow.WorkFragment{ authService, chapterService }, func () app_error.AppError{
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
 		if (err != nil){
 			return err

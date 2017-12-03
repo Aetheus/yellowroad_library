@@ -27,7 +27,7 @@ func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 		Code string
 	}
 
-	err := work.Auto([]uow.WorkFragment{storyService}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{storyService}, func() app_error.AppError {
 		bookId, err := gin_tools.GetIntParam("book_id",c)
 		if (err != nil){
 			return err

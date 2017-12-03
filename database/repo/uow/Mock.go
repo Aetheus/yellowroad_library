@@ -29,7 +29,7 @@ var (
 //         // make and configure a mocked UnitOfWork
 //         mockedUnitOfWork := &UnitOfWorkMock{
 //             AutoFunc: func(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError {
-// 	               panic("TODO: mock out the Auto method")
+// 	               panic("TODO: mock out the AutoCommit method")
 //             },
 //             BookRepoFunc: func() book_repo.BookRepository {
 // 	               panic("TODO: mock out the BookRepo method")
@@ -79,7 +79,7 @@ type UnitOfWorkMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// Auto holds details about calls to the Auto method.
+		// AutoCommit holds details about calls to the AutoCommit method.
 		Auto []struct {
 			// In1 is the in1 argument value.
 			In1 []WorkFragment
@@ -107,10 +107,10 @@ type UnitOfWorkMock struct {
 	}
 }
 
-// Auto calls AutoFunc.
+// AutoCommit calls AutoFunc.
 func (mock *UnitOfWorkMock) Auto(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError {
 	if mock.AutoFunc == nil {
-		panic("moq: UnitOfWorkMock.AutoFunc is nil but UnitOfWork.Auto was just called")
+		panic("moq: UnitOfWorkMock.AutoFunc is nil but UnitOfWork.AutoCommit was just called")
 	}
 	callInfo := struct {
 		In1 []WorkFragment
@@ -125,7 +125,7 @@ func (mock *UnitOfWorkMock) Auto(in1 []WorkFragment, in2 func() app_error.AppErr
 	return mock.AutoFunc(in1, in2)
 }
 
-// AutoCalls gets all the calls that were made to Auto.
+// AutoCalls gets all the calls that were made to AutoCommit.
 // Check the length with:
 //     len(mockedUnitOfWork.AutoCalls())
 func (mock *UnitOfWorkMock) AutoCalls() []struct {

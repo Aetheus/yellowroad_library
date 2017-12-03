@@ -27,7 +27,7 @@ func (this UserRouteHandlers) SignUp(c *gin.Context)  {
 	authService := this.container.AuthService(work)
 
 	var user entities.User
-	err := work.Auto([]uow.WorkFragment{authService}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{authService}, func() app_error.AppError {
 		form := signUpForm{}
 
 		if err := c.BindJSON(&form) ; err != nil {
@@ -67,7 +67,7 @@ func (this UserRouteHandlers) Login(c *gin.Context) {
 
 	var user entities.User
 	var loginToken string
-	err := work.Auto([]uow.WorkFragment{authService}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{authService}, func() app_error.AppError {
 		form := loginForm{}
 		if err := c.BindJSON(&form); err != nil {
 			var err  = app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
@@ -106,7 +106,7 @@ func (this UserRouteHandlers) VerifyToken(c *gin.Context) {
 
 	var user entities.User
 	var form verifyTokenForm
-	err := work.Auto([]uow.WorkFragment{authService}, func () (err app_error.AppError){
+	err := work.AutoCommit([]uow.WorkFragment{authService}, func () (err app_error.AppError){
 		if formErr := c.BindJSON(&form); formErr != nil {
 			return app_error.Wrap(formErr).SetHttpCode(http.StatusUnprocessableEntity)
 		}

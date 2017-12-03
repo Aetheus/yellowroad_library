@@ -24,7 +24,7 @@ type UnitOfWork interface {
 	ChapterPathRepo() (chapterpath_repo.ChapterPathRepository)
 	UserRepo() (user_repo.UserRepository)
 
-	Auto([]WorkFragment, func() app_error.AppError) app_error.AppError
+	AutoCommit([]WorkFragment, func() app_error.AppError) app_error.AppError
 	Commit() (app_error.AppError)
 	Rollback() (app_error.AppError)
 }
@@ -52,7 +52,7 @@ func NewAppUnitOfWork(db *gorm.DB) UnitOfWork{
 	}
 }
 
-func (this AppUnitOfWork) Auto(fragments []WorkFragment,callback func() app_error.AppError) app_error.AppError {
+func (this AppUnitOfWork) AutoCommit(fragments []WorkFragment,callback func() app_error.AppError) app_error.AppError {
 	for _, fragment := range fragments {
 		fragment.SetUnitOfWork(this)
 	}
