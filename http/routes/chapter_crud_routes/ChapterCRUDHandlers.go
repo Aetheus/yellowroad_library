@@ -5,7 +5,7 @@ import (
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/entities"
-	"yellowroad_library/utils/api_response"
+	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/containers"
 )
@@ -15,10 +15,11 @@ type ChapterCrudHandlers struct {
 }
 
 func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
 	chapterService  := this.container.ChapterService(work)
+	/***************************/
 
 	var form entities.Chapter_And_Path_CreationForm
 	var newChapter entities.Chapter
@@ -34,9 +35,7 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 		if (err != nil) {
 			return err
 		}
-
-		//ensures that the bookId is the book id of this route
-		form.ChapterForm.BookId = &book_id
+		form.ChapterForm.BookId = &book_id //ensures that the bookId is the book id of this route
 
 		user, err := authService.GetLoggedInUser(c)
 		if (err != nil){
@@ -52,20 +51,20 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 	})
 
 	if ( err != nil ){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c,err)
 	}else {
-		c.JSON(api_response.SuccessWithCode(gin.H{
-			"chapter" : newChapter,
-			"path_to_chapter" : chapterPath,
-		}))
+		api_reply.Success(c, gin.H{
+			"chapter" : newChapter, "path_to_chapter" : chapterPath,
+		})
 	}
 }
 
 func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
 	chapterService  := this.container.ChapterService(work)
+	/***************************/
 
 	var updatedChapter entities.Chapter
 	var chapterForm entities.Chapter_UpdateForm
@@ -92,19 +91,18 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 
 
 	if ( err != nil ){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c, err)
 	}else {
-		c.JSON(api_response.SuccessWithCode(gin.H{
-			"chapter" : updatedChapter,
-		}))
+		api_reply.Success(c, gin.H{ "chapter" : updatedChapter })
 	}
 }
 
 func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
 	chapterService  := this.container.ChapterService(work)
+	/***************************/
 
 	err := work.AutoCommit([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
@@ -126,22 +124,23 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 	})
 
 	if ( err != nil ){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c,err)
 	}else {
-		c.JSON(api_response.SuccessWithCode(gin.H{}))
+		api_reply.Success(c,gin.H{})
 	}
 }
 
 func (this ChapterCrudHandlers) CreatePathAwayFromThisChapter(c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
 	chapterService  := this.container.ChapterService(work)
+	/***************************/
 
 	var newPath entities.ChapterPath
 	var form entities.ChapterPath_CreationForm
 
-	workErr := work.AutoCommit([]uow.WorkFragment{ authService, chapterService }, func () app_error.AppError{
+	err := work.AutoCommit([]uow.WorkFragment{ authService, chapterService }, func () app_error.AppError{
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
 		if (err != nil){
 			return err
@@ -166,9 +165,9 @@ func (this ChapterCrudHandlers) CreatePathAwayFromThisChapter(c *gin.Context) {
 		return nil
 	})
 
-	if (workErr != nil){
-		c.JSON(api_response.ConvertErrWithCode(workErr))
+	if (err != nil){
+		api_reply.Failure(c,err)
 	}else{
-		c.JSON(api_response.SuccessWithCode(newPath))
+		api_reply.Success(c,newPath)
 	}
 }

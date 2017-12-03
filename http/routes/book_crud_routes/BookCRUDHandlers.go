@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/entities"
-	"yellowroad_library/utils/api_response"
+	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/database/repo/uow"
@@ -16,8 +16,9 @@ type BookCrudHandlers struct {
 }
 
 func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
+	/***************************/
 
 	var book entities.Book
 	err := work.AutoCommit([]uow.WorkFragment{}, func() app_error.AppError {
@@ -25,7 +26,7 @@ func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
 
 		book_id, err := gin_tools.GetIntParam("book_id", c)
 		if err != nil {
-			c.JSON(api_response.ConvertErrWithCode(err))
+			c.JSON(api_reply.ConvertErrWithCode(err))
 			return err
 		}
 
@@ -39,15 +40,16 @@ func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
 	})
 
 	if ( err != nil ){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c,err)
 	}else {
-		c.JSON(api_response.SuccessWithCode(book))
+		api_reply.Success(c,book)
 	}
 }
 
 func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
+	/***************************/
 
 	var results []entities.Book
 	err := work.AutoCommit([]uow.WorkFragment{}, func() app_error.AppError {
@@ -66,18 +68,19 @@ func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
 	})
 
 	if ( err != nil ){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c,err)
 	}else {
-		c.JSON(api_response.SuccessWithCode(results))
+		api_reply.Success(c,results)
 	}
 }
 
 
 func (this BookCrudHandlers) CreateBook (c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
 	bookService := this.container.BookService(work)
+	/***************************/
 
 	var book entities.Book
 	err := work.AutoCommit([]uow.WorkFragment{authService,bookService}, func() app_error.AppError {
@@ -104,21 +107,20 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 
 
 	if ( err != nil ){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c,err)
 	}else {
-		c.JSON(api_response.SuccessWithCode(
-			gin.H{"book": book},
-		))
+		api_reply.Success(c,gin.H{"book": book})
 	}
 }
 
 
 
 func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
 	bookService := this.container.BookService(work)
+	/***************************/
 
 	err := work.AutoCommit([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
 		book_id, err := gin_tools.GetIntParam("book_id",c)
@@ -140,17 +142,18 @@ func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 
 
 	if ( err != nil ){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c,err)
 	}else {
-		c.JSON(api_response.SuccessWithCode(gin.H{}))
+		api_reply.Success(c,gin.H{})
 	}
 }
 
 func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
 	bookService := this.container.BookService(work)
+	/***************************/
 
 	var book entities.Book
 	err := work.AutoCommit([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
@@ -179,8 +182,8 @@ func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 	})
 
 	if ( err != nil ){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c,err)
 	}else {
-		c.JSON(api_response.SuccessWithCode(gin.H{"book": book}))
+		api_reply.Success(c,gin.H{"book": book})
 	}
 }

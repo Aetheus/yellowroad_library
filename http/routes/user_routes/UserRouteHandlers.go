@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"yellowroad_library/utils/app_error"
-	"yellowroad_library/utils/api_response"
+	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/containers"
@@ -22,9 +22,11 @@ type signUpForm struct {
 	Email string `json:"email"`
 }
 func (this UserRouteHandlers) SignUp(c *gin.Context)  {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
+	/***************************/
+
 
 	var user entities.User
 	err := work.AutoCommit([]uow.WorkFragment{authService}, func() app_error.AppError {
@@ -46,13 +48,9 @@ func (this UserRouteHandlers) SignUp(c *gin.Context)  {
 
 
 	if(err != nil){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c, err)
 	} else {
-		c.JSON(api_response.SuccessWithCode(
-			gin.H {
-				"user" : user,
-			},
-		))
+		api_reply.Success(c, gin.H{"user" : user})
 	}
 }
 
@@ -61,9 +59,11 @@ type loginForm struct {
 	Password string `json:"password"`
 }
 func (this UserRouteHandlers) Login(c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
+	/***************************/
+
 
 	var user entities.User
 	var loginToken string
@@ -85,14 +85,9 @@ func (this UserRouteHandlers) Login(c *gin.Context) {
 
 
 	if(err != nil){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c, err)
 	} else {
-		c.JSON(api_response.SuccessWithCode(
-			gin.H{
-				"user" : user,
-				"token" : loginToken,
-			},
-		))
+		api_reply.Success(c, gin.H{ "user" : user, "token" : loginToken})
 	}
 }
 
@@ -100,9 +95,11 @@ type verifyTokenForm struct {
 	TokenString string `json:"auth_token"`
 }
 func (this UserRouteHandlers) VerifyToken(c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	authService := this.container.AuthService(work)
+	/***************************/
+
 
 	var user entities.User
 	var form verifyTokenForm
@@ -112,21 +109,13 @@ func (this UserRouteHandlers) VerifyToken(c *gin.Context) {
 		}
 
 		user, err = authService.VerifyToken(form.TokenString)
-		if (err != nil){
-			return err
-		}
-
-		return nil
+		return err
 	})
 
+
 	if(err != nil){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c, err)
 	} else {
-		c.JSON(api_response.SuccessWithCode(
-			gin.H{
-				"user" : user,
-				"token" : form.TokenString,
-			},
-		))
+		api_reply.Success(c,gin.H{ "user" : user, "token" : form.TokenString})
 	}
 }

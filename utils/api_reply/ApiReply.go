@@ -1,8 +1,9 @@
-package api_response
+package api_reply
 
 import (
 	"yellowroad_library/utils/app_error"
 	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 var SUCCESS = "success"
@@ -18,7 +19,7 @@ type ApiResponse struct  {
 	Message string `json:"message,omitempty"`
 }
 
-func Success(data interface{}) ApiResponse{
+func SuccessResponse(data interface{}) ApiResponse{
 	return ApiResponse {
 		Status : SUCCESS,
 		Data : data,
@@ -26,18 +27,18 @@ func Success(data interface{}) ApiResponse{
 }
 //a convenience for Gin's context.JSON() func, which takes two parameters
 func SuccessWithCode(data interface{}) (int, ApiResponse) {
-	return http.StatusOK, Success(data)
+	return http.StatusOK, SuccessResponse(data)
 }
 
-//converts an AppError into either a Fail or Error response, depending on its HTTP code
+//converts an AppError into either a FailResponse or ErrorResponse response, depending on its HTTP code
 func ConvertErr(err app_error.AppError) ApiResponse{
 	isServerError := isServerErrorCode(err.HttpCode())
 
 	if (isServerError) {
-		return Error(err.EndpointMessage())
+		return ErrorResponse(err.EndpointMessage())
 	} else {
 		var dummyData struct{} //TODO add "data" field to AppError and use it here instead
-		return Fail(err.EndpointMessage(), dummyData)
+		return FailResponse(err.EndpointMessage(), dummyData)
 	}
 }
 //a convenience for Gin's context.JSON() func, which takes two parameters
@@ -45,7 +46,7 @@ func ConvertErrWithCode(err app_error.AppError) (int, ApiResponse) {
 	return err.HttpCode(),ConvertErr(err)
 }
 
-func Fail(message string, data interface{}) ApiResponse{
+func FailResponse(message string, data interface{}) ApiResponse{
 	return ApiResponse {
 		Status : FAIL,
 		Data : data,
@@ -53,7 +54,7 @@ func Fail(message string, data interface{}) ApiResponse{
 	}
 }
 
-func Error(message string) ApiResponse{
+func ErrorResponse(message string) ApiResponse{
 	return ApiResponse {
 		Status : ERROR,
 		Message : message,
@@ -67,4 +68,12 @@ func isServerErrorCode(code int) bool{
 	} else {
 		return false
 	}
+}
+
+// Convenience methods for sending Gin responses
+func Success(c *gin.Context, payload interface{}){
+	c.JSON(SuccessWithCode(payload))
+}
+func Failure(c *gin.Context, err app_error.AppError) {
+	c.JSON(ConvertErrWithCode(err))
 }

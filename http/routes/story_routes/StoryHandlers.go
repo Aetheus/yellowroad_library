@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"yellowroad_library/services/story_serv"
 	"yellowroad_library/utils/gin_tools"
-	"yellowroad_library/utils/api_response"
+	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/utils/app_error"
 	"encoding/json"
@@ -16,9 +16,10 @@ type StoryHandlers struct {
 }
 
 func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
-	//dependencies
+	/*Dependencies**************/
 	work := this.container.UnitOfWork()
 	storyService := this.container.StoryService(work)
+	/***************************/
 
 	var newSaveString string
 	var pathResponse story_serv.PathResponse
@@ -29,14 +30,10 @@ func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 
 	err := work.AutoCommit([]uow.WorkFragment{storyService}, func() app_error.AppError {
 		bookId, err := gin_tools.GetIntParam("book_id",c)
-		if (err != nil){
-			return err
-		}
+		if (err != nil){ return err }
 
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
-		if (err != nil){
-			return err
-		}
+		if (err != nil){ return err }
 
 		saveString := c.Query("save")
 
@@ -45,14 +42,11 @@ func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 
 		pathRequest := story_serv.NewPathRequest(isFreeMode, bookId, chapterId, chapterPathId)
 		pathResponse, err = storyService.NavigateToChapter(pathRequest,saveString)
-		if (err != nil) {
-			return err
-		}
+		if (err != nil) { return err }
 
 		newSaveString , err = pathResponse.NewSave.EncodedSaveString()
-		if (err != nil) {
-			return err
-		}
+		if (err != nil) { return err }
+
 		saveData.Code = newSaveString
 		saveData.Raw = []byte(pathResponse.NewSave.JsonString)
 
@@ -61,11 +55,10 @@ func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 
 
 	if(err != nil){
-		c.JSON(api_response.ConvertErrWithCode(err))
+		api_reply.Failure(c,err)
 	} else {
-		c.JSON(api_response.SuccessWithCode(gin.H{
-			"chapter" : pathResponse.DestinationChapter,
-			"save" : saveData,
-		}))
+		api_reply.Success(c,gin.H{
+			"save" : saveData, "chapter" : pathResponse.DestinationChapter,
+		})
 	}
 }
