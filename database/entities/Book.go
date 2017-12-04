@@ -6,21 +6,21 @@ import (
 )
 
 type Book struct {
-	Title          string
-	Description    string
-	Permissions    string
+	Title          string			`json:"title"`
+	Description    string			`json:"description"`
+	Permissions    string			`json:"permissions"`
 
-	FirstChapterId database.NullInt  `sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
-	FirstChapter   *Chapter `gorm:"ForeignKey:FirstChapterId" json:",omitempty"`
+	FirstChapterId database.NullInt `json:"first_chapter_id" sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
+	FirstChapter   *Chapter 		`json:"first_chapter,omitempty" gorm:"ForeignKey:FirstChapterId"`
 
-	CreatorId      int
-	Creator		   *User	`gorm:"ForeignKey:CreatorId" json:",omitempty"`
+	CreatorId      int				`json:"creator_id"`
+	Creator		   *User			`json:"creator,omitempty" gorm:"ForeignKey:CreatorId"`
 
 	//housekeeping attributes
-	ID        int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt database.NullTime
+	ID        int					`json:"id"`
+	CreatedAt time.Time				`json:"created_at"`
+	UpdatedAt time.Time				`json:"updated_at"`
+	DeletedAt database.NullTime		`json:"deleted_at"`
 }
 
 var BookAssociations = []string{
@@ -30,8 +30,8 @@ var BookAssociations = []string{
 
 
 type Book_CreationForm struct {
-	Title *string
-	Description *string
+	Title *string			`json:"title"`
+	Description *string		`json:"description"`
 	//FirstChapterId *int
 }
 func (this Book_CreationForm) Apply(book *Book){
@@ -41,8 +41,8 @@ func (this Book_CreationForm) Apply(book *Book){
 }
 
 type Book_UpdateForm struct {
-	Title *string
-	Description *string
+	Title *string			`json:"title"`
+	Description *string		`json:"description"`
 }
 func (this Book_UpdateForm) Apply(book *Book){
 	if (this.Title != nil) { book.Title = *this.Title }

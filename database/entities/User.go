@@ -6,23 +6,23 @@ import (
 )
 
 type User struct {
-	Username string
+	Username string `json:"username"`
 	Password string `json:"-"` //this excludes it from being accidentally serialized into a JSON and shown to users
-	Email    string
+	Email    string `json:"email"`
 
 	//housekeeping attributes
-	ID        int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt database.NullTime
+	ID        int `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt database.NullTime `json:"deleted_at"`
 }
 
 
 //fields that we allow to edit in our handlers (e.g: for the "update" routes of CRUD)
 type UserForm struct {
-	Username *string
-	Password *string //this shouldn't be applied
-	Email    *string
+	Username *string	`json:"username"`
+	Password *string 	`json:"password"` //this shouldn't be applied
+	Email    *string	`json:"email"`
 }
 func (this UserForm) Apply(user *User){
 	if(this.Username != nil) { user.Username = *this.Username }

@@ -6,21 +6,21 @@ import (
 )
 
 type ChapterPath struct {
-	FromChapterId int
-	FromChapter Chapter `gorm:"ForeignKey:FromChapterId"`
+	FromChapterId int 				`json:"from_chapter_id"`
+	FromChapter Chapter 			`json:"from_chapter,omitempty" gorm:"ForeignKey:FromChapterId"`
 
-	ToChapterId int
-	ToChapter Chapter `gorm:"ForeignKey:ToChapterId"`
+	ToChapterId int 				`json:"to_chapter_id"`
+	ToChapter Chapter 				`json:"to_chapter,omitempty" gorm:"ForeignKey:ToChapterId"`
 
-	Effects database.Jsonb
-	Requirements database.Jsonb
-	Description string
+	Effects database.Jsonb			`json:"effects"`
+	Requirements database.Jsonb		`json:"requirements"`
+	Description string				`json:"description"`
 
 	//housekeeping attributes
-	ID        int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt database.NullTime
+	ID        int					`json:"id"`
+	CreatedAt time.Time				`json:"created_at"`
+	UpdatedAt time.Time				`json:"updated_at"`
+	DeletedAt database.NullTime		`json:"deleted_at"`
 }
 
 var ChapterPathAssociations = []string{
@@ -33,11 +33,11 @@ func (ChapterPath) TableName () string {
 }
 
 type ChapterPath_CreationForm struct {
-	FromChapterId *int
-	ToChapterId *int
-	Effects *database.Jsonb
-	Requirements *database.Jsonb
-	Description *string
+	FromChapterId *int 				`json:"from_chapter_id"`
+	ToChapterId *int 				`json:"to_chapter_id"`
+	Effects *database.Jsonb 		`json:"effects"`
+	Requirements *database.Jsonb 	`json:"requirements"`
+	Description *string 			`json:"description"`
 }
 
 func (this ChapterPath_CreationForm) Apply(path *ChapterPath){
@@ -49,9 +49,9 @@ func (this ChapterPath_CreationForm) Apply(path *ChapterPath){
 }
 
 type ChapterPath_UpdateForm struct {
-	Effects *database.Jsonb
-	Requirements *database.Jsonb
-	Description *string
+	Effects *database.Jsonb			`json:"effects"`
+	Requirements *database.Jsonb	`json:"requirements"`
+	Description *string				`json:"description"`
 }
 func (this ChapterPath_UpdateForm) Apply(path *ChapterPath){
 	if (this.Effects != nil) { path.Effects = *this.Effects }

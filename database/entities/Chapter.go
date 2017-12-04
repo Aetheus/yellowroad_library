@@ -15,20 +15,20 @@ import (
 */
 
 type Chapter struct {
-	Title     string
-	Body      string
+	Title     string			`json:"title"`
+	Body      string			`json:"body"`
 
-	BookId    int
-	Book	  *Book `gorm:"ForeignKey:BookId" json:",omitempty"`
+	BookId    int				`json:"book_id"`
+	Book	  *Book 			`json:"book,omitempty" gorm:"ForeignKey:BookId"`
 
-	CreatorId int
-	Creator	  *User	`gorm:"ForeignKey:CreatorId" json:",omitempty"`
+	CreatorId int				`json:"creator_id"`
+	Creator	  *User				`json:"creator,omitempty" gorm:"ForeignKey:CreatorId"`
 
 	//housekeeping attributes
-	ID        int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt database.NullTime
+	ID        int				`json:"id"`
+	CreatedAt time.Time			`json:"created_at"`
+	UpdatedAt time.Time			`json:"updated_at"`
+	DeletedAt database.NullTime	`json:"deleted_at"`
 }
 
 var ChapterAssociations = []string{
@@ -38,8 +38,8 @@ var ChapterAssociations = []string{
 
 //fields that we allow for updating
 type Chapter_UpdateForm struct {
-	Title *string
-	Body *string
+	Title *string	`json:"title"`
+	Body *string	`json:"body"`
 }
 func (this Chapter_UpdateForm) Apply(chapter *Chapter){
 	if(this.Title != nil) { chapter.Title = *this.Title }
@@ -48,9 +48,9 @@ func (this Chapter_UpdateForm) Apply(chapter *Chapter){
 
 //fields that we allow during creation
 type Chapter_CreationForm struct {
-	Title *string
-	Body *string
-	BookId *int
+	Title *string	`json:"title"`
+	Body *string	`json:"body"`
+	BookId *int		`json:"book_id"`
 }
 func (this Chapter_CreationForm) Apply(chapter *Chapter){
 	if(this.Title != nil) { chapter.Title = *this.Title }
