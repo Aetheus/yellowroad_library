@@ -29,21 +29,15 @@ func (this UserRouteHandlers) SignUp(c *gin.Context)  {
 
 
 	var user entities.User
-	err := work.AutoCommit([]uow.WorkFragment{authService}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{authService}, func() (errOrNil app_error.AppError) {
 		form := signUpForm{}
 
 		if err := c.BindJSON(&form) ; err != nil {
-			var err = app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
-			return err
+			return app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
 		}
 
-		var registrationErr app_error.AppError
-		user, registrationErr = authService.RegisterUser(form.Username,form.Password,form.Email)
-		if (registrationErr != nil) {
-			return registrationErr
-		}
-
-		return nil
+		user, errOrNil = authService.RegisterUser(form.Username,form.Password,form.Email)
+		return errOrNil
 	});
 
 
@@ -67,20 +61,14 @@ func (this UserRouteHandlers) Login(c *gin.Context) {
 
 	var user entities.User
 	var loginToken string
-	err := work.AutoCommit([]uow.WorkFragment{authService}, func() app_error.AppError {
+	err := work.AutoCommit([]uow.WorkFragment{authService}, func() (errOrNil app_error.AppError) {
 		form := loginForm{}
-		if err := c.BindJSON(&form); err != nil {
-			var err  = app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
-			return err
+		if formErr := c.BindJSON(&form); formErr != nil {
+			return app_error.Wrap(formErr).SetHttpCode(http.StatusUnprocessableEntity)
 		}
 
-		var loginErr app_error.AppError
-		user, loginToken, loginErr = authService.LoginUser(form.Username, form.Password)
-		if (loginErr != nil){
-			return loginErr
-		}
-
-		return nil
+		user, loginToken, errOrNil = authService.LoginUser(form.Username, form.Password)
+		return errOrNil
 	});
 
 
@@ -103,13 +91,13 @@ func (this UserRouteHandlers) VerifyToken(c *gin.Context) {
 
 	var user entities.User
 	var form verifyTokenForm
-	err := work.AutoCommit([]uow.WorkFragment{authService}, func () (err app_error.AppError){
+	err := work.AutoCommit([]uow.WorkFragment{authService}, func () (errOrNil app_error.AppError){
 		if formErr := c.BindJSON(&form); formErr != nil {
 			return app_error.Wrap(formErr).SetHttpCode(http.StatusUnprocessableEntity)
 		}
 
-		user, err = authService.VerifyToken(form.TokenString)
-		return err
+		user, errOrNil = authService.VerifyToken(form.TokenString)
+		return errOrNil
 	})
 
 
