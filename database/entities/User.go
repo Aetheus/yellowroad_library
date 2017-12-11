@@ -2,7 +2,6 @@ package entities
 
 import (
 	"time"
-	"yellowroad_library/database"
 	"github.com/lib/pq"
 )
 
