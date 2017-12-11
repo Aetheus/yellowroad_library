@@ -14,6 +14,9 @@ type Book struct {
 	FirstChapterId database.NullInt `json:"first_chapter_id" sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
 	FirstChapter   *Chapter 		`json:"first_chapter,omitempty" gorm:"ForeignKey:FirstChapterId"`
 
+	//Chapters 		[]Chapter		`gorm:"ForeignKey:BookId;AssociationForeignKey:ID"`
+	ChapterCount 	int				`json:"chapter_count" sql:"-"`
+
 	CreatorId      int				`json:"creator_id"`
 	Creator		   *User			`json:"creator,omitempty" gorm:"ForeignKey:CreatorId"`
 
@@ -24,10 +27,10 @@ type Book struct {
 	DeletedAt pq.NullTime		`json:"deleted_at"`
 }
 
-var BookAssociations = []string{
-	"FirstChapter",
-	"Creator",
-}
+//Constants for Gorm Association queries
+const BOOK_FIRST_CHAPTER = "FirstChapter"
+const BOOK_CREATOR = "Creator"
+const BOOK_ASSOC_CHAPTERS = "Chapters"
 
 
 type Book_CreationForm struct {

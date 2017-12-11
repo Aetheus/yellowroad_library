@@ -8,6 +8,8 @@ import (
 	"yellowroad_library/database/entities"
 	"yellowroad_library/database/repo/user_repo"
 	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
+	"strconv"
+	"yellowroad_library/database/repo/book_repo"
 )
 
 func TestGormBookRepository(t *testing.T) {
@@ -61,6 +63,32 @@ func TestGormBookRepository(t *testing.T) {
 					err := bookRepo.Delete(&newBook)
 					So(err, ShouldBeNil)
 					So(newBook.DeletedAt, ShouldNotEqual, currentDeletedAt)
+				})
+			})
+
+			Convey("Given several (30) books", func(){
+				for i := 0 ; i < 30; i++{
+					newBook := entities.Book {
+						CreatorId: newUser.ID,
+						Title: "test title "+strconv.Itoa(i),
+						Description: "test description "+strconv.Itoa(i),
+					}
+					err := bookRepo.Insert(&newBook)
+					So(err, ShouldBeNil)
+				}
+
+				Convey("If perpage = 5, only 5 Books should be returned", func (){
+					results,err := bookRepo.Paginate(1,5,book_repo.SearchOptions{})
+					So(err,ShouldBeNil)
+					So(len(results), ShouldEqual, 5)
+				})
+
+				Convey("There should be at least 3 pages of results (when perpage = 10)", func (){
+					for i := 0 ; i < 3; i++ {
+						results,err := bookRepo.Paginate(1,10,book_repo.SearchOptions{})
+						So(err,ShouldBeNil)
+						So(len(results), ShouldEqual, 10)
+					}
 				})
 			})
 		})

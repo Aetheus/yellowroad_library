@@ -22,21 +22,20 @@ func New(dbConn *gorm.DB) GormBookRepository {
 	}
 }
 
-func preloadAssociations(dbConn *gorm.DB) *gorm.DB{
-	for i := 0; i < len(entities.BookAssociations); i++ {
-		dbConn = dbConn.Preload(entities.BookAssociations[i])
-	}
-
-	return dbConn
-}
-
 func (repo GormBookRepository) FindById(id int) (entities.Book, app_error.AppError) {
 	var book entities.Book
 
 	dbConn := repo.dbConn
 
-	queryResult := preloadAssociations(dbConn).
-						Where("id = ?", id).
+	queryResult := dbConn.
+						Select("books.*, COUNT(chapters_c.id) as chapter_count").
+						Joins("LEFT JOIN chapters as chapters_c on chapters_c.book_id = books.id").
+						Preload(entities.BOOK_CREATOR,func(db *gorm.DB) *gorm.DB {
+							return db.Select("username, id")
+						}).
+						Preload(entities.BOOK_FIRST_CHAPTER).
+						Where("books.id = ?", id).
+						Group("books.id").
 						First(&book)
 
 	if queryResult.Error != nil {
@@ -63,9 +62,16 @@ func (repo GormBookRepository) Paginate(startpage int, perpage int, options book
 
 	//TODO: use SearchOptions to do stuff like filter, order, etc
 	queryResult := repo.dbConn.
+						Select("books.*, COUNT(chapters_c.id) as chapter_count").
+						Joins("LEFT JOIN chapters as chapters_c on chapters_c.book_id = books.id").
+						Preload(entities.BOOK_CREATOR,func(db *gorm.DB) *gorm.DB {
+							return db.Select("username, id")
+						}).
 						Offset( (startpage - 1) * perpage).
 						Limit(perpage).
+						Group("books.id").
 						Find(&results)
+
 
 	if queryResult.Error != nil {
 		var returnedErr app_error.AppError
