@@ -3,6 +3,7 @@ package entities
 import (
 	"time"
 	"yellowroad_library/database"
+	"github.com/lib/pq"
 )
 
 /*
@@ -28,7 +29,7 @@ type Chapter struct {
 	ID        int				`json:"id"`
 	CreatedAt time.Time			`json:"created_at"`
 	UpdatedAt time.Time			`json:"updated_at"`
-	DeletedAt database.NullTime	`json:"deleted_at"`
+	DeletedAt pq.NullTime	`json:"deleted_at"`
 }
 
 var ChapterAssociations = []string{
