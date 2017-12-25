@@ -2,8 +2,7 @@ package entities
 
 import (
 	"time"
-	"yellowroad_library/database"
-	"github.com/lib/pq"
+	"gopkg.in/guregu/null.v3"
 )
 
 type Book struct {
@@ -11,7 +10,7 @@ type Book struct {
 	Description    string			`json:"description"`
 	Permissions    string			`json:"permissions"`
 
-	FirstChapterId database.NullInt `json:"first_chapter_id" sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
+	FirstChapterId null.Int `json:"first_chapter_id" sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
 	FirstChapter   *Chapter 		`json:"first_chapter,omitempty" gorm:"ForeignKey:FirstChapterId"`
 
 	//Chapters 		[]Chapter		`gorm:"ForeignKey:BookId;AssociationForeignKey:ID"`
@@ -24,7 +23,7 @@ type Book struct {
 	ID        int					`json:"id"`
 	CreatedAt time.Time				`json:"created_at"`
 	UpdatedAt time.Time				`json:"updated_at"`
-	DeletedAt pq.NullTime		`json:"deleted_at"`
+	DeletedAt null.Time				`json:"deleted_at"`
 }
 
 //Constants for Gorm Association queries

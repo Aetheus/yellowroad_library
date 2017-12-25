@@ -158,6 +158,12 @@
   version = "v8.18.2"
 
 [[projects]]
+  name = "gopkg.in/guregu/null.v3"
+  packages = ["."]
+  revision = "e81d6d8d57747b34d7c5fe0d20ebf57692f04ea9"
+  version = "v3.3.0"
+
+[[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -166,6 +172,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ab520010727d4e5bef5c5868c17e0ee9a95fd624b827b57e08718beff262d7df"
+  inputs-digest = "067025b2e198b9f7dcf4b5135a79d00e411fb3d9cfc3b8f5814e5abe40fedf84"
   solver-name = "gps-cdcl"
   solver-version = 1

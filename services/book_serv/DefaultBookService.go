@@ -4,8 +4,8 @@ import (
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/entities"
 	"net/http"
-	"yellowroad_library/database"
 	"yellowroad_library/database/repo/uow"
+	"gopkg.in/guregu/null.v3"
 )
 
 type DefaultBookService struct {
@@ -30,7 +30,7 @@ func (this DefaultBookService) CreateBook(creator entities.User, form entities.B
 
 	form.Apply(&book)
 	book.CreatorId = creator.ID
-	book.FirstChapterId = database.NullInt{Int:0}
+	book.FirstChapterId = null.IntFrom(0)
 
 	if err := this.work.BookRepo().Insert(&book); err != nil {
 		return book, app_error.Wrap(err)

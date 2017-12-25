@@ -34,7 +34,7 @@ func (this DefaultStoryService) NavigateToChapter(request PathRequest, encodedSa
 		saveIsEmpty = true
 	}
 
-	destinationChapterIsFirstChapter := (destinationChapter.ID == destinationChapter.Book.FirstChapterId.Int)
+	destinationChapterIsFirstChapter := ( int64(destinationChapter.ID) == destinationChapter.Book.FirstChapterId.Int64 )
 
 	var currentSave story_save.Save
 	if (saveIsEmpty) {

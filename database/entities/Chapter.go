@@ -2,7 +2,7 @@ package entities
 
 import (
 	"time"
-	"github.com/lib/pq"
+	"gopkg.in/guregu/null.v3"
 )
 
 /*
@@ -28,7 +28,7 @@ type Chapter struct {
 	ID        int				`json:"id"`
 	CreatedAt time.Time			`json:"created_at"`
 	UpdatedAt time.Time			`json:"updated_at"`
-	DeletedAt pq.NullTime	`json:"deleted_at"`
+	DeletedAt null.Time			`json:"deleted_at"`
 }
 
 var ChapterAssociations = []string{
