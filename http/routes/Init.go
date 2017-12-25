@@ -15,15 +15,15 @@ func Init(container containers.Container) error {
 	var ginEngine = gin.Default()
 
 	ginEngine.Use(cors.New(cors.Config{
-		//TODO : origins should be from a config!!
-		AllowOrigins:     []string{"http://domainname.com", "http://localhost:3000"},
-
+		AllowOrigins:     container.GetConfiguration().Web.AllowOrigins,
 		AllowMethods:     []string{"PUT","PATCH","GET","POST", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge: 12 * time.Hour,
 	}))
+
+	fmt.Printf("CORS configured to allow the following origins: %s \n", container.GetConfiguration().Web.AllowOrigins)
 
 	registerRoutes(ginEngine,container)
 	ginEngine.Run(portString)

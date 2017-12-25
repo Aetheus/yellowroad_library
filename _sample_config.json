@@ -8,6 +8,7 @@
       "SSLMode" : "disable"
    },
    "Web" : {
-      "Port" : 8080
+      "Port" : 8080,
+      "AllowOrigins" : ["http://domainname.com", "http://localhost:3000"]
    }
 }

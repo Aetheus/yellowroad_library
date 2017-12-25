@@ -8,7 +8,7 @@ import (
 )
 
 /*Configuration :
-This is the Configuratoin struct - for the actual config files, check the root directory
+This is the Configuration struct - for the actual config files, check the root directory
 for "config.json". If that doesn't exist yet, use the "_sample_config.json" file as a reference
 to create your own config.json
 */
@@ -26,6 +26,7 @@ type Configuration struct {
 
 	Web struct {
 		Port int
+		AllowOrigins []string
 	}
 }
 
