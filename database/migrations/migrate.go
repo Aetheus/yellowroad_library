@@ -25,6 +25,7 @@ func Migrate(configuration config.Configuration) (error) {
 
 	if err = migrater.Up(); err != nil {
 		if (err.Error() == "no change"){
+			//reminder: if you added a new SQL script and it still showed "no change", make sure the filename ends with ".up.sql"
 			fmt.Println("No migrations to run")
 			return nil
 		}else {
