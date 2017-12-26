@@ -22,6 +22,10 @@ import (
 	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/services/chapter_serv"
+	"yellowroad_library/database/repo/booktag_repo"
+	"yellowroad_library/database/repo/booktagcount_repo"
+	"yellowroad_library/database/repo/booktag_repo/gorm_booktag_repo"
+	"yellowroad_library/database/repo/booktagcount_repo/gorm_booktagcount_repo"
 )
 
 type AppContainer struct {
@@ -132,6 +136,13 @@ func (ac AppContainer) GetChapterRepository() chapter_repo.ChapterRepository {
 
 func (ac AppContainer) GetChapterPathRepository() chapterpath_repo.ChapterPathRepository {
 	return gorm_chapterpath_repo.New(ac.GetDbConn())
+}
+
+func (ac AppContainer) GetBookTagRepository() booktag_repo.BookTagRepository{
+	return gorm_booktag_repo.New(ac.GetDbConn())
+}
+func (ac AppContainer) GetBookTagCountRepository() booktagcount_repo.BookTagCountRepository{
+	return gorm_booktagcount_repo.New(ac.GetDbConn())
 }
 
 func (ac AppContainer) UnitOfWork() uow.UnitOfWork {

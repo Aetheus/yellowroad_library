@@ -13,6 +13,8 @@ import (
 	"yellowroad_library/database/repo/chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/services/chapter_serv"
+	"yellowroad_library/database/repo/booktag_repo"
+	"yellowroad_library/database/repo/booktagcount_repo"
 )
 
 /*Container :
@@ -37,6 +39,8 @@ type Container interface {
 	GetBookRepository() book_repo.BookRepository
 	GetChapterRepository() chapter_repo.ChapterRepository
 	GetChapterPathRepository() chapterpath_repo.ChapterPathRepository
+	GetBookTagRepository() booktag_repo.BookTagRepository
+	GetBookTagCountRepository() booktagcount_repo.BookTagCountRepository
 	UnitOfWork() uow.UnitOfWork
 
 	//middleware
