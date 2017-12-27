@@ -81,3 +81,37 @@ func (this DefaultBookService) DeleteBook(currentUser entities.User, book_id int
 
 	return nil
 }
+
+func (this DefaultBookService) PlusTag(currentUser entities.User, book_id int, tagName string) (err app_error.AppError) {
+	searchFields := entities.BookTag{
+		BookId : book_id,
+		UserId : currentUser.ID,
+		Tag : tagName,
+	}
+	existingVote, err := this.work.BookTagRepo().FindByFields(searchFields)
+
+	if (len(existingVote) == 0 ){
+		err = this.work.BookTagRepo().Insert(&searchFields)
+		return err
+	} else {
+		//if the user already "plused" this tag for this book, just return at this point
+		return nil
+	}
+}
+
+func (this DefaultBookService) MinusTag(currentUser entities.User, book_id int, tagName string) (err app_error.AppError) {
+	searchFields := entities.BookTag{
+		BookId : book_id,
+		UserId : currentUser.ID,
+		Tag : tagName,
+	}
+	existingVote, err := this.work.BookTagRepo().FindByFields(searchFields)
+
+	if (len(existingVote) == 0 ){
+		//if the user already "plused" this tag for this book, just return at this point
+		return nil
+	} else {
+		err = this.work.BookTagRepo().DeleteByFields(searchFields)
+		return err
+	}
+}
