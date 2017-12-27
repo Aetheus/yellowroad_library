@@ -6,6 +6,8 @@ package uow
 import (
 	"sync"
 	"yellowroad_library/database/repo/book_repo"
+	"yellowroad_library/database/repo/booktag_repo"
+	"yellowroad_library/database/repo/booktagcount_repo"
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/database/repo/chapterpath_repo"
 	"yellowroad_library/database/repo/user_repo"
@@ -13,13 +15,15 @@ import (
 )
 
 var (
-	lockUnitOfWorkMockAuto            sync.RWMutex
-	lockUnitOfWorkMockBookRepo        sync.RWMutex
-	lockUnitOfWorkMockChapterPathRepo sync.RWMutex
-	lockUnitOfWorkMockChapterRepo     sync.RWMutex
-	lockUnitOfWorkMockCommit          sync.RWMutex
-	lockUnitOfWorkMockRollback        sync.RWMutex
-	lockUnitOfWorkMockUserRepo        sync.RWMutex
+	lockUnitOfWorkMockAutoCommit       sync.RWMutex
+	lockUnitOfWorkMockBookRepo         sync.RWMutex
+	lockUnitOfWorkMockBookTagCountRepo sync.RWMutex
+	lockUnitOfWorkMockBookTagRepo      sync.RWMutex
+	lockUnitOfWorkMockChapterPathRepo  sync.RWMutex
+	lockUnitOfWorkMockChapterRepo      sync.RWMutex
+	lockUnitOfWorkMockCommit           sync.RWMutex
+	lockUnitOfWorkMockRollback         sync.RWMutex
+	lockUnitOfWorkMockUserRepo         sync.RWMutex
 )
 
 // UnitOfWorkMock is a mock implementation of UnitOfWork.
@@ -28,11 +32,17 @@ var (
 //
 //         // make and configure a mocked UnitOfWork
 //         mockedUnitOfWork := &UnitOfWorkMock{
-//             AutoFunc: func(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError {
+//             AutoCommitFunc: func(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError {
 // 	               panic("TODO: mock out the AutoCommit method")
 //             },
 //             BookRepoFunc: func() book_repo.BookRepository {
 // 	               panic("TODO: mock out the BookRepo method")
+//             },
+//             BookTagCountRepoFunc: func() booktagcount_repo.BookTagCountRepository {
+// 	               panic("TODO: mock out the BookTagCountRepo method")
+//             },
+//             BookTagRepoFunc: func() booktag_repo.BookTagRepository {
+// 	               panic("TODO: mock out the BookTagRepo method")
 //             },
 //             ChapterPathRepoFunc: func() chapterpath_repo.ChapterPathRepository {
 // 	               panic("TODO: mock out the ChapterPathRepo method")
@@ -56,11 +66,17 @@ var (
 //
 //     }
 type UnitOfWorkMock struct {
-	// AutoFunc mocks the Auto method.
-	AutoFunc func(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError
+	// AutoCommitFunc mocks the AutoCommit method.
+	AutoCommitFunc func(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError
 
 	// BookRepoFunc mocks the BookRepo method.
 	BookRepoFunc func() book_repo.BookRepository
+
+	// BookTagCountRepoFunc mocks the BookTagCountRepo method.
+	BookTagCountRepoFunc func() booktagcount_repo.BookTagCountRepository
+
+	// BookTagRepoFunc mocks the BookTagRepo method.
+	BookTagRepoFunc func() booktag_repo.BookTagRepository
 
 	// ChapterPathRepoFunc mocks the ChapterPathRepo method.
 	ChapterPathRepoFunc func() chapterpath_repo.ChapterPathRepository
@@ -80,7 +96,7 @@ type UnitOfWorkMock struct {
 	// calls tracks calls to the methods.
 	calls struct {
 		// AutoCommit holds details about calls to the AutoCommit method.
-		Auto []struct {
+		AutoCommit []struct {
 			// In1 is the in1 argument value.
 			In1 []WorkFragment
 			// In2 is the in2 argument value.
@@ -88,6 +104,12 @@ type UnitOfWorkMock struct {
 		}
 		// BookRepo holds details about calls to the BookRepo method.
 		BookRepo []struct {
+		}
+		// BookTagCountRepo holds details about calls to the BookTagCountRepo method.
+		BookTagCountRepo []struct {
+		}
+		// BookTagRepo holds details about calls to the BookTagRepo method.
+		BookTagRepo []struct {
 		}
 		// ChapterPathRepo holds details about calls to the ChapterPathRepo method.
 		ChapterPathRepo []struct {
@@ -107,10 +129,10 @@ type UnitOfWorkMock struct {
 	}
 }
 
-// AutoCommit calls AutoFunc.
-func (mock *UnitOfWorkMock) Auto(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError {
-	if mock.AutoFunc == nil {
-		panic("moq: UnitOfWorkMock.AutoFunc is nil but UnitOfWork.AutoCommit was just called")
+// AutoCommit calls AutoCommitFunc.
+func (mock *UnitOfWorkMock) AutoCommit(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError {
+	if mock.AutoCommitFunc == nil {
+		panic("moq: UnitOfWorkMock.AutoCommitFunc is nil but UnitOfWork.AutoCommit was just called")
 	}
 	callInfo := struct {
 		In1 []WorkFragment
@@ -119,16 +141,16 @@ func (mock *UnitOfWorkMock) Auto(in1 []WorkFragment, in2 func() app_error.AppErr
 		In1: in1,
 		In2: in2,
 	}
-	lockUnitOfWorkMockAuto.Lock()
-	mock.calls.Auto = append(mock.calls.Auto, callInfo)
-	lockUnitOfWorkMockAuto.Unlock()
-	return mock.AutoFunc(in1, in2)
+	lockUnitOfWorkMockAutoCommit.Lock()
+	mock.calls.AutoCommit = append(mock.calls.AutoCommit, callInfo)
+	lockUnitOfWorkMockAutoCommit.Unlock()
+	return mock.AutoCommitFunc(in1, in2)
 }
 
-// AutoCalls gets all the calls that were made to AutoCommit.
+// AutoCommitCalls gets all the calls that were made to AutoCommit.
 // Check the length with:
-//     len(mockedUnitOfWork.AutoCalls())
-func (mock *UnitOfWorkMock) AutoCalls() []struct {
+//     len(mockedUnitOfWork.AutoCommitCalls())
+func (mock *UnitOfWorkMock) AutoCommitCalls() []struct {
 	In1 []WorkFragment
 	In2 func() app_error.AppError
 } {
@@ -136,9 +158,9 @@ func (mock *UnitOfWorkMock) AutoCalls() []struct {
 		In1 []WorkFragment
 		In2 func() app_error.AppError
 	}
-	lockUnitOfWorkMockAuto.RLock()
-	calls = mock.calls.Auto
-	lockUnitOfWorkMockAuto.RUnlock()
+	lockUnitOfWorkMockAutoCommit.RLock()
+	calls = mock.calls.AutoCommit
+	lockUnitOfWorkMockAutoCommit.RUnlock()
 	return calls
 }
 
@@ -165,6 +187,58 @@ func (mock *UnitOfWorkMock) BookRepoCalls() []struct {
 	lockUnitOfWorkMockBookRepo.RLock()
 	calls = mock.calls.BookRepo
 	lockUnitOfWorkMockBookRepo.RUnlock()
+	return calls
+}
+
+// BookTagCountRepo calls BookTagCountRepoFunc.
+func (mock *UnitOfWorkMock) BookTagCountRepo() booktagcount_repo.BookTagCountRepository {
+	if mock.BookTagCountRepoFunc == nil {
+		panic("moq: UnitOfWorkMock.BookTagCountRepoFunc is nil but UnitOfWork.BookTagCountRepo was just called")
+	}
+	callInfo := struct {
+	}{}
+	lockUnitOfWorkMockBookTagCountRepo.Lock()
+	mock.calls.BookTagCountRepo = append(mock.calls.BookTagCountRepo, callInfo)
+	lockUnitOfWorkMockBookTagCountRepo.Unlock()
+	return mock.BookTagCountRepoFunc()
+}
+
+// BookTagCountRepoCalls gets all the calls that were made to BookTagCountRepo.
+// Check the length with:
+//     len(mockedUnitOfWork.BookTagCountRepoCalls())
+func (mock *UnitOfWorkMock) BookTagCountRepoCalls() []struct {
+} {
+	var calls []struct {
+	}
+	lockUnitOfWorkMockBookTagCountRepo.RLock()
+	calls = mock.calls.BookTagCountRepo
+	lockUnitOfWorkMockBookTagCountRepo.RUnlock()
+	return calls
+}
+
+// BookTagRepo calls BookTagRepoFunc.
+func (mock *UnitOfWorkMock) BookTagRepo() booktag_repo.BookTagRepository {
+	if mock.BookTagRepoFunc == nil {
+		panic("moq: UnitOfWorkMock.BookTagRepoFunc is nil but UnitOfWork.BookTagRepo was just called")
+	}
+	callInfo := struct {
+	}{}
+	lockUnitOfWorkMockBookTagRepo.Lock()
+	mock.calls.BookTagRepo = append(mock.calls.BookTagRepo, callInfo)
+	lockUnitOfWorkMockBookTagRepo.Unlock()
+	return mock.BookTagRepoFunc()
+}
+
+// BookTagRepoCalls gets all the calls that were made to BookTagRepo.
+// Check the length with:
+//     len(mockedUnitOfWork.BookTagRepoCalls())
+func (mock *UnitOfWorkMock) BookTagRepoCalls() []struct {
+} {
+	var calls []struct {
+	}
+	lockUnitOfWorkMockBookTagRepo.RLock()
+	calls = mock.calls.BookTagRepo
+	lockUnitOfWorkMockBookTagRepo.RUnlock()
 	return calls
 }
 

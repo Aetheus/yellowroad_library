@@ -11,6 +11,10 @@ import (
 	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
 	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
 	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
+	"yellowroad_library/database/repo/booktag_repo"
+	"yellowroad_library/database/repo/booktagcount_repo"
+	"yellowroad_library/database/repo/booktag_repo/gorm_booktag_repo"
+	"yellowroad_library/database/repo/booktagcount_repo/gorm_booktagcount_repo"
 )
 
 type WorkFragment interface {
@@ -23,6 +27,8 @@ type UnitOfWork interface {
 	ChapterRepo() (chapter_repo.ChapterRepository)
 	ChapterPathRepo() (chapterpath_repo.ChapterPathRepository)
 	UserRepo() (user_repo.UserRepository)
+	BookTagRepo() (booktag_repo.BookTagRepository)
+	BookTagCountRepo() (booktagcount_repo.BookTagCountRepository)
 
 	AutoCommit([]WorkFragment, func() app_error.AppError) app_error.AppError
 	Commit() (app_error.AppError)
@@ -34,6 +40,8 @@ type AppUnitOfWork struct {
 	chapterRepo *chapter_repo.ChapterRepository
 	chapterPathRepo *chapterpath_repo.ChapterPathRepository
 	userRepo *user_repo.UserRepository
+	bookTagRepo *booktag_repo.BookTagRepository
+	bookTagCountRepo *booktagcount_repo.BookTagCountRepository
 
 	hasCommitted bool
 	hasCommitErrors bool
@@ -135,6 +143,21 @@ func (this AppUnitOfWork) UserRepo() (user_repo.UserRepository) {
 	return *this.userRepo
 }
 
+
+func (this AppUnitOfWork) BookTagRepo() (booktag_repo.BookTagRepository){
+	if this.bookTagRepo == nil {
+		var bookTagRepo booktag_repo.BookTagRepository = gorm_booktag_repo.New(this.transaction)
+		this.bookTagRepo = &bookTagRepo
+	}
+	return *this.bookTagRepo
+}
+func (this AppUnitOfWork) BookTagCountRepo() (booktagcount_repo.BookTagCountRepository){
+	if this.bookTagCountRepo == nil {
+		var bookTagRepo booktagcount_repo.BookTagCountRepository = gorm_booktagcount_repo.New(this.transaction)
+		this.bookTagCountRepo = &bookTagRepo
+	}
+	return *this.bookTagCountRepo
+}
 
 
 
