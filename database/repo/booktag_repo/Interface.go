@@ -6,7 +6,8 @@ import (
 )
 
 type BookTagRepository interface {
+	FindByFields(searchFields entities.BookTag) ([]entities.BookTag, app_error.AppError)
 	Insert(*entities.BookTag) (app_error.AppError)
 	Delete(*entities.BookTag) (app_error.AppError)
-	DeleteByFields(tag string, user_id int, book_id int) (app_error.AppError)
+	DeleteByFields(searchFields entities.BookTag) (app_error.AppError)
 }
