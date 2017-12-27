@@ -13,7 +13,7 @@ import (
 
 func TestGormBookTagRepository(t *testing.T) {
 	// Only pass t into top-level Convey calls
-	Convey("Given a GormBookRepository and UserRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
+	Convey("Given a GormBookRepository,UserRepository and GormBookTagRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		var transaction = gormDB.Begin()
 		var bookRepo = gorm_book_repo.New(transaction);
 		var userRepo user_repo.UserRepository = gorm_user_repo.New(transaction)
