@@ -47,8 +47,8 @@ func (this GormBookTagCountRepository) SyncCount(tag string, book_id int) (count
 	//count the rows in BookTags that match the given tag and book_id
 	var total_tags_in_book int
 	queryResult := this.dbConn.
+						Model(&entities.BookTag{}).
 						Where("tag = ? AND book_id = ?", tag, book_id).
-						Find(&entities.BookTag{}).
 						Count(&total_tags_in_book)
 	if queryResult.Error != nil {
 		err = app_error.Wrap(queryResult.Error)
