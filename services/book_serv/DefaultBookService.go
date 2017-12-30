@@ -114,7 +114,7 @@ func (this DefaultBookService) MinusTag(currentUser entities.User, book_id int, 
 	existingVote, err := this.work.BookTagRepo().FindByFields(searchFields)
 
 	if (len(existingVote) == 0 ){
-		//if the user already "plused" this tag for this book, just return at this point
+		//if the user has no existing vote for this tag, just return at this point
 		return
 	} else {
 		err = this.work.BookTagRepo().DeleteByFields(searchFields)
