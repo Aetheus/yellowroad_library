@@ -83,6 +83,12 @@ func (this DefaultBookService) DeleteBook(currentUser entities.User, book_id int
 }
 
 func (this DefaultBookService) PlusTag(currentUser entities.User, book_id int, tagName string) (newCount int, err app_error.AppError) {
+	_, err = this.work.BookRepo().FindById(book_id)
+	if (err != nil){
+		//quit early if we can't find the book or something else went wrong
+		return
+	}
+
 	searchFields := entities.BookTag{
 		BookId : book_id,
 		UserId : currentUser.ID,
@@ -106,6 +112,12 @@ func (this DefaultBookService) PlusTag(currentUser entities.User, book_id int, t
 }
 
 func (this DefaultBookService) MinusTag(currentUser entities.User, book_id int, tagName string) (newCount int, err app_error.AppError) {
+	_, err = this.work.BookRepo().FindById(book_id)
+	if (err != nil){
+		//quit early if we can't find the book or something else went wrong
+		return
+	}
+
 	searchFields := entities.BookTag{
 		BookId : book_id,
 		UserId : currentUser.ID,
