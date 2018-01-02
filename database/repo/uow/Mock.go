@@ -15,15 +15,15 @@ import (
 )
 
 var (
-	lockUnitOfWorkMockAutoCommit       sync.RWMutex
-	lockUnitOfWorkMockBookRepo         sync.RWMutex
-	lockUnitOfWorkMockBookTagCountRepo sync.RWMutex
-	lockUnitOfWorkMockBookTagRepo      sync.RWMutex
-	lockUnitOfWorkMockChapterPathRepo  sync.RWMutex
-	lockUnitOfWorkMockChapterRepo      sync.RWMutex
-	lockUnitOfWorkMockCommit           sync.RWMutex
-	lockUnitOfWorkMockRollback         sync.RWMutex
-	lockUnitOfWorkMockUserRepo         sync.RWMutex
+	lockUnitOfWorkMockAutoCommit           sync.RWMutex
+	lockUnitOfWorkMockBookRepo             sync.RWMutex
+	lockUnitOfWorkMockBookTagVoteCountRepo sync.RWMutex
+	lockUnitOfWorkMockBookTagVoteRepo      sync.RWMutex
+	lockUnitOfWorkMockChapterPathRepo      sync.RWMutex
+	lockUnitOfWorkMockChapterRepo          sync.RWMutex
+	lockUnitOfWorkMockCommit               sync.RWMutex
+	lockUnitOfWorkMockRollback             sync.RWMutex
+	lockUnitOfWorkMockUserRepo             sync.RWMutex
 )
 
 // UnitOfWorkMock is a mock implementation of UnitOfWork.
@@ -38,11 +38,11 @@ var (
 //             BookRepoFunc: func() book_repo.BookRepository {
 // 	               panic("TODO: mock out the BookRepo method")
 //             },
-//             BookTagCountRepoFunc: func() booktagcount_repo.BookTagVoteCountRepository {
-// 	               panic("TODO: mock out the BookTagCountRepo method")
+//             BookTagVoteCountRepoFunc: func() btagvotecount_repo.BookTagVoteCountRepository {
+// 	               panic("TODO: mock out the BookTagVoteCountRepo method")
 //             },
-//             BookTagRepoFunc: func() booktag_repo.BookTagVoteRepository {
-// 	               panic("TODO: mock out the BookTagRepo method")
+//             BookTagVoteRepoFunc: func() btagvote_repo.BookTagVoteRepository {
+// 	               panic("TODO: mock out the BookTagVoteRepo method")
 //             },
 //             ChapterPathRepoFunc: func() chapterpath_repo.ChapterPathRepository {
 // 	               panic("TODO: mock out the ChapterPathRepo method")
@@ -72,11 +72,11 @@ type UnitOfWorkMock struct {
 	// BookRepoFunc mocks the BookRepo method.
 	BookRepoFunc func() book_repo.BookRepository
 
-	// BookTagCountRepoFunc mocks the BookTagCountRepo method.
-	BookTagCountRepoFunc func() btagvotecount_repo.BookTagVoteCountRepository
+	// BookTagVoteCountRepoFunc mocks the BookTagVoteCountRepo method.
+	BookTagVoteCountRepoFunc func() btagvotecount_repo.BookTagVoteCountRepository
 
-	// BookTagRepoFunc mocks the BookTagRepo method.
-	BookTagRepoFunc func() btagvote_repo.BookTagVoteRepository
+	// BookTagVoteRepoFunc mocks the BookTagVoteRepo method.
+	BookTagVoteRepoFunc func() btagvote_repo.BookTagVoteRepository
 
 	// ChapterPathRepoFunc mocks the ChapterPathRepo method.
 	ChapterPathRepoFunc func() chapterpath_repo.ChapterPathRepository
@@ -105,11 +105,11 @@ type UnitOfWorkMock struct {
 		// BookRepo holds details about calls to the BookRepo method.
 		BookRepo []struct {
 		}
-		// BookTagCountRepo holds details about calls to the BookTagCountRepo method.
-		BookTagCountRepo []struct {
+		// BookTagVoteCountRepo holds details about calls to the BookTagVoteCountRepo method.
+		BookTagVoteCountRepo []struct {
 		}
-		// BookTagRepo holds details about calls to the BookTagRepo method.
-		BookTagRepo []struct {
+		// BookTagVoteRepo holds details about calls to the BookTagVoteRepo method.
+		BookTagVoteRepo []struct {
 		}
 		// ChapterPathRepo holds details about calls to the ChapterPathRepo method.
 		ChapterPathRepo []struct {
@@ -190,55 +190,55 @@ func (mock *UnitOfWorkMock) BookRepoCalls() []struct {
 	return calls
 }
 
-// BookTagCountRepo calls BookTagCountRepoFunc.
-func (mock *UnitOfWorkMock) BookTagCountRepo() btagvotecount_repo.BookTagVoteCountRepository {
-	if mock.BookTagCountRepoFunc == nil {
-		panic("moq: UnitOfWorkMock.BookTagCountRepoFunc is nil but UnitOfWork.BookTagCountRepo was just called")
+// BookTagVoteCountRepo calls BookTagVoteCountRepoFunc.
+func (mock *UnitOfWorkMock) BookTagVoteCountRepo() btagvotecount_repo.BookTagVoteCountRepository {
+	if mock.BookTagVoteCountRepoFunc == nil {
+		panic("moq: UnitOfWorkMock.BookTagVoteCountRepoFunc is nil but UnitOfWork.BookTagVoteCountRepo was just called")
 	}
 	callInfo := struct {
 	}{}
-	lockUnitOfWorkMockBookTagCountRepo.Lock()
-	mock.calls.BookTagCountRepo = append(mock.calls.BookTagCountRepo, callInfo)
-	lockUnitOfWorkMockBookTagCountRepo.Unlock()
-	return mock.BookTagCountRepoFunc()
+	lockUnitOfWorkMockBookTagVoteCountRepo.Lock()
+	mock.calls.BookTagVoteCountRepo = append(mock.calls.BookTagVoteCountRepo, callInfo)
+	lockUnitOfWorkMockBookTagVoteCountRepo.Unlock()
+	return mock.BookTagVoteCountRepoFunc()
 }
 
-// BookTagCountRepoCalls gets all the calls that were made to BookTagCountRepo.
+// BookTagVoteCountRepoCalls gets all the calls that were made to BookTagVoteCountRepo.
 // Check the length with:
-//     len(mockedUnitOfWork.BookTagCountRepoCalls())
-func (mock *UnitOfWorkMock) BookTagCountRepoCalls() []struct {
+//     len(mockedUnitOfWork.BookTagVoteCountRepoCalls())
+func (mock *UnitOfWorkMock) BookTagVoteCountRepoCalls() []struct {
 } {
 	var calls []struct {
 	}
-	lockUnitOfWorkMockBookTagCountRepo.RLock()
-	calls = mock.calls.BookTagCountRepo
-	lockUnitOfWorkMockBookTagCountRepo.RUnlock()
+	lockUnitOfWorkMockBookTagVoteCountRepo.RLock()
+	calls = mock.calls.BookTagVoteCountRepo
+	lockUnitOfWorkMockBookTagVoteCountRepo.RUnlock()
 	return calls
 }
 
-// BookTagRepo calls BookTagRepoFunc.
-func (mock *UnitOfWorkMock) BookTagRepo() btagvote_repo.BookTagVoteRepository {
-	if mock.BookTagRepoFunc == nil {
-		panic("moq: UnitOfWorkMock.BookTagRepoFunc is nil but UnitOfWork.BookTagRepo was just called")
+// BookTagVoteRepo calls BookTagVoteRepoFunc.
+func (mock *UnitOfWorkMock) BookTagVoteRepo() btagvote_repo.BookTagVoteRepository {
+	if mock.BookTagVoteRepoFunc == nil {
+		panic("moq: UnitOfWorkMock.BookTagVoteRepoFunc is nil but UnitOfWork.BookTagVoteRepo was just called")
 	}
 	callInfo := struct {
 	}{}
-	lockUnitOfWorkMockBookTagRepo.Lock()
-	mock.calls.BookTagRepo = append(mock.calls.BookTagRepo, callInfo)
-	lockUnitOfWorkMockBookTagRepo.Unlock()
-	return mock.BookTagRepoFunc()
+	lockUnitOfWorkMockBookTagVoteRepo.Lock()
+	mock.calls.BookTagVoteRepo = append(mock.calls.BookTagVoteRepo, callInfo)
+	lockUnitOfWorkMockBookTagVoteRepo.Unlock()
+	return mock.BookTagVoteRepoFunc()
 }
 
-// BookTagRepoCalls gets all the calls that were made to BookTagRepo.
+// BookTagVoteRepoCalls gets all the calls that were made to BookTagVoteRepo.
 // Check the length with:
-//     len(mockedUnitOfWork.BookTagRepoCalls())
-func (mock *UnitOfWorkMock) BookTagRepoCalls() []struct {
+//     len(mockedUnitOfWork.BookTagVoteRepoCalls())
+func (mock *UnitOfWorkMock) BookTagVoteRepoCalls() []struct {
 } {
 	var calls []struct {
 	}
-	lockUnitOfWorkMockBookTagRepo.RLock()
-	calls = mock.calls.BookTagRepo
-	lockUnitOfWorkMockBookTagRepo.RUnlock()
+	lockUnitOfWorkMockBookTagVoteRepo.RLock()
+	calls = mock.calls.BookTagVoteRepo
+	lockUnitOfWorkMockBookTagVoteRepo.RUnlock()
 	return calls
 }
 

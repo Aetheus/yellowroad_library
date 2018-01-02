@@ -27,8 +27,8 @@ type UnitOfWork interface {
 	ChapterRepo() (chapter_repo.ChapterRepository)
 	ChapterPathRepo() (chapterpath_repo.ChapterPathRepository)
 	UserRepo() (user_repo.UserRepository)
-	BookTagRepo() (btagvote_repo.BookTagVoteRepository)
-	BookTagCountRepo() (btagvotecount_repo.BookTagVoteCountRepository)
+	BookTagVoteRepo() (btagvote_repo.BookTagVoteRepository)
+	BookTagVoteCountRepo() (btagvotecount_repo.BookTagVoteCountRepository)
 
 	AutoCommit([]WorkFragment, func() app_error.AppError) app_error.AppError
 	Commit() (app_error.AppError)
@@ -144,14 +144,14 @@ func (this AppUnitOfWork) UserRepo() (user_repo.UserRepository) {
 }
 
 
-func (this AppUnitOfWork) BookTagRepo() (btagvote_repo.BookTagVoteRepository){
+func (this AppUnitOfWork) BookTagVoteRepo() (btagvote_repo.BookTagVoteRepository){
 	if this.bookTagRepo == nil {
 		var bookTagRepo btagvote_repo.BookTagVoteRepository = gorm_btagvote_repo.New(this.transaction)
 		this.bookTagRepo = &bookTagRepo
 	}
 	return *this.bookTagRepo
 }
-func (this AppUnitOfWork) BookTagCountRepo() (btagvotecount_repo.BookTagVoteCountRepository){
+func (this AppUnitOfWork) BookTagVoteCountRepo() (btagvotecount_repo.BookTagVoteCountRepository){
 	if this.bookTagCountRepo == nil {
 		var bookTagRepo btagvotecount_repo.BookTagVoteCountRepository = gorm_btagvotecount_repo.New(this.transaction)
 		this.bookTagCountRepo = &bookTagRepo
