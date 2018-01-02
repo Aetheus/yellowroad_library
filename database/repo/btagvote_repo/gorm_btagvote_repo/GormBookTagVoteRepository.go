@@ -43,6 +43,22 @@ func (this GormBookTagVoteRepository) Insert(booktag *entities.BookTagVote) (app
 
 	return nil
 }
+
+func (this GormBookTagVoteRepository) Upsert(booktag *entities.BookTagVote) (app_error.AppError){
+	queryResult := this.dbConn.
+						Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!
+						Where(entities.BookTagVote{Tag:booktag.Tag, BookId:booktag.BookId, UserId: booktag.UserId}).
+						Assign(*booktag).
+						FirstOrCreate(booktag)
+
+	if queryResult.Error != nil {
+		return app_error.Wrap(queryResult.Error)
+	}
+
+	return nil
+}
+
+
 func (this GormBookTagVoteRepository) Delete(booktag *entities.BookTagVote) (app_error.AppError) {
 	if (booktag.ID == 0){
 		err := errors.New("Invalid primary key value of 0 while attempting to delete")

@@ -50,6 +50,7 @@ func TestGormBookTagRepository(t *testing.T) {
 						BookId	: newBook.ID,
 						Tag 	: "plot_twist",
 						UserId  : authorUser.ID,
+						Direction: 1,
 					}
 					err = bookTagRepo.Insert(&firstTag)
 					So(err, ShouldBeNil)
@@ -120,8 +121,32 @@ func TestGormBookTagRepository(t *testing.T) {
 							BookId	: newBook.ID,
 							Tag 	: "plot_twist",
 							UserId  : authorUser.ID,
+							Direction: 1,
 						})
 						So(err, ShouldNotBeNil)
+					})
+
+					Convey("Upserting the same tag with the same user but with a different direction value should return no error", func (){
+						err = bookTagRepo.Upsert(&entities.BookTagVote{
+							BookId	: newBook.ID,
+							Tag 	: "plot_twist",
+							UserId  : authorUser.ID,
+							Direction : -1,
+						})
+						So(err, ShouldBeNil)
+
+						Convey("Value of the tag should properly reflect upsert direction value", func (){
+							results, err := bookTagRepo.FindByFields(entities.BookTagVote{
+								BookId	: newBook.ID,
+								Tag 	: "plot_twist",
+								UserId  : authorUser.ID,
+								Direction : -1,
+							})
+
+							So(err, ShouldBeNil)
+							So(len(results), ShouldEqual, 1)
+							So(results[0].Direction, ShouldEqual, -1)
+						})
 					})
 
 					Convey("Deleting the tag should work", func (){
