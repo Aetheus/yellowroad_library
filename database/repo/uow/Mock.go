@@ -6,8 +6,8 @@ package uow
 import (
 	"sync"
 	"yellowroad_library/database/repo/book_repo"
-	"yellowroad_library/database/repo/booktag_repo"
-	"yellowroad_library/database/repo/booktagcount_repo"
+	"yellowroad_library/database/repo/btagvote_repo"
+	"yellowroad_library/database/repo/btagvotecount_repo"
 	"yellowroad_library/database/repo/chapter_repo"
 	"yellowroad_library/database/repo/chapterpath_repo"
 	"yellowroad_library/database/repo/user_repo"
@@ -38,10 +38,10 @@ var (
 //             BookRepoFunc: func() book_repo.BookRepository {
 // 	               panic("TODO: mock out the BookRepo method")
 //             },
-//             BookTagCountRepoFunc: func() booktagcount_repo.BookTagCountRepository {
+//             BookTagCountRepoFunc: func() booktagcount_repo.BookTagVoteCountRepository {
 // 	               panic("TODO: mock out the BookTagCountRepo method")
 //             },
-//             BookTagRepoFunc: func() booktag_repo.BookTagRepository {
+//             BookTagRepoFunc: func() booktag_repo.BookTagVoteRepository {
 // 	               panic("TODO: mock out the BookTagRepo method")
 //             },
 //             ChapterPathRepoFunc: func() chapterpath_repo.ChapterPathRepository {
@@ -73,10 +73,10 @@ type UnitOfWorkMock struct {
 	BookRepoFunc func() book_repo.BookRepository
 
 	// BookTagCountRepoFunc mocks the BookTagCountRepo method.
-	BookTagCountRepoFunc func() booktagcount_repo.BookTagCountRepository
+	BookTagCountRepoFunc func() btagvotecount_repo.BookTagVoteCountRepository
 
 	// BookTagRepoFunc mocks the BookTagRepo method.
-	BookTagRepoFunc func() booktag_repo.BookTagRepository
+	BookTagRepoFunc func() btagvote_repo.BookTagVoteRepository
 
 	// ChapterPathRepoFunc mocks the ChapterPathRepo method.
 	ChapterPathRepoFunc func() chapterpath_repo.ChapterPathRepository
@@ -191,7 +191,7 @@ func (mock *UnitOfWorkMock) BookRepoCalls() []struct {
 }
 
 // BookTagCountRepo calls BookTagCountRepoFunc.
-func (mock *UnitOfWorkMock) BookTagCountRepo() booktagcount_repo.BookTagCountRepository {
+func (mock *UnitOfWorkMock) BookTagCountRepo() btagvotecount_repo.BookTagVoteCountRepository {
 	if mock.BookTagCountRepoFunc == nil {
 		panic("moq: UnitOfWorkMock.BookTagCountRepoFunc is nil but UnitOfWork.BookTagCountRepo was just called")
 	}
@@ -217,7 +217,7 @@ func (mock *UnitOfWorkMock) BookTagCountRepoCalls() []struct {
 }
 
 // BookTagRepo calls BookTagRepoFunc.
-func (mock *UnitOfWorkMock) BookTagRepo() booktag_repo.BookTagRepository {
+func (mock *UnitOfWorkMock) BookTagRepo() btagvote_repo.BookTagVoteRepository {
 	if mock.BookTagRepoFunc == nil {
 		panic("moq: UnitOfWorkMock.BookTagRepoFunc is nil but UnitOfWork.BookTagRepo was just called")
 	}

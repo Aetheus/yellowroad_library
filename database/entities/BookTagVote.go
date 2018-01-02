@@ -1,6 +1,6 @@
 package entities
 
-type BookTag struct {
+type BookTagVote struct {
 	Tag          	string			`json:"title"`
 
 	BookId			int				`json:"book_id"`
@@ -9,13 +9,15 @@ type BookTag struct {
 	UserId      	int				`json:"user_id"`
 	User		   	*User			`json:"user,omitempty" gorm:"ForeignKey:UserId"`
 
+	Direction 		int				`json:"direction"`
+
 	//housekeeping attributes
 	ID        		int				`json:"id"`
 }
 
 //for GORM; table name
-func (BookTag) TableName() string {
-	return "book_tags"
+func (BookTagVote) TableName() string {
+	return "btags_votes"
 }
 
 //for GORM; associations

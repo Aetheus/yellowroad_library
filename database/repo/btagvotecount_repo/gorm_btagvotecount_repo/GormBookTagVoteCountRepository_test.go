@@ -1,4 +1,4 @@
-package gorm_booktagcount_repo
+package gorm_btagvotecount_repo
 
 import "testing"
 import (
@@ -9,17 +9,17 @@ import (
 	"yellowroad_library/database/repo/user_repo"
 	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
 	"yellowroad_library/database/entities"
-	"yellowroad_library/database/repo/booktag_repo/gorm_booktag_repo"
+	"yellowroad_library/database/repo/btagvote_repo/gorm_btagvote_repo"
 	"strconv"
 )
 
 func TestGormBookTagCountRepository(t *testing.T) {
 	// Only pass t into top-level Convey calls
-	Convey("Given a GormBookRepository,UserRepository, GormBookTagRepository and GormBookTagCountRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
+	Convey("Given a GormBookRepository,UserRepository, GormBookTagVoteRepository and GormBookTagVoteCountRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		var transaction = gormDB.Begin()
 		var bookRepo = gorm_book_repo.New(transaction);
 		var userRepo user_repo.UserRepository = gorm_user_repo.New(transaction)
-		var bookTagRepo = gorm_booktag_repo.New(transaction)
+		var bookTagRepo = gorm_btagvote_repo.New(transaction)
 		var bookTagCountRepo = New(transaction)
 
 		Convey("Given a valid user", func (){
@@ -52,7 +52,7 @@ func TestGormBookTagCountRepository(t *testing.T) {
 						So(err, ShouldBeNil)
 
 						//insert "revenge" tag
-						revengeTag := entities.BookTag{
+						revengeTag := entities.BookTagVote{
 							BookId	: newBook.ID,
 							Tag 	: "revenge",
 							UserId  : temp_user.ID,
@@ -62,7 +62,7 @@ func TestGormBookTagCountRepository(t *testing.T) {
 
 						//insert "murder" tag
 						if (i < 15) {
-							murderTag := entities.BookTag{
+							murderTag := entities.BookTagVote{
 								BookId	: newBook.ID,
 								Tag 	: "murder",
 								UserId  : temp_user.ID,
@@ -75,14 +75,14 @@ func TestGormBookTagCountRepository(t *testing.T) {
 
 
 					Convey("There should be 30 'revenge' tags and 15 'murder' tags", func (){
-						revengeResults, err := bookTagRepo.FindByFields(entities.BookTag{
+						revengeResults, err := bookTagRepo.FindByFields(entities.BookTagVote{
 							BookId:newBook.ID,
 							Tag: "revenge",
 						})
 						So(err, ShouldBeNil)
 						So(len(revengeResults), ShouldEqual, 30)
 
-						murderResults, err := bookTagRepo.FindByFields(entities.BookTag{
+						murderResults, err := bookTagRepo.FindByFields(entities.BookTagVote{
 							BookId:newBook.ID,
 							Tag: "murder",
 						})

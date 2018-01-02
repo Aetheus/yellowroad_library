@@ -1,4 +1,4 @@
-package gorm_booktag_repo
+package gorm_btagvote_repo
 
 import "testing"
 import (
@@ -46,7 +46,7 @@ func TestGormBookTagRepository(t *testing.T) {
 				So(err, ShouldBeNil)
 
 				Convey("Inserting a book tag should work", func (){
-					firstTag := entities.BookTag{
+					firstTag := entities.BookTagVote{
 						BookId	: newBook.ID,
 						Tag 	: "plot_twist",
 						UserId  : authorUser.ID,
@@ -55,7 +55,7 @@ func TestGormBookTagRepository(t *testing.T) {
 					So(err, ShouldBeNil)
 
 					Convey("Finding the newly inserted tag should work", func (){
-						results, err := bookTagRepo.FindByFields(entities.BookTag{
+						results, err := bookTagRepo.FindByFields(entities.BookTagVote{
 							BookId:newBook.ID,
 							Tag: "plot_twist",
 						})
@@ -69,7 +69,7 @@ func TestGormBookTagRepository(t *testing.T) {
 					})
 
 					Convey("Inserting the same tag but with a different user should work", func (){
-						duplicateTag := entities.BookTag{
+						duplicateTag := entities.BookTagVote{
 							BookId	: newBook.ID,
 							Tag 	: "plot_twist",
 							UserId  : reader_1_user.ID,
@@ -78,7 +78,7 @@ func TestGormBookTagRepository(t *testing.T) {
 						So(err, ShouldBeNil)
 
 						Convey("Finding the tag should give 2 results", func (){
-							results, err := bookTagRepo.FindByFields(entities.BookTag{
+							results, err := bookTagRepo.FindByFields(entities.BookTagVote{
 								BookId:newBook.ID,
 								Tag: "plot_twist",
 							})
@@ -97,13 +97,13 @@ func TestGormBookTagRepository(t *testing.T) {
 
 
 							Convey("Deleting the tags using the tag text and book id as search options should delete both tags", func (){
-								err := bookTagRepo.DeleteByFields(entities.BookTag{
+								err := bookTagRepo.DeleteByFields(entities.BookTagVote{
 									Tag: "plot_twist",
 									BookId: newBook.ID,
 								})
 								So(err,ShouldBeNil)
 
-								results, err := bookTagRepo.FindByFields(entities.BookTag{
+								results, err := bookTagRepo.FindByFields(entities.BookTagVote{
 									BookId:newBook.ID,
 									Tag: "plot_twist",
 								})
@@ -116,7 +116,7 @@ func TestGormBookTagRepository(t *testing.T) {
 					})
 
 					Convey("Inserting the same tag again with the same user should return an error", func (){
-						err = bookTagRepo.Insert(&entities.BookTag{
+						err = bookTagRepo.Insert(&entities.BookTagVote{
 							BookId	: newBook.ID,
 							Tag 	: "plot_twist",
 							UserId  : authorUser.ID,

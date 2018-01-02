@@ -1,26 +1,26 @@
-package gorm_booktagcount_repo
+package gorm_btagvotecount_repo
 
 import (
-	"yellowroad_library/database/repo/booktagcount_repo"
+	"yellowroad_library/database/repo/btagvotecount_repo"
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/app_error"
 	"errors"
 )
 
-type GormBookTagCountRepository struct {
+type GormBookTagVoteCountRepository struct {
 	dbConn *gorm.DB
 }
 
-var _ booktagcount_repo.BookTagCountRepository = GormBookTagCountRepository{}
+var _ btagvotecount_repo.BookTagVoteCountRepository = GormBookTagVoteCountRepository{}
 
-func New(dbConn *gorm.DB) GormBookTagCountRepository {
-	return GormBookTagCountRepository{
+func New(dbConn *gorm.DB) GormBookTagVoteCountRepository {
+	return GormBookTagVoteCountRepository{
 		dbConn : dbConn,
 	}
 }
 
-func (this GormBookTagCountRepository) Insert(booktag_count *entities.BookTagCount) (app_error.AppError){
+func (this GormBookTagVoteCountRepository) Insert(booktag_count *entities.BookTagVoteCount) (app_error.AppError){
 	queryResult := this.dbConn.
 		Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!
 		Create(booktag_count)
@@ -31,7 +31,7 @@ func (this GormBookTagCountRepository) Insert(booktag_count *entities.BookTagCou
 
 	return nil
 }
-func (this GormBookTagCountRepository) Delete(booktag_count *entities.BookTagCount) (app_error.AppError) {
+func (this GormBookTagVoteCountRepository) Delete(booktag_count *entities.BookTagVoteCount) (app_error.AppError) {
 	if (booktag_count.ID == 0){
 		err := errors.New("Invalid primary key value of 0 while attempting to delete")
 		return app_error.Wrap(err)
@@ -43,11 +43,11 @@ func (this GormBookTagCountRepository) Delete(booktag_count *entities.BookTagCou
 
 	return nil
 }
-func (this GormBookTagCountRepository) SyncCount(tag string, book_id int) (count entities.BookTagCount, err app_error.AppError) {
+func (this GormBookTagVoteCountRepository) SyncCount(tag string, book_id int) (count entities.BookTagVoteCount, err app_error.AppError) {
 	//count the rows in BookTags that match the given tag and book_id
 	var total_tags_in_book int
 	queryResult := this.dbConn.
-						Model(&entities.BookTag{}).
+						Model(&entities.BookTagVote{}).
 						Where("tag = ? AND book_id = ?", tag, book_id).
 						Count(&total_tags_in_book)
 	if queryResult.Error != nil {
@@ -55,10 +55,10 @@ func (this GormBookTagCountRepository) SyncCount(tag string, book_id int) (count
 		return count, err
 	}
 
-	//upsert the value into the BookTagCount table
+	//upsert the value into the BookTagVoteCount table
 	queryResult = this.dbConn.
-						Where(entities.BookTagCount{Tag:tag, BookId:book_id}).
-						Assign(entities.BookTagCount{Count: total_tags_in_book}).
+						Where(entities.BookTagVoteCount{Tag:tag, BookId:book_id}).
+						Assign(entities.BookTagVoteCount{Count: total_tags_in_book}).
 						FirstOrCreate(&count)
 
 	if queryResult.Error != nil {

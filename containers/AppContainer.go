@@ -22,10 +22,10 @@ import (
 	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/services/chapter_serv"
-	"yellowroad_library/database/repo/booktag_repo"
-	"yellowroad_library/database/repo/booktagcount_repo"
-	"yellowroad_library/database/repo/booktag_repo/gorm_booktag_repo"
-	"yellowroad_library/database/repo/booktagcount_repo/gorm_booktagcount_repo"
+	"yellowroad_library/database/repo/btagvote_repo"
+	"yellowroad_library/database/repo/btagvotecount_repo"
+	"yellowroad_library/database/repo/btagvote_repo/gorm_btagvote_repo"
+	"yellowroad_library/database/repo/btagvotecount_repo/gorm_btagvotecount_repo"
 )
 
 type AppContainer struct {
@@ -138,11 +138,11 @@ func (ac AppContainer) GetChapterPathRepository() chapterpath_repo.ChapterPathRe
 	return gorm_chapterpath_repo.New(ac.GetDbConn())
 }
 
-func (ac AppContainer) GetBookTagRepository() booktag_repo.BookTagRepository{
-	return gorm_booktag_repo.New(ac.GetDbConn())
+func (ac AppContainer) GetBookTagRepository() btagvote_repo.BookTagVoteRepository {
+	return gorm_btagvote_repo.New(ac.GetDbConn())
 }
-func (ac AppContainer) GetBookTagCountRepository() booktagcount_repo.BookTagCountRepository{
-	return gorm_booktagcount_repo.New(ac.GetDbConn())
+func (ac AppContainer) GetBookTagCountRepository() btagvotecount_repo.BookTagVoteCountRepository {
+	return gorm_btagvotecount_repo.New(ac.GetDbConn())
 }
 
 func (ac AppContainer) UnitOfWork() uow.UnitOfWork {

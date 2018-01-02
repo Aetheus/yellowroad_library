@@ -1,6 +1,6 @@
 package entities
 
-type BookTagCount struct {
+type BookTagVoteCount struct {
 	Tag          	string			`json:"title"`
 	Count			int				`json:"count"`
 
@@ -12,6 +12,6 @@ type BookTagCount struct {
 }
 
 //for GORM
-func (BookTagCount) TableName() string {
+func (BookTagVoteCount) TableName() string {
 	return "book_tags_count"
 }

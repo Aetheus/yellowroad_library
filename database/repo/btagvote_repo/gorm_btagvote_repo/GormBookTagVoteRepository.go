@@ -1,25 +1,25 @@
-package gorm_booktag_repo
+package gorm_btagvote_repo
 
 import (
-	"yellowroad_library/database/repo/booktag_repo"
+	"yellowroad_library/database/repo/btagvote_repo"
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/app_error"
 	"errors"
 )
 
-type GormBookTagRepository struct {
+type GormBookTagVoteRepository struct {
 	dbConn *gorm.DB
 }
-var _ booktag_repo.BookTagRepository = GormBookTagRepository{}
+var _ btagvote_repo.BookTagVoteRepository = GormBookTagVoteRepository{}
 
-func New(dbConn *gorm.DB) GormBookTagRepository{
-	return GormBookTagRepository{
+func New(dbConn *gorm.DB) GormBookTagVoteRepository {
+	return GormBookTagVoteRepository{
 		dbConn : dbConn,
 	}
 }
 
-func (this GormBookTagRepository) FindByFields(searchFields entities.BookTag) (results []entities.BookTag, err app_error.AppError) {
+func (this GormBookTagVoteRepository) FindByFields(searchFields entities.BookTagVote) (results []entities.BookTagVote, err app_error.AppError) {
 	queryResult := this.dbConn.
 						Where(searchFields).
 						Find(&results)
@@ -32,7 +32,7 @@ func (this GormBookTagRepository) FindByFields(searchFields entities.BookTag) (r
 	return
 }
 
-func (this GormBookTagRepository) Insert(booktag *entities.BookTag) (app_error.AppError){
+func (this GormBookTagVoteRepository) Insert(booktag *entities.BookTagVote) (app_error.AppError){
 	queryResult := this.dbConn.
 		Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!
 		Create(booktag)
@@ -43,7 +43,7 @@ func (this GormBookTagRepository) Insert(booktag *entities.BookTag) (app_error.A
 
 	return nil
 }
-func (this GormBookTagRepository) Delete(booktag *entities.BookTag) (app_error.AppError) {
+func (this GormBookTagVoteRepository) Delete(booktag *entities.BookTagVote) (app_error.AppError) {
 	if (booktag.ID == 0){
 		err := errors.New("Invalid primary key value of 0 while attempting to delete")
 		return app_error.Wrap(err)
@@ -55,10 +55,10 @@ func (this GormBookTagRepository) Delete(booktag *entities.BookTag) (app_error.A
 
 	return nil
 }
-func (this GormBookTagRepository) DeleteByFields(searchFields entities.BookTag) (app_error.AppError){
+func (this GormBookTagVoteRepository) DeleteByFields(searchFields entities.BookTagVote) (app_error.AppError){
 	queryResult := this.dbConn.
 						Where(searchFields).
-						Delete(entities.BookTag{})
+						Delete(entities.BookTagVote{})
 
 	if queryResult.Error != nil {
 		return app_error.Wrap(queryResult.Error)

@@ -89,7 +89,7 @@ func (this DefaultBookService) PlusTag(currentUser entities.User, book_id int, t
 		return
 	}
 
-	searchFields := entities.BookTag{
+	searchFields := entities.BookTagVote{
 		BookId : book_id,
 		UserId : currentUser.ID,
 		Tag : tagName,
@@ -98,13 +98,13 @@ func (this DefaultBookService) PlusTag(currentUser entities.User, book_id int, t
 
 	if (len(existingVote) == 0 ){
 		err = this.work.BookTagRepo().Insert(&searchFields)
-		if (err != nil) {return}
+		if (err != nil) {return newCount,err}
 
 		result, err := this.work.BookTagCountRepo().SyncCount(tagName,book_id)
-		if (err != nil) {return}
+		if (err != nil) {return newCount,err}
 		newCount = result.Count
 
-		return
+		return newCount,err
 	} else {
 		//if the user already "plused" this tag for this book, just return at this point
 		return
@@ -118,7 +118,7 @@ func (this DefaultBookService) MinusTag(currentUser entities.User, book_id int, 
 		return
 	}
 
-	searchFields := entities.BookTag{
+	searchFields := entities.BookTagVote{
 		BookId : book_id,
 		UserId : currentUser.ID,
 		Tag : tagName,
@@ -130,12 +130,12 @@ func (this DefaultBookService) MinusTag(currentUser entities.User, book_id int, 
 		return
 	} else {
 		err = this.work.BookTagRepo().DeleteByFields(searchFields)
-		if (err != nil) {return}
+		if (err != nil) {return newCount,err}
 
 		result, err := this.work.BookTagCountRepo().SyncCount(tagName,book_id)
-		if (err != nil) {return}
+		if (err != nil) {return newCount,err}
 		newCount = result.Count
 
-		return
+		return newCount,err
 	}
 }

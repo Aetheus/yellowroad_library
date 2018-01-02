@@ -11,10 +11,10 @@ import (
 	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
 	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
 	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
-	"yellowroad_library/database/repo/booktag_repo"
-	"yellowroad_library/database/repo/booktagcount_repo"
-	"yellowroad_library/database/repo/booktag_repo/gorm_booktag_repo"
-	"yellowroad_library/database/repo/booktagcount_repo/gorm_booktagcount_repo"
+	"yellowroad_library/database/repo/btagvote_repo"
+	"yellowroad_library/database/repo/btagvotecount_repo"
+	"yellowroad_library/database/repo/btagvote_repo/gorm_btagvote_repo"
+	"yellowroad_library/database/repo/btagvotecount_repo/gorm_btagvotecount_repo"
 )
 
 type WorkFragment interface {
@@ -27,8 +27,8 @@ type UnitOfWork interface {
 	ChapterRepo() (chapter_repo.ChapterRepository)
 	ChapterPathRepo() (chapterpath_repo.ChapterPathRepository)
 	UserRepo() (user_repo.UserRepository)
-	BookTagRepo() (booktag_repo.BookTagRepository)
-	BookTagCountRepo() (booktagcount_repo.BookTagCountRepository)
+	BookTagRepo() (btagvote_repo.BookTagVoteRepository)
+	BookTagCountRepo() (btagvotecount_repo.BookTagVoteCountRepository)
 
 	AutoCommit([]WorkFragment, func() app_error.AppError) app_error.AppError
 	Commit() (app_error.AppError)
@@ -40,8 +40,8 @@ type AppUnitOfWork struct {
 	chapterRepo *chapter_repo.ChapterRepository
 	chapterPathRepo *chapterpath_repo.ChapterPathRepository
 	userRepo *user_repo.UserRepository
-	bookTagRepo *booktag_repo.BookTagRepository
-	bookTagCountRepo *booktagcount_repo.BookTagCountRepository
+	bookTagRepo *btagvote_repo.BookTagVoteRepository
+	bookTagCountRepo *btagvotecount_repo.BookTagVoteCountRepository
 
 	hasCommitted bool
 	hasCommitErrors bool
@@ -144,16 +144,16 @@ func (this AppUnitOfWork) UserRepo() (user_repo.UserRepository) {
 }
 
 
-func (this AppUnitOfWork) BookTagRepo() (booktag_repo.BookTagRepository){
+func (this AppUnitOfWork) BookTagRepo() (btagvote_repo.BookTagVoteRepository){
 	if this.bookTagRepo == nil {
-		var bookTagRepo booktag_repo.BookTagRepository = gorm_booktag_repo.New(this.transaction)
+		var bookTagRepo btagvote_repo.BookTagVoteRepository = gorm_btagvote_repo.New(this.transaction)
 		this.bookTagRepo = &bookTagRepo
 	}
 	return *this.bookTagRepo
 }
-func (this AppUnitOfWork) BookTagCountRepo() (booktagcount_repo.BookTagCountRepository){
+func (this AppUnitOfWork) BookTagCountRepo() (btagvotecount_repo.BookTagVoteCountRepository){
 	if this.bookTagCountRepo == nil {
-		var bookTagRepo booktagcount_repo.BookTagCountRepository = gorm_booktagcount_repo.New(this.transaction)
+		var bookTagRepo btagvotecount_repo.BookTagVoteCountRepository = gorm_btagvotecount_repo.New(this.transaction)
 		this.bookTagCountRepo = &bookTagRepo
 	}
 	return *this.bookTagCountRepo
