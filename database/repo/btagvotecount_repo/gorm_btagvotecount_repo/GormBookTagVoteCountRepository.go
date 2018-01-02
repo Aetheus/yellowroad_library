@@ -45,15 +45,21 @@ func (this GormBookTagVoteCountRepository) Delete(booktag_count *entities.BookTa
 }
 func (this GormBookTagVoteCountRepository) SyncCount(tag string, book_id int) (count entities.BookTagVoteCount, err app_error.AppError) {
 	//count the rows in BookTags that match the given tag and book_id
+	var result struct {
+		Total int
+	}
 	var total_tags_in_book int
 	queryResult := this.dbConn.
 						Model(&entities.BookTagVote{}).
+						Select("SUM(direction) as total").
 						Where("tag = ? AND book_id = ?", tag, book_id).
-						Count(&total_tags_in_book)
+						Scan(&result)
 	if queryResult.Error != nil {
 		err = app_error.Wrap(queryResult.Error)
 		return count, err
 	}
+	total_tags_in_book = result.Total
+
 
 	//upsert the value into the BookTagVoteCount table
 	queryResult = this.dbConn.
