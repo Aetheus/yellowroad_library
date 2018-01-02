@@ -39,8 +39,8 @@ type Container interface {
 	GetBookRepository() book_repo.BookRepository
 	GetChapterRepository() chapter_repo.ChapterRepository
 	GetChapterPathRepository() chapterpath_repo.ChapterPathRepository
-	GetBookTagRepository() btagvote_repo.BookTagVoteRepository
-	GetBookTagCountRepository() btagvotecount_repo.BookTagVoteCountRepository
+	GetBookTagVoteRepository() btagvote_repo.BookTagVoteRepository
+	GetBookTagVoteCountRepository() btagvotecount_repo.BookTagVoteCountRepository
 	UnitOfWork() uow.UnitOfWork
 
 	//middleware

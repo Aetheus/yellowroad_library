@@ -138,10 +138,10 @@ func (ac AppContainer) GetChapterPathRepository() chapterpath_repo.ChapterPathRe
 	return gorm_chapterpath_repo.New(ac.GetDbConn())
 }
 
-func (ac AppContainer) GetBookTagRepository() btagvote_repo.BookTagVoteRepository {
+func (ac AppContainer) GetBookTagVoteRepository() btagvote_repo.BookTagVoteRepository {
 	return gorm_btagvote_repo.New(ac.GetDbConn())
 }
-func (ac AppContainer) GetBookTagCountRepository() btagvotecount_repo.BookTagVoteCountRepository {
+func (ac AppContainer) GetBookTagVoteCountRepository() btagvotecount_repo.BookTagVoteCountRepository {
 	return gorm_btagvotecount_repo.New(ac.GetDbConn())
 }
 
