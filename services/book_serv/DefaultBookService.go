@@ -82,60 +82,33 @@ func (this DefaultBookService) DeleteBook(currentUser entities.User, book_id int
 	return nil
 }
 
-func (this DefaultBookService) PlusTag(currentUser entities.User, book_id int, tagName string) (newCount int, err app_error.AppError) {
+func (this DefaultBookService) VoteOnTag(currentUser entities.User, book_id int, tagName string, voteValue int) (newCount int, err app_error.AppError){
 	_, err = this.work.BookRepo().FindById(book_id)
 	if (err != nil){
 		//quit early if we can't find the book or something else went wrong
 		return
 	}
 
-	searchFields := entities.BookTagVote{
+	//prevent people from entering values larger than 1 or lower than -1
+	if(voteValue > 0){
+		voteValue = 1
+	} else if (voteValue < 0) {
+		voteValue = -1
+	}
+
+	vote := entities.BookTagVote{
 		BookId : book_id,
 		UserId : currentUser.ID,
 		Tag : tagName,
-	}
-	existingVote, err := this.work.BookTagRepo().FindByFields(searchFields)
-
-	if (len(existingVote) == 0 ){
-		err = this.work.BookTagRepo().Insert(&searchFields)
-		if (err != nil) {return newCount,err}
-
-		result, err := this.work.BookTagCountRepo().SyncCount(tagName,book_id)
-		if (err != nil) {return newCount,err}
-		newCount = result.Count
-
-		return newCount,err
-	} else {
-		//if the user already "plused" this tag for this book, just return at this point
-		return
-	}
-}
-
-func (this DefaultBookService) MinusTag(currentUser entities.User, book_id int, tagName string) (newCount int, err app_error.AppError) {
-	_, err = this.work.BookRepo().FindById(book_id)
-	if (err != nil){
-		//quit early if we can't find the book or something else went wrong
-		return
+		Direction : voteValue,
 	}
 
-	searchFields := entities.BookTagVote{
-		BookId : book_id,
-		UserId : currentUser.ID,
-		Tag : tagName,
-	}
-	existingVote, err := this.work.BookTagRepo().FindByFields(searchFields)
+	err = this.work.BookTagVoteRepo().Upsert(&vote)
+	if (err != nil) {return newCount,err}
 
-	if (len(existingVote) == 0 ){
-		//if the user has no existing vote for this tag, just return at this point
-		return
-	} else {
-		err = this.work.BookTagRepo().DeleteByFields(searchFields)
-		if (err != nil) {return newCount,err}
+	result, err := this.work.BookTagVoteCountRepo().SyncCount(tagName,book_id)
+	if (err != nil) {return newCount,err}
+	newCount = result.Count
 
-		result, err := this.work.BookTagCountRepo().SyncCount(tagName,book_id)
-		if (err != nil) {return newCount,err}
-		newCount = result.Count
-
-		return newCount,err
-	}
+	return
 }
