@@ -13,5 +13,5 @@ type BookTagVoteCount struct {
 
 //for GORM
 func (BookTagVoteCount) TableName() string {
-	return "book_tags_count"
+	return "btags_vote_count"
 }
