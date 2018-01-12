@@ -12,9 +12,8 @@ import (
 )
 
 type UserRouteHandlers struct {
-	container containers.Container
+	Container containers.Container
 }
-
 
 type signUpForm struct {
 	Username string `json:"username"`
@@ -23,8 +22,8 @@ type signUpForm struct {
 }
 func (this UserRouteHandlers) SignUp(c *gin.Context)  {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
 	/***************************/
 
 
@@ -54,8 +53,8 @@ type loginForm struct {
 }
 func (this UserRouteHandlers) Login(c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
 	/***************************/
 
 
@@ -84,8 +83,8 @@ type verifyTokenForm struct {
 }
 func (this UserRouteHandlers) VerifyToken(c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
 	/***************************/
 
 

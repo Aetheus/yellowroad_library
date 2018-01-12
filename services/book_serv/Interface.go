@@ -11,8 +11,7 @@ type BookService interface {
 	UpdateBook(currentUser entities.User, book_id int, form entities.Book_UpdateForm) (entities.Book,app_error.AppError)
 	DeleteBook(currentUser entities.User, book_id int) app_error.AppError
 
-	PlusTag(currentUser entities.User, book_id int, tagName string) (newCount int, err app_error.AppError)
-	MinusTag(currentUser entities.User, book_id int, tagName string) (newCount int, err app_error.AppError)
+	VoteOnTag(currentUser entities.User, book_id int, tagName string, voteValue int) (newCount int, err app_error.AppError)
 
 	SetUnitOfWork(work uow.UnitOfWork)
 }

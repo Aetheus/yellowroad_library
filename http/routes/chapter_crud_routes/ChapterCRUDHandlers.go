@@ -11,14 +11,14 @@ import (
 )
 
 type ChapterCrudHandlers struct {
-	container containers.Container
+	Container containers.Container
 }
 
 func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
-	chapterService  := this.container.ChapterService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
+	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
 	var form entities.Chapter_And_Path_CreationForm
@@ -61,9 +61,9 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 
 func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
-	chapterService  := this.container.ChapterService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
+	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
 	var updatedChapter entities.Chapter
@@ -99,9 +99,9 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 
 func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
-	chapterService  := this.container.ChapterService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
+	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
 	err := work.AutoCommit([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
@@ -132,9 +132,9 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 
 func (this ChapterCrudHandlers) CreatePathAwayFromThisChapter(c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
-	chapterService  := this.container.ChapterService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
+	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
 	var newPath entities.ChapterPath

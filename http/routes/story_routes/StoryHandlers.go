@@ -12,13 +12,13 @@ import (
 )
 
 type StoryHandlers struct {
-	container containers.Container
+	Container containers.Container
 }
 
 func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	storyService := this.container.StoryService(work)
+	work := this.Container.UnitOfWork()
+	storyService := this.Container.StoryService(work)
 	/***************************/
 
 	var newSaveString string

@@ -25,7 +25,8 @@ func Init(container containers.Container) error {
 
 	fmt.Printf("CORS configured to allow the following origins: %s \n", container.GetConfiguration().Web.AllowOrigins)
 
-	registerRoutes(ginEngine,container)
+	ROUTES(ginEngine,container)
+
 	ginEngine.Run(portString)
 
 	return nil

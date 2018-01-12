@@ -12,12 +12,12 @@ import (
 )
 
 type BookCrudHandlers struct {
-	container containers.Container
+	Container containers.Container
 }
 
 func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
+	work := this.Container.UnitOfWork()
 	/***************************/
 
 	var book entities.Book
@@ -48,7 +48,7 @@ func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
 
 func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
+	work := this.Container.UnitOfWork()
 	/***************************/
 
 	var results []entities.Book
@@ -77,9 +77,9 @@ func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
 
 func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
-	bookService := this.container.BookService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
+	bookService := this.Container.BookService(work)
 	/***************************/
 
 	var book entities.Book
@@ -117,9 +117,9 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 
 func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
-	bookService := this.container.BookService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
+	bookService := this.Container.BookService(work)
 	/***************************/
 
 	err := work.AutoCommit([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
@@ -150,9 +150,9 @@ func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 
 func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 	/*Dependencies**************/
-	work := this.container.UnitOfWork()
-	authService := this.container.AuthService(work)
-	bookService := this.container.BookService(work)
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
+	bookService := this.Container.BookService(work)
 	/***************************/
 
 	var book entities.Book
