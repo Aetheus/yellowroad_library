@@ -5,27 +5,15 @@ import (
 
 	"yellowroad_library/config"
 	db "yellowroad_library/database"
-	"yellowroad_library/database/repo/user_repo"
 	"yellowroad_library/http/middleware/auth_middleware"
 	"yellowroad_library/services/auth_serv"
 	"yellowroad_library/services/token_serv"
-	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
 
 	"github.com/jinzhu/gorm"
-	"yellowroad_library/database/repo/book_repo"
-	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
 	"yellowroad_library/services/book_serv"
 	"yellowroad_library/services/story_serv"
-	"yellowroad_library/database/repo/chapter_repo"
-	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
-	"yellowroad_library/database/repo/chapterpath_repo"
-	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/services/chapter_serv"
-	"yellowroad_library/database/repo/btagvote_repo"
-	"yellowroad_library/database/repo/btagvotecount_repo"
-	"yellowroad_library/database/repo/btagvote_repo/gorm_btagvote_repo"
-	"yellowroad_library/database/repo/btagvotecount_repo/gorm_btagvotecount_repo"
 )
 
 type AppContainer struct {
@@ -120,38 +108,12 @@ func (ac AppContainer) StoryService(work uow.UnitOfWork) story_serv.StoryService
 
 /***********************************************************************************************/
 /***********************************************************************************************/
-//Repositories
-
-func (ac AppContainer) GetUserRepository() user_repo.UserRepository {
-	return gorm_user_repo.New(ac.GetDbConn())
-}
-
-func (ac AppContainer) GetBookRepository() book_repo.BookRepository {
-	return gorm_book_repo.New(ac.GetDbConn())
-}
-
-func (ac AppContainer) GetChapterRepository() chapter_repo.ChapterRepository {
-	return gorm_chapter_repo.New(ac.GetDbConn())
-}
-
-func (ac AppContainer) GetChapterPathRepository() chapterpath_repo.ChapterPathRepository {
-	return gorm_chapterpath_repo.New(ac.GetDbConn())
-}
-
-func (ac AppContainer) GetBookTagVoteRepository() btagvote_repo.BookTagVoteRepository {
-	return gorm_btagvote_repo.New(ac.GetDbConn())
-}
-func (ac AppContainer) GetBookTagVoteCountRepository() btagvotecount_repo.BookTagVoteCountRepository {
-	return gorm_btagvotecount_repo.New(ac.GetDbConn())
-}
+// Unit of Work
 
 func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
 	return uow.NewAppUnitOfWork(ac.GetDbConn())
 }
 
-//func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
-//	return uow.NewAppUnitOfWork(ac.GetDbConn())
-//}
 
 /***********************************************************************************************/
 /***********************************************************************************************/
