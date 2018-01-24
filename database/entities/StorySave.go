@@ -6,7 +6,7 @@ import (
 )
 
 type StorySave struct {
-	Token 			string				`json:"token"`
+	Token 			string				`json:"token" gorm:"primary_key"`
 	Save 			database.Jsonb		`json:"save"`
 
 	CreatedBy 		int					`json:"created_by"`
