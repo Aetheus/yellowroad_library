@@ -5,6 +5,7 @@ import (
 	"yellowroad_library/utils/app_error"
 	"net/http"
 	"strconv"
+	"encoding/json"
 )
 
 func GetIntParam(key string,c *gin.Context) (int, app_error.AppError){
@@ -51,6 +52,20 @@ func GetBoolQueryOrDefault(key string, defaultVal bool, c *gin.Context) bool{
 	}
 	return convertedVal
 }
+
+func GetJsonParam(key string,c *gin.Context) json.RawMessage {
+	value := c.Param(key)
+	return json.RawMessage(value)
+}
+
+func GetJsonParamOrDefault(key string, defaultValAsString string, c *gin.Context) json.RawMessage {
+	value := c.Param(key)
+	if (value == "") {
+		value = defaultValAsString
+	}
+	return json.RawMessage(value)
+}
+
 
 func JSON(formPointer interface{}, c *gin.Context) (app_error.AppError){
 	bindErr := c.BindJSON(formPointer)
