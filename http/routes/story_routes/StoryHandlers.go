@@ -7,7 +7,6 @@ import (
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/utils/app_error"
-	"encoding/json"
 	"yellowroad_library/containers"
 )
 
@@ -21,12 +20,7 @@ func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 	storyService := this.Container.StoryService(work)
 	/***************************/
 
-	var newSaveString string
 	var pathResponse story_serv.PathResponse
-	var saveData struct {
-		Raw  json.RawMessage
-		Code string
-	}
 
 	err := work.AutoCommit([]uow.WorkFragment{storyService}, func() app_error.AppError {
 		bookId, err := gin_tools.GetIntParam("book_id",c)
@@ -35,20 +29,13 @@ func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
 		if (err != nil){ return err }
 
-		saveString := c.Query("save")
-
 		chapterPathId := gin_tools.GetIntQueryOrDefault("chapter_path_id", 0,c)	//chapter path can be ignored if we're on freemode
-		isFreeMode := gin_tools.GetBoolQueryOrDefault("freemode",false,c)			//free mode is off by default
+		isFreeMode := false //gin_tools.GetBoolQueryOrDefault("freemode",false,c)			//free mode is off by default
+		currentSave := gin_tools.GetJsonParamOrDefault("save","{}",c)
 
-		pathRequest := story_serv.NewPathRequest(isFreeMode, bookId, chapterId, chapterPathId)
-		pathResponse, err = storyService.NavigateToChapter(pathRequest,saveString)
+		pathRequest := story_serv.NewPathRequest(bookId, chapterId, chapterPathId, currentSave, isFreeMode)
+		pathResponse, err = storyService.NavigateToChapter(pathRequest)
 		if (err != nil) { return err }
-
-		newSaveString , err = pathResponse.NewSave.EncodedSaveString()
-		if (err != nil) { return err }
-
-		saveData.Code = newSaveString
-		saveData.Raw = []byte(pathResponse.NewSave.JsonString)
 
 		return nil
 	})
@@ -58,7 +45,7 @@ func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 		api_reply.Failure(c,err)
 	} else {
 		api_reply.Success(c,gin.H{
-			"save" : saveData, "chapter" : pathResponse.DestinationChapter,
+			"save" : pathResponse.NewSaveData, "chapter" : pathResponse.DestinationChapter,
 		})
 	}
 }
