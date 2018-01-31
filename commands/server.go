@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"log"
 	config "yellowroad_library/config"
 	"yellowroad_library/containers"
 	"yellowroad_library/http/routes"
+	"yellowroad_library/utils/app_error"
 )
 
 
@@ -13,6 +13,6 @@ func ServerCommand(configuration config.Configuration){
 
 	err := routes.Init(container)
 	if (err != nil) {
-		log.Fatal(err)
+		LogErrorAndExit(app_error.Wrap(err))
 	}
 }

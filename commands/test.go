@@ -1,11 +1,11 @@
 package commands
 
 import (
-	"log"
 	"os/exec"
 	"os"
 	"fmt"
 	"bufio"
+	"yellowroad_library/utils/app_error"
 )
 
 func TestCommand(workingDirectory string){
@@ -20,7 +20,7 @@ func TestCommand(workingDirectory string){
 	//get a pipe so that we can scan the output and display it to users
 	cmdReader, err := cmd.StdoutPipe()
 	if (err != nil){
-		log.Fatal(err)
+		LogErrorAndExit(app_error.Wrap(err))
 	}
 
 	//scan and relay the information back to the user
@@ -33,6 +33,6 @@ func TestCommand(workingDirectory string){
 
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		LogErrorAndExit(app_error.Wrap(err))
 	}
 }
