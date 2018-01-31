@@ -3,7 +3,6 @@ package main
 import (
 	config "yellowroad_library/config"
 	"yellowroad_library/containers"
-	"yellowroad_library/database/migrations"
 	"yellowroad_library/http/routes"
 )
 
@@ -17,10 +16,6 @@ func main() {
 	}
 
 	container := containers.NewAppContainer(configuration)
-	err = migrations.Migrate(configuration)
-	if (err != nil){
-		panic(err)
-	}
 
 	routes.Init(container)
 }
