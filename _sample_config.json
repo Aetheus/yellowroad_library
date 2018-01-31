@@ -5,10 +5,15 @@
       "Username" : "YourUsernameHere",
       "Password" : "YourPasswordHere",
       "Database" : "YourDatabaseNameHere",
-      "SSLMode" : "disable"
+      "SSLMode" : "disable",
+      "MigrationsDir" : "/root_of_project/database/migrations"
    },
    "Web" : {
       "Port" : 8080,
       "AllowOrigins" : ["http://domainname.com", "http://localhost:3000"]
+   },
+   "JWT" : {
+      "ExpiryDurationInDays" : 30,
+      "SecretKey" : "ReplaceThisWithASecretKey"
    }
 }

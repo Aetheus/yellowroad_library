@@ -28,6 +28,11 @@ type Configuration struct {
 		Port int
 		AllowOrigins []string
 	}
+
+	JWT struct {
+		ExpiryDurationInDays int
+		SecretKey string
+	}
 }
 
 //TODO : write logic to do validity checking for all the config fields

@@ -8,6 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/config"
+	"fmt"
 )
 
 type DefaultTokenService struct {
@@ -19,11 +20,10 @@ type DefaultTokenService struct {
 var _ TokenService = DefaultTokenService{}
 
 func Default(configuration config.Configuration) DefaultTokenService {
-	//TODO : change secret key to use something from the settings
 	return DefaultTokenService{
-		signingMethod:        jwt.SigningMethodHS256, //default this for now
-		secretKey:            []byte("blubber"),      //default this for now
-		expiryDurationInDays: 365,                    //default this for now
+		signingMethod:        jwt.SigningMethodHS256,
+		secretKey:            []byte(configuration.JWT.SecretKey),
+		expiryDurationInDays: configuration.JWT.ExpiryDurationInDays,
 	}
 }
 
@@ -31,8 +31,16 @@ func (service DefaultTokenService) ValidateTokenString(tokenString string) (Logi
 	var claims LoginClaim
 
 	token, err := jwt.ParseWithClaims(tokenString, &LoginClaim{}, func(token *jwt.Token) (interface{}, error) {
+
+		if token.Method.Alg() != "HS256" {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+
 		return service.secretKey, nil
 	})
+
+
 
 	if err != nil {
 		return claims, app_error.Wrap(err)
