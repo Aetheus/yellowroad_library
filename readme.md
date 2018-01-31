@@ -18,7 +18,11 @@ Repository | All the nitty-gritty **database handling** is handled by Repositori
 
 
 -------
+
+
 #Unit Tests
+
+
 This project uses GoConvey in order to run tests and expose them via a webpage on port 8080. In order to run these tests ... :
 
 If you've `go build`'ed the executable:
@@ -33,7 +37,10 @@ Note:
 The tests internally use the `library_app_root` to define the root of the application. This will very probably change in future, but if you've set this environment variable for whatever reason, be warned of unexpected behaviour.
 
 --------
+
 #Migrations
+
+
 ##How to run them
 If you've `go build`'ed the executable:
     
