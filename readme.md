@@ -19,18 +19,29 @@ Repository | All the nitty-gritty **database handling** is handled by Repositori
 
 -------
 #Unit Tests
-Before running any tests, be it with `go test` or `goconvey`, be sure to export the `library_app_root` environment variable first. 
+This project uses GoConvey in order to run tests and expose them via a webpage on port 8080. In order to run these tests ... :
 
-If you're in the project directory, simply: ``export library_app_root=`pwd` && goconvey``
+If you've `go build`'ed the executable:
+    
+    `$ [executable] test`
+    
+If you want it running quick-and-dirty using `go run`:
+    
+    `$ go run main.go test`
 
-It should be set to the root of this application, where this very MD file is located (e.g: /home/YourUsername/go/src/yellowroad_library )
+Note:
+The tests internally use the `library_app_root` to define the root of the application. This will very probably change in future, but if you've set this environment variable for whatever reason, be warned of unexpected behaviour.
 
 --------
 #Migrations
 ##How to run them
-In order to run migrations, simply execute `go run migrate.go`. The migrate tool will expect a config file to be present (see `_sample_config.json`), and this config file can be specified using the `config_path` environment variable. 
-
-In the absence of such an environment variable, the tool will attempt to find a `config.json` file in the same directory that it is being executed from (i.e: the project's root directory).
+If you've `go build`'ed the executable:
+    
+    `$ [executable] migrate`
+    
+If you want it running quick-and-dirty using `go run`:
+    
+    `$ go run main.go migrate`
 
 
 ##Adding new migrations
