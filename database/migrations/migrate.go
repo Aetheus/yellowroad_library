@@ -9,7 +9,7 @@ import (
 	"errors"
 )
 
-func Migrate(configuration config.Configuration) (error) {
+func Migrate(configuration config.Configuration, migrationsDirectoryPath string) (error) {
 	fmt.Println("Attempting migrations ... ")
 	//"postgres://mattes:secret@localhost:5432/database?sslmode=disable"
 	connString, err := createConnectionString(configuration)
@@ -17,7 +17,7 @@ func Migrate(configuration config.Configuration) (error) {
 		return err
 	}
 
-	migrater, err := migrate.New(configuration.Database.MigrationsDir, connString)
+	migrater, err := migrate.New(migrationsDirectoryPath, connString)
 	if (err != nil ){
 		return err
 	}

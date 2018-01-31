@@ -56,7 +56,7 @@ func main() {
 		Short: "Runs database migrations",
 		Long:  `Runs database migrations in the database/migrations directory. See readme.md for more details`,
 		Run: func(cmd *cobra.Command, args []string) {
-			commands.MigrateCommand(configuration)
+			commands.MigrateCommand(configuration,workingDirectory)
 		},
 	}
 

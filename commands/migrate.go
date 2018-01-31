@@ -6,16 +6,22 @@ import (
 
 	"yellowroad_library/database/migrations"
 	"yellowroad_library/config"
+	"path"
+	"yellowroad_library/utils/app_error"
 )
 
-func MigrateCommand(configuration config.Configuration){
+func MigrateCommand(configuration config.Configuration, workingDirectory string){
 
 	fmt.Println("Migration Tool: Initializing ... ")
 
 	fmt.Println("Attempting to run migrations")
-	appErr := migrations.Migrate(configuration)
-	if appErr != nil {
-		log.Fatal(appErr)
+
+	migrationDirectoryPath := "file:///" + path.Join(workingDirectory,"database","migrations")
+	err := migrations.Migrate(configuration, migrationDirectoryPath)
+	if err != nil {
+		err := app_error.Wrap(err)
+		err.Stacktrace()
+		log.Fatalf("Error:\n\t%s\nStackTrace:\n%s",err.Error(),err.Stacktrace())
 	}
 
 	fmt.Println("Migration process completed. Exiting now ...")

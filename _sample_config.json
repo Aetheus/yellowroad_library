@@ -5,8 +5,7 @@
       "Username" : "YourUsernameHere",
       "Password" : "YourPasswordHere",
       "Database" : "YourDatabaseNameHere",
-      "SSLMode" : "disable",
-      "MigrationsDir" : "/root_of_project/database/migrations"
+      "SSLMode" : "disable"
    },
    "Web" : {
       "Port" : 8080,
