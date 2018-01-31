@@ -56,6 +56,12 @@
   revision = "444abdf920945de5d4a977b572bcc6c674d1e4eb"
 
 [[projects]]
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
   name = "github.com/jinzhu/gorm"
   packages = [".","dialects/postgres"]
   revision = "5174cc5c242a728b435ea2be8a2f7f998e15429b"
@@ -98,12 +104,6 @@
   version = "v0.0.3"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/santhosh-tekuri/jsonschema"
-  packages = [".","formats","loader"]
-  revision = "1d461e6faf3a8748e96af0d198ed535a3b28b35d"
-
-[[projects]]
   name = "github.com/smartystreets/assertions"
   packages = [".","internal/go-render/render","internal/oglematchers"]
   revision = "ff1918e1e5a13a74014644ae7c1e0ba2f791364d"
@@ -114,6 +114,18 @@
   packages = ["convey","convey/gotest","convey/reporting"]
   revision = "9e8dc3f972df6c8fcc0375ef492c24d0bb204857"
   version = "1.6.3"
+
+[[projects]]
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  revision = "7b2c5ac9fc04fc5efafb60700713d4fa609b777b"
+  version = "v0.0.1"
+
+[[projects]]
+  name = "github.com/spf13/pflag"
+  packages = ["."]
+  revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -172,6 +184,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8134a8a9dadc88a40e5ed923a6cf8f8e57cb0a25f93080ea1aa098fc4ab79d81"
+  inputs-digest = "591fee7cb696b9832924ff394ebfc462ca47289e05ddafc9f99c3a837afbbd2c"
   solver-name = "gps-cdcl"
   solver-version = 1
