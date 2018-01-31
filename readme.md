@@ -18,7 +18,7 @@ Repository | All the nitty-gritty **database handling** is handled by Repositori
 
 
 -------
-#Note for testing
+#Unit Tests
 Before running any tests, be it with `go test` or `goconvey`, be sure to export the `library_app_root` environment variable first. 
 
 If you're in the project directory, simply: ``export library_app_root=`pwd` && goconvey``
@@ -26,4 +26,24 @@ If you're in the project directory, simply: ``export library_app_root=`pwd` && g
 It should be set to the root of this application, where this very MD file is located (e.g: /home/YourUsername/go/src/yellowroad_library )
 
 --------
+#Migrations
+##How to run them
+In order to run migrations, simply execute `go run migrate.go`. The migrate tool will expect a config file to be present (see `_sample_config.json`), and this config file can be specified using the `config_path` environment variable. 
+
+In the absence of such an environment variable, the tool will attempt to find a `config.json` file in the same directory that it is being executed from (i.e: the project's root directory).
+
+
+##Adding new migrations
+Database migrations should be stored in the `database/migrations` directory. They should follow this naming convention:
+    
+    `{YYYY}{MM}{DD}{HH}{MM}_{description}.up.sql`
+
+For instance, a migration written on the 2nd of October 2017 at exactly 12:06AM should have a name like the following:
+    
+    `201710020006_add_requirements_and_effect_to_chapter_path.up.sql`
+
+
+--------
+
+
 More details (like a description of what the app actually is) to come ... 
