@@ -12,16 +12,6 @@ func New (httpErrorCode int, contextMessage string, endpointMessage string) AppE
 	}
 }
 
-func unhandled(err error) AppError {
-	enhancedError := merry.Wrap(err).
-		WithHTTPCode(http.StatusInternalServerError).
-		WithUserMessage("An unhandled error occurred")
-
-	return &appError {
-		enhancedError : enhancedError,
-	}
-}
-
 //converts regular errors to appError if they aren't already an instance of it
 //if it is, then it just returns
 // by default, all non merry.Error/appError errors will be converted to appErrors with 500 HTTP code
@@ -36,7 +26,13 @@ func Wrap (err error) AppError {
 	} else if err == nil {
 		return nil
 	} else {
-		return unhandled(err)
+		enhancedError := merry.Wrap(err).
+			WithHTTPCode(http.StatusInternalServerError).
+			WithUserMessage("An unhandled error occurred")
+
+		return &appError {
+			enhancedError : enhancedError,
+		}
 	}
 }
 
