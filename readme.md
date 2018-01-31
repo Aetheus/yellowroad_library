@@ -20,7 +20,7 @@ Repository | All the nitty-gritty **database handling** is handled by Repositori
 -------
 
 
-#Unit Tests
+# Unit Tests
 
 
 This project uses GoConvey in order to run tests and expose them via a webpage on port 8080. In order to run these tests ... :
@@ -38,10 +38,10 @@ The tests internally use the `library_app_root` to define the root of the applic
 
 --------
 
-#Migrations
+# Migrations
 
 
-##How to run them
+## How to run them
 If you've `go build`'ed the executable:
     
     `$ [executable] migrate`
@@ -51,7 +51,7 @@ If you want it running quick-and-dirty using `go run`:
     `$ go run main.go migrate`
 
 
-##Adding new migrations
+## Adding new migrations
 Database migrations should be stored in the `database/migrations` directory. They should follow this naming convention:
     
     `{YYYY}{MM}{DD}{HH}{MM}_{description}.up.sql`
