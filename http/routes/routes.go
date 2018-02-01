@@ -23,7 +23,7 @@ func ROUTES(
 
 	bookCrudHandlers := book_crud_routes.BookCrudHandlers{container}
 	{
-		api.GET("stories/", bookCrudHandlers.FetchBooks)
+		api.GET("stories", bookCrudHandlers.FetchBooks)
 		api.GET("stories/:book_id", bookCrudHandlers.FetchSingleBook)
 		auth_api.POST("stories", bookCrudHandlers.CreateBook)
 		auth_api.PUT("stories/:book_id", bookCrudHandlers.UpdateBook)
