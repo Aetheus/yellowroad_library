@@ -40,7 +40,7 @@ func ROUTES(
 
 	storyHandlers := story_routes.StoryHandlers{container}
 	{
-		api.GET("stories/:book_id/chapter/:chapter_id/game", storyHandlers.NavigateToSingleChapter)
+		api.POST("stories/:book_id/chapter/:chapter_id/game", storyHandlers.NavigateToSingleChapter)
 	}
 
 	userRouteHandlers := user_routes.UserRouteHandlers{container}
