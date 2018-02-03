@@ -32,15 +32,15 @@ func ROUTES(
 
 	chapterCrudHandlers := chapter_crud_routes.ChapterCrudHandlers{container}
 	{
-		auth_api.POST("stories/:book_id/chapter", chapterCrudHandlers.CreateChapter)
-		auth_api.PUT("stories/:book_id/chapter/:chapter_id", chapterCrudHandlers.UpdateChapter)
-		auth_api.DELETE("stories/:book_id/chapter/:chapter_id", chapterCrudHandlers.DeleteChapter)
-		auth_api.POST("stories/:book_id/chapter/:chapter_id/paths", chapterCrudHandlers.CreatePathAwayFromThisChapter)
+		auth_api.POST("stories/:book_id/chapters", chapterCrudHandlers.CreateChapter)
+		auth_api.PUT("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.UpdateChapter)
+		auth_api.DELETE("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.DeleteChapter)
+		auth_api.POST("stories/:book_id/chapters/:chapter_id/paths", chapterCrudHandlers.CreatePathAwayFromThisChapter)
 	}
 
 	storyHandlers := story_routes.StoryHandlers{container}
 	{
-		api.POST("stories/:book_id/chapter/:chapter_id/game", storyHandlers.NavigateToSingleChapter)
+		api.POST("stories/:book_id/chapters/:chapter_id/game", storyHandlers.NavigateToSingleChapter)
 	}
 
 	userRouteHandlers := user_routes.UserRouteHandlers{container}
