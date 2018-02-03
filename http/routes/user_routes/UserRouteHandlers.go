@@ -1,14 +1,13 @@
 package user_routes
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/containers"
+	"yellowroad_library/utils/gin_tools"
 )
 
 type UserRouteHandlers struct {
@@ -31,8 +30,8 @@ func (this UserRouteHandlers) SignUp(c *gin.Context)  {
 	err := work.AutoCommit([]uow.WorkFragment{authService}, func() (errOrNil app_error.AppError) {
 		form := signUpForm{}
 
-		if err := c.BindJSON(&form) ; err != nil {
-			return app_error.Wrap(err).SetHttpCode(http.StatusUnprocessableEntity)
+		if err := gin_tools.BindJSON(&form,c) ; err != nil {
+			return err
 		}
 
 		user, errOrNil = authService.RegisterUser(form.Username,form.Password,form.Email)
@@ -62,8 +61,8 @@ func (this UserRouteHandlers) Login(c *gin.Context) {
 	var loginToken string
 	err := work.AutoCommit([]uow.WorkFragment{authService}, func() (errOrNil app_error.AppError) {
 		form := loginForm{}
-		if formErr := c.BindJSON(&form); formErr != nil {
-			return app_error.Wrap(formErr).SetHttpCode(http.StatusUnprocessableEntity)
+		if formErr := gin_tools.BindJSON(&form,c); formErr != nil {
+			return formErr
 		}
 
 		user, loginToken, errOrNil = authService.LoginUser(form.Username, form.Password)
@@ -91,8 +90,8 @@ func (this UserRouteHandlers) VerifyToken(c *gin.Context) {
 	var user entities.User
 	var form verifyTokenForm
 	err := work.AutoCommit([]uow.WorkFragment{authService}, func () (errOrNil app_error.AppError){
-		if formErr := c.BindJSON(&form); formErr != nil {
-			return app_error.Wrap(formErr).SetHttpCode(http.StatusUnprocessableEntity)
+		if formErr := gin_tools.BindJSON(&form,c); formErr != nil {
+			return formErr
 		}
 
 		user, errOrNil = authService.VerifyToken(form.TokenString)

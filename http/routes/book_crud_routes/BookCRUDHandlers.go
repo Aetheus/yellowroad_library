@@ -93,8 +93,7 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 		}
 
 		//Get form data to create book with
-		if err := c.BindJSON(&form); err != nil {
-			var err app_error.AppError = app_error.Wrap(err)
+		if err := gin_tools.BindJSON(&form,c); err != nil {
 			return err
 		}
 
@@ -164,7 +163,7 @@ func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 			return err
 		}
 
-		err = gin_tools.JSON(&form,c)
+		err = gin_tools.BindJSON(&form,c)
 		if err != nil {
 			return err
 		}

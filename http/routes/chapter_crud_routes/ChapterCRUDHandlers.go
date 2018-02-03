@@ -30,7 +30,7 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 			return err
 		}
 
-		err = gin_tools.JSON(&form,c)
+		err = gin_tools.BindJSON(&form,c)
 		if (err != nil) {
 			return err
 		}
@@ -74,7 +74,7 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 			return err
 		}
 
-		err = gin_tools.JSON(&chapterForm,c)
+		err = gin_tools.BindJSON(&chapterForm,c)
 		if (err != nil) {
 			return err
 		}
@@ -145,7 +145,7 @@ func (this ChapterCrudHandlers) CreatePathAwayFromThisChapter(c *gin.Context) {
 			return err
 		}
 
-		err = gin_tools.JSON(&form,c)
+		err = gin_tools.BindJSON(&form,c)
 		if (err != nil){
 			return err
 		}

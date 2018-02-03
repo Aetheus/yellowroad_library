@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"encoding/json"
+	"fmt"
 )
 
 func GetIntParam(key string,c *gin.Context) (int, app_error.AppError){
@@ -67,10 +68,26 @@ func GetJsonParamOrDefault(key string, defaultValAsString string, c *gin.Context
 }
 
 
-func JSON(formPointer interface{}, c *gin.Context) (app_error.AppError){
-	bindErr := c.BindJSON(formPointer)
-	if (bindErr != nil) {
-		return app_error.Wrap(bindErr).SetHttpCode(http.StatusUnprocessableEntity)
+func BindJSON(formPointer interface{}, c *gin.Context) (app_error.AppError){
+	data, err := c.GetRawData()
+	if err != nil {
+		return app_error.Wrap(err)
+	}
+
+	err = json.Unmarshal(data, formPointer)
+	errMessage := ""
+	errorCode := http.StatusBadRequest;
+
+	if jsonError, ok := err.(*json.UnmarshalTypeError); ok {
+		errMessage = fmt.Sprintf("[%v]: Expected type '%v', got a '%v' instead",jsonError.Field, jsonError.Type.Name(), jsonError.Value,  )
+		errorCode = http.StatusUnprocessableEntity
+	} else {
+		errMessage = "Cannot parse JSON due to an unexpected syntax error"
+		errorCode = http.StatusBadRequest
+	}
+
+	if (err != nil) {
+		return app_error.New(errorCode, err.Error(), errMessage)
 	}
 
 	return nil
