@@ -21,9 +21,8 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
-	var form entities.Chapter_And_Path_CreationForm
+	var form entities.Chapter_CreationForm
 	var newChapter entities.Chapter
-	var chapterPath entities.ChapterPath
 
 	err := work.AutoCommit([]uow.WorkFragment{chapterService},func () app_error.AppError{
 		book_id, err := gin_tools.GetIntParam("book_id",c)
@@ -35,14 +34,14 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 		if (err != nil) {
 			return err
 		}
-		form.ChapterForm.BookId = &book_id //ensures that the bookId is the book id of this route
+		form.BookId = &book_id //ensures that the bookId is the book id of this route
 
 		user, err := authService.GetLoggedInUser(c)
 		if (err != nil){
 			return err
 		}
 
-		newChapter, chapterPath, err = chapterService.CreateChapterAndPath(user,form)
+		newChapter, err = chapterService.CreateChapter(user,form)
 		if (err != nil) {
 			return err
 		}
@@ -54,7 +53,7 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 		api_reply.Failure(c,err)
 	}else {
 		api_reply.Success(c, gin.H{
-			"chapter" : newChapter, "path_to_chapter" : chapterPath,
+			"chapter" : newChapter,
 		})
 	}
 }
