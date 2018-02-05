@@ -38,19 +38,19 @@ func NewAppContainer(config config.Configuration) AppContainer {
 //Non-interface methods
 
 func (ac AppContainer) GetDbConn() *gorm.DB {
-	var dbSettings = ac.configuration.Database
-
-	var dbType = dbSettings.Driver
-	var connectionString = fmt.Sprintf(
-		"host=%s user=%s dbname=%s sslmode=%s password=%s",
-		dbSettings.Host,
-		dbSettings.Username,
-		dbSettings.Database,
-		dbSettings.SSLMode,
-		dbSettings.Password,
-	)
-
 	if ac.dbConn == nil {
+		var dbSettings = ac.configuration.Database
+
+		var dbType = dbSettings.Driver
+		var connectionString = fmt.Sprintf(
+			"host=%s user=%s dbname=%s sslmode=%s password=%s",
+			dbSettings.Host,
+			dbSettings.Username,
+			dbSettings.Database,
+			dbSettings.SSLMode,
+			dbSettings.Password,
+		)
+
 		ac.dbConn = db.Conn(dbType, connectionString)
 	}
 
