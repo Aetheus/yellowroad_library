@@ -8,12 +8,18 @@ import (
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/containers"
+	"encoding/json"
 )
 
 type StoryHandlers struct {
 	Container containers.Container
 }
 
+
+type NavigationForm struct {
+	Save 		json.RawMessage
+	IsFreeMode 	*bool //optional
+}
 func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
@@ -21,8 +27,17 @@ func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 	/***************************/
 
 	var pathResponse story_serv.PathResponse
-
+	var form NavigationForm
 	err := work.AutoCommit([]uow.WorkFragment{storyService}, func() app_error.AppError {
+		err := gin_tools.BindJSON(&form,c);
+		if (err != nil){ return err }
+
+		currentSave := form.Save
+		isFreeMode := false
+		if form.IsFreeMode != nil {
+			isFreeMode = *form.IsFreeMode
+		}
+
 		bookId, err := gin_tools.GetIntParam("book_id",c)
 		if (err != nil){ return err }
 
@@ -30,8 +45,6 @@ func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
 		if (err != nil){ return err }
 
 		chapterPathId := gin_tools.GetIntQueryOrDefault("chapter_path_id", 0,c)	//chapter path can be ignored if we're on freemode
-		isFreeMode := false //gin_tools.GetBoolQueryOrDefault("freemode",false,c)			//free mode is off by default
-		currentSave := gin_tools.GetJsonParamOrDefault("save","{}",c)
 
 		pathRequest := story_serv.NewPathRequest(bookId, chapterId, chapterPathId, currentSave, isFreeMode)
 		pathResponse, err = storyService.NavigateToChapter(pathRequest)

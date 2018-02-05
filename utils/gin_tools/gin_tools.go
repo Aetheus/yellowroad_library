@@ -54,20 +54,6 @@ func GetBoolQueryOrDefault(key string, defaultVal bool, c *gin.Context) bool{
 	return convertedVal
 }
 
-func GetJsonParam(key string,c *gin.Context) json.RawMessage {
-	value := c.Param(key)
-	return json.RawMessage(value)
-}
-
-func GetJsonParamOrDefault(key string, defaultValAsString string, c *gin.Context) json.RawMessage {
-	value := c.Param(key)
-	if (value == "") {
-		value = defaultValAsString
-	}
-	return json.RawMessage(value)
-}
-
-
 func BindJSON(formPointer interface{}, c *gin.Context) (app_error.AppError){
 	data, err := c.GetRawData()
 	if err != nil {
