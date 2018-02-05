@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"yellowroad_library/config"
-	db "yellowroad_library/database"
 	"yellowroad_library/http/middleware/auth_middleware"
 	"yellowroad_library/services/auth_serv"
 	"yellowroad_library/services/token_serv"
@@ -14,6 +13,7 @@ import (
 	"yellowroad_library/services/story_serv"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/services/chapter_serv"
+	"yellowroad_library/utils/app_error"
 )
 
 type AppContainer struct {
@@ -27,35 +27,34 @@ type AppContainer struct {
 //ensure interface implementation
 var _ Container = AppContainer{}
 
-func NewAppContainer(config config.Configuration) AppContainer {
-	return AppContainer{
-		configuration: config,
+func NewAppContainer(config config.Configuration) (container AppContainer, appErr app_error.AppError) {
+	//setup the DB connection
+	var dbSettings = config.Database
+	var dbType = dbSettings.Driver
+	var connectionString = fmt.Sprintf(
+		"host=%s user=%s dbname=%s sslmode=%s password=%s",
+		dbSettings.Host, dbSettings.Username, dbSettings.Database, dbSettings.SSLMode, dbSettings.Password,
+	)
+	dbConn, err := gorm.Open(dbType, connectionString)
+	dbConn.LogMode(true)	//TODO : only do this if debug mode enabled
+	if err != nil {
+		appErr = app_error.Wrap(err)
+		return
 	}
+
+
+	container = AppContainer {
+		configuration: config,
+		dbConn: dbConn,
+	}
+	return
 }
 
 /***********************************************************************************************/
 /***********************************************************************************************/
 //Non-interface methods
+//
 
-func (ac AppContainer) GetDbConn() *gorm.DB {
-	if ac.dbConn == nil {
-		var dbSettings = ac.configuration.Database
-
-		var dbType = dbSettings.Driver
-		var connectionString = fmt.Sprintf(
-			"host=%s user=%s dbname=%s sslmode=%s password=%s",
-			dbSettings.Host,
-			dbSettings.Username,
-			dbSettings.Database,
-			dbSettings.SSLMode,
-			dbSettings.Password,
-		)
-
-		ac.dbConn = db.Conn(dbType, connectionString)
-	}
-
-	return ac.dbConn
-}
 
 /***********************************************************************************************/
 /***********************************************************************************************/
@@ -111,7 +110,7 @@ func (ac AppContainer) StoryService(work uow.UnitOfWork) story_serv.StoryService
 // Unit of Work
 
 func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
-	return uow.NewAppUnitOfWork(ac.GetDbConn())
+	return uow.NewAppUnitOfWork(ac.dbConn)
 }
 
 

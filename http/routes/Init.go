@@ -8,9 +8,10 @@ import (
 	"github.com/gin-contrib/cors"
 
 	"yellowroad_library/containers"
+	"yellowroad_library/utils/app_error"
 )
 
-func Init(container containers.Container) error {
+func Init(container containers.Container) app_error.AppError {
 	var portString = fmt.Sprintf(":%d", container.GetConfiguration().Web.Port)
 	var ginEngine = gin.Default()
 

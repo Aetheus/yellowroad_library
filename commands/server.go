@@ -9,9 +9,12 @@ import (
 
 
 func ServerCommand(configuration config.Configuration){
-	container := containers.NewAppContainer(configuration)
+	container, err := containers.NewAppContainer(configuration)
+	if (err != nil) {
+		LogErrorAndExit(app_error.Wrap(err))
+	}
 
-	err := routes.Init(container)
+	err = routes.Init(container)
 	if (err != nil) {
 		LogErrorAndExit(app_error.Wrap(err))
 	}
