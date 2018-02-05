@@ -14,6 +14,36 @@ type ChapterCrudHandlers struct {
 	Container containers.Container
 }
 
+func (this ChapterCrudHandlers) FetchSingleChapter(c *gin.Context) {
+	/*Dependencies**************/
+	work := this.Container.UnitOfWork()
+	chapterRepo := work.ChapterRepo()
+	/***************************/
+
+	var chapter entities.Chapter
+
+	err := work.AutoCommit([]uow.WorkFragment{}, func() app_error.AppError {
+		book_id, err := gin_tools.GetIntParam("book_id",c)
+		if (err != nil) { return err }
+
+		chapter_id, err := gin_tools.GetIntParam("chapter_id",c)
+		if (err != nil) { return err }
+
+		chapter, err = chapterRepo.FindWithinBook(chapter_id, book_id)
+		if (err != nil) { return err }
+
+		return nil
+	})
+
+	if ( err != nil ){
+		api_reply.Failure(c,err)
+	}else {
+		api_reply.Success(c, gin.H{
+			"chapter" : chapter,
+		})
+	}
+}
+
 func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
