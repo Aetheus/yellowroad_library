@@ -1,4 +1,4 @@
-package story_routes
+package game_routes
 
 import (
 	"github.com/gin-gonic/gin"
@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 )
 
-type StoryHandlers struct {
+type GameHandlers struct {
 	Container containers.Container
 }
 
@@ -20,7 +20,7 @@ type NavigationForm struct {
 	Save 		json.RawMessage
 	IsFreeMode 	*bool //optional
 }
-func (this StoryHandlers) NavigateToSingleChapter(c *gin.Context) {
+func (this GameHandlers) NavigateToSingleChapter(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
 	storyService := this.Container.StoryService(work)

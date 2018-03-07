@@ -5,7 +5,7 @@ import (
 	"yellowroad_library/containers"
 	"yellowroad_library/http/routes/book_crud_routes"
 	"yellowroad_library/http/routes/chapter_crud_routes"
-	"yellowroad_library/http/routes/story_routes"
+	"yellowroad_library/http/routes/game_routes"
 	"yellowroad_library/http/routes/user_routes"
 )
 
@@ -24,8 +24,9 @@ func ROUTES(
 	bookCrudHandlers := book_crud_routes.BookCrudHandlers{container}
 	{
 		public_api.GET("stories", bookCrudHandlers.FetchBooks)
-		public_api.GET("stories/:book_id", bookCrudHandlers.FetchSingleBook)
 		auth_api.POST("stories", bookCrudHandlers.CreateBook)
+
+		public_api.GET("stories/:book_id", bookCrudHandlers.FetchSingleBook)
 		auth_api.PUT("stories/:book_id", bookCrudHandlers.UpdateBook)
 		auth_api.DELETE("stories/:book_id", bookCrudHandlers.DeleteBook)
 	}
@@ -33,15 +34,17 @@ func ROUTES(
 	chapterCrudHandlers := chapter_crud_routes.ChapterCrudHandlers{container}
 	{
 		auth_api.POST("stories/:book_id/chapters", chapterCrudHandlers.CreateChapter)
+
 		public_api.GET("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.FetchSingleChapter)
 		auth_api.PUT("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.UpdateChapter)
 		auth_api.DELETE("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.DeleteChapter)
+
 		auth_api.POST("stories/:book_id/chapters/:chapter_id/paths", chapterCrudHandlers.CreatePathAwayFromThisChapter)
 	}
 
-	storyHandlers := story_routes.StoryHandlers{container}
+	gameHandlers := game_routes.GameHandlers{container}
 	{
-		public_api.POST("stories/:book_id/chapters/:chapter_id/game", storyHandlers.NavigateToSingleChapter)
+		public_api.POST("stories/:book_id/chapters/:chapter_id/game", gameHandlers.NavigateToSingleChapter)
 	}
 
 	userRouteHandlers := user_routes.UserRouteHandlers{container}
