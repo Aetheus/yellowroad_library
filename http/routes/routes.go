@@ -49,8 +49,9 @@ func ROUTES(
 
 	userRouteHandlers := user_routes.UserRouteHandlers{container}
 	{
-		public_api.POST("users/login", userRouteHandlers.Login)
-		public_api.POST("users/register", userRouteHandlers.SignUp)
-		public_api.POST("users/verify", userRouteHandlers.VerifyToken)
+		public_api.POST("users", userRouteHandlers.SignUp)
+
+		public_api.POST("tokens", userRouteHandlers.Login)
+		public_api.POST("tokens/verify", userRouteHandlers.VerifyToken)
 	}
 }
