@@ -24,6 +24,8 @@ type Chapter struct {
 	CreatorId int				`json:"creator_id"`
 	Creator	  *User				`json:"creator,omitempty" gorm:"ForeignKey:CreatorId"`
 
+	PathsAway []ChapterPath		`json:"paths_away" gorm:"foreignkey:FromChapterId;association_foreignkey:ID"`
+
 	//housekeeping attributes
 	ID        int				`json:"id"`
 	CreatedAt time.Time			`json:"created_at"`
@@ -31,9 +33,16 @@ type Chapter struct {
 	DeletedAt null.Time			`json:"deleted_at"`
 }
 
+//TODO: use these (See how Book entity and repo are)
+const CHAPTER_BOOK = "Book"
+const CHAPTER_CREATOR = "Creator"
+const CHAPTER_PATHS_AWAY = "PathsAway"
+
+//TODO: remove these
 var ChapterAssociations = []string{
 	"Book",
 	"Creator",
+	"PathsAway",
 }
 
 //fields that we allow for updating
