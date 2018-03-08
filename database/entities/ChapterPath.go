@@ -24,9 +24,8 @@ type ChapterPath struct {
 	DeletedAt pq.NullTime		`json:"deleted_at"`
 }
 
-var ChapterPathAssociations = []string{
-	"ToChapter", "FromChapter",
-}
+const ASSOC_CHAPTERPATH_TOCHAPTER = "ToChapter"
+const ASSOC_CHAPTERPATH_FROMCHAPTER = "FromChapter"
 
 //for GORM
 func (ChapterPath) TableName () string {

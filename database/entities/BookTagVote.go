@@ -21,5 +21,5 @@ func (BookTagVote) TableName() string {
 }
 
 //for GORM; associations
-const BOOK_TAG_BOOK = "Book"
-const BOOK_TAG_USER = "User"
+const ASSOC_BOOK_TAG_BOOK = "Book"
+const ASSOC_BOOK_TAG_USER = "User"

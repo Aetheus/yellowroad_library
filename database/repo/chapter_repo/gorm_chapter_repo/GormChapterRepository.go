@@ -21,19 +21,17 @@ func New(dbConn *gorm.DB) GormChapterRepository{
 	}
 }
 
-func preloadAssociations(dbConn *gorm.DB) *gorm.DB {
-	for i := 0 ; i < len(entities.ChapterAssociations); i++ {
-		dbConn = dbConn.Preload(entities.ChapterAssociations[i])
-	}
-	return dbConn
-}
 
 func (this GormChapterRepository) FindById(id int) (entities.Chapter, app_error.AppError) {
 	var chapter entities.Chapter
 
-	queryResult := preloadAssociations(this.dbConn).
-						Where("id = ?",id).
-						First(&chapter)
+	queryResult := this.dbConn.
+					Preload(entities.ASSOC_CHAPTER_BOOK).
+					Preload(entities.ASSOC_CHAPTER_CREATOR).
+					Preload(entities.ASSOC_CHAPTER_PATHS_AWAY).
+					Where("id = ?",id).
+					First(&chapter)
+
 	if queryResult.Error != nil {
 		var returnedErr app_error.AppError
 		if queryResult.RecordNotFound() {
@@ -52,9 +50,13 @@ func (this GormChapterRepository) FindById(id int) (entities.Chapter, app_error.
 func (this GormChapterRepository) FindWithinBook(chapter_id int, book_id int) (entities.Chapter, app_error.AppError){
 	var chapter entities.Chapter
 
-	queryResult := preloadAssociations(this.dbConn).
-						Where("id = ? AND book_id = ?",chapter_id, book_id).
-						First(&chapter)
+	queryResult := this.dbConn.
+					Preload(entities.ASSOC_CHAPTER_BOOK).
+					Preload(entities.ASSOC_CHAPTER_CREATOR).
+					Preload(entities.ASSOC_CHAPTER_PATHS_AWAY).
+					Where("id = ? AND book_id = ?",chapter_id, book_id).
+					First(&chapter)
+
 	if queryResult.Error != nil {
 		var returnedErr app_error.AppError
 		if queryResult.RecordNotFound() {

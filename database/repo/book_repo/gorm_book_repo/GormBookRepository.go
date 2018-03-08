@@ -30,10 +30,10 @@ func (repo GormBookRepository) FindById(id int) (entities.Book, app_error.AppErr
 	queryResult := dbConn.
 						Select("books.*, COUNT(chapters_c.id) as chapter_count").
 						Joins("LEFT JOIN chapters as chapters_c on chapters_c.book_id = books.id").
-						Preload(entities.BOOK_CREATOR,func(db *gorm.DB) *gorm.DB {
+						Preload(entities.ASSOC_BOOK_CREATOR,func(db *gorm.DB) *gorm.DB {
 							return db.Select("username, id")
 						}).
-						Preload(entities.BOOK_FIRST_CHAPTER).
+						Preload(entities.ASSOC_BOOK_FIRST_CHAPTER).
 						Where("books.id = ?", id).
 						Group("books.id").
 						First(&book)
@@ -64,7 +64,7 @@ func (repo GormBookRepository) Paginate(startpage int, perpage int, options book
 	queryResult := repo.dbConn.
 						Select("books.*, COUNT(chapters_c.id) as chapter_count").
 						Joins("LEFT JOIN chapters as chapters_c on chapters_c.book_id = books.id").
-						Preload(entities.BOOK_CREATOR,func(db *gorm.DB) *gorm.DB {
+						Preload(entities.ASSOC_BOOK_CREATOR,func(db *gorm.DB) *gorm.DB {
 							return db.Select("username, id")
 						}).
 						Offset( (startpage - 1) * perpage).

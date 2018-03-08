@@ -27,9 +27,9 @@ type Book struct {
 }
 
 //Constants for Gorm Association queries
-const BOOK_FIRST_CHAPTER = "FirstChapter"
-const BOOK_CREATOR = "Creator"
-const BOOK_ASSOC_CHAPTERS = "Chapters"
+const ASSOC_BOOK_FIRST_CHAPTER = "FirstChapter"
+const ASSOC_BOOK_CREATOR = "Creator"
+const ASSOC_BOOK_ASSOC_CHAPTERS = "Chapters"
 
 
 type Book_CreationForm struct {

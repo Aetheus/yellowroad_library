@@ -33,17 +33,10 @@ type Chapter struct {
 	DeletedAt null.Time			`json:"deleted_at"`
 }
 
-//TODO: use these (See how Book entity and repo are)
-const CHAPTER_BOOK = "Book"
-const CHAPTER_CREATOR = "Creator"
-const CHAPTER_PATHS_AWAY = "PathsAway"
+const ASSOC_CHAPTER_BOOK = "Book"
+const ASSOC_CHAPTER_CREATOR = "Creator"
+const ASSOC_CHAPTER_PATHS_AWAY = "PathsAway"
 
-//TODO: remove these
-var ChapterAssociations = []string{
-	"Book",
-	"Creator",
-	"PathsAway",
-}
 
 //fields that we allow for updating
 type Chapter_UpdateForm struct {
