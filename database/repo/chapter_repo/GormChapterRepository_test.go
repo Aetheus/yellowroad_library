@@ -1,4 +1,4 @@
-package gorm_chapter_repo
+package chapter_repo
 
 import (
 	"testing"
@@ -6,10 +6,8 @@ import (
 	"yellowroad_library/test_utils"
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/entities"
-	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/database/repo/user_repo"
-	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
 )
 
 
@@ -18,9 +16,9 @@ func TestGormChapterRepository (t *testing.T) {
 	Convey("Given a GormChapterRepository, BookRepository and UserRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		transaction := gormDB.Begin()
 
-		var chapterRepo = New(transaction)
-		var bookRepo book_repo.BookRepository = gorm_book_repo.New(transaction)
-		var userRepo user_repo.UserRepository = gorm_user_repo.New(transaction)
+		var chapterRepo = NewDefault(transaction)
+		var bookRepo book_repo.BookRepository = book_repo.NewDefault(transaction)
+		var userRepo user_repo.UserRepository = user_repo.NewDefault(transaction)
 
 		Convey("Given a valid book", func (){
 			//create a user and book to test this
@@ -67,7 +65,7 @@ func TestGormChapterRepository (t *testing.T) {
 
 				Convey("Updating the new chapter with valid fields should work", func () {
 					oldUpdatedAt := newChapter.UpdatedAt
-					newTitle := "New Beginnings"
+					newTitle := "NewDefault Beginnings"
 					newChapter.Title = newTitle
 					err := chapterRepo.Update(&newChapter)
 					So(err, ShouldBeNil)

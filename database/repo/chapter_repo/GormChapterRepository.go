@@ -1,4 +1,4 @@
-package gorm_chapter_repo
+package chapter_repo
 
 import (
 	"yellowroad_library/utils/app_error"
@@ -6,16 +6,15 @@ import (
 	"github.com/jinzhu/gorm"
 	"net/http"
 
-	"yellowroad_library/database/repo/chapter_repo"
 	"errors"
 )
 
 type GormChapterRepository struct {
 	dbConn *gorm.DB
 }
-var _ chapter_repo.ChapterRepository = GormChapterRepository{}
 
-func New(dbConn *gorm.DB) GormChapterRepository{
+var _ ChapterRepository = GormChapterRepository{} //ensure interface implementation
+func NewDefault(dbConn *gorm.DB) GormChapterRepository{
 	return GormChapterRepository{
 		dbConn : dbConn,
 	}

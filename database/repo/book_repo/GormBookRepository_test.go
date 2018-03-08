@@ -1,4 +1,4 @@
-package gorm_book_repo
+package book_repo
 
 import "testing"
 import (
@@ -7,17 +7,15 @@ import (
 	"yellowroad_library/test_utils"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/database/repo/user_repo"
-	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
 	"strconv"
-	"yellowroad_library/database/repo/book_repo"
 )
 
 func TestGormBookRepository(t *testing.T) {
 	// Only pass t into top-level Convey calls
 	Convey("Given a GormBookRepository and UserRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		var transaction = gormDB.Begin()
-		var bookRepo = New(transaction);
-		var userRepo user_repo.UserRepository = gorm_user_repo.New(transaction)
+		var bookRepo = NewDefault(transaction);
+		var userRepo user_repo.UserRepository = user_repo.NewDefault(transaction)
 
 
 		Convey("Given a valid user", func (){
@@ -78,14 +76,14 @@ func TestGormBookRepository(t *testing.T) {
 				}
 
 				Convey("If perpage = 5, only 5 Books should be returned", func (){
-					results,err := bookRepo.Paginate(1,5,book_repo.SearchOptions{})
+					results,err := bookRepo.Paginate(1,5,SearchOptions{})
 					So(err,ShouldBeNil)
 					So(len(results), ShouldEqual, 5)
 				})
 
 				Convey("There should be at least 3 pages of results (when perpage = 10)", func (){
 					for i := 0 ; i < 3; i++ {
-						results,err := bookRepo.Paginate(1,10,book_repo.SearchOptions{})
+						results,err := bookRepo.Paginate(1,10,SearchOptions{})
 						So(err,ShouldBeNil)
 						So(len(results), ShouldEqual, 10)
 					}

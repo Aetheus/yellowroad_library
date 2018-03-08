@@ -1,22 +1,19 @@
-package gorm_book_repo
+package book_repo
 
 import (
 	"yellowroad_library/database/entities"
-
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/utils/app_error"
 	"net/http"
-	"yellowroad_library/database/repo/book_repo"
 	"errors"
 )
 
 type GormBookRepository struct {
 	dbConn *gorm.DB
 }
-//ensure interface implementation
-var _ book_repo.BookRepository = GormBookRepository{}
 
-func New(dbConn *gorm.DB) GormBookRepository {
+var _ BookRepository = GormBookRepository{} //ensure interface implementation
+func NewDefault(dbConn *gorm.DB) GormBookRepository {
 	return GormBookRepository{
 		dbConn: dbConn,
 	}
@@ -53,7 +50,7 @@ func (repo GormBookRepository) FindById(id int) (entities.Book, app_error.AppErr
 	return book, nil
 }
 
-func (repo GormBookRepository) Paginate(startpage int, perpage int, options book_repo.SearchOptions) ([]entities.Book, app_error.AppError) {
+func (repo GormBookRepository) Paginate(startpage int, perpage int, options SearchOptions) ([]entities.Book, app_error.AppError) {
 	results := []entities.Book{}
 
 	if startpage < 1 {

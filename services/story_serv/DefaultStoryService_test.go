@@ -5,7 +5,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	//"yellowroad_library/database/entities"
 	//"yellowroad_library/database/repo/user_repo"
-	//"yellowroad_library/database/repo/user_repo/gorm_user_repo"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/database/entities"
 	"encoding/json"

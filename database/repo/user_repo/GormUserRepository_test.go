@@ -1,4 +1,4 @@
-package gorm_user_repo
+package user_repo
 
 import (
 	"testing"
@@ -8,11 +8,10 @@ import (
 	"yellowroad_library/database/entities"
 )
 
-
 func TestGormUserRepository(t *testing.T){
 	Convey("Given a User Repository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		transaction := gormDB.Begin()
-		userRepo := New(transaction)
+		userRepo := NewDefault(transaction)
 
 		Convey("Inserting a new user should work", func (){
 			seneca := entities.User {

@@ -1,15 +1,14 @@
-package gorm_btagvotecount_repo
+package btagvotecount_repo
 
 import "testing"
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/test_utils"
-	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
+	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/database/repo/user_repo"
-	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
 	"yellowroad_library/database/entities"
-	"yellowroad_library/database/repo/btagvote_repo/gorm_btagvote_repo"
+	"yellowroad_library/database/repo/btagvote_repo"
 	"strconv"
 )
 
@@ -17,10 +16,10 @@ func TestGormBookTagCountRepository(t *testing.T) {
 	// Only pass t into top-level Convey calls
 	Convey("Given a GormBookRepository,UserRepository, GormBookTagVoteRepository and GormBookTagVoteCountRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		var transaction = gormDB.Begin()
-		var bookRepo = gorm_book_repo.New(transaction);
-		var userRepo user_repo.UserRepository = gorm_user_repo.New(transaction)
-		var bookTagRepo = gorm_btagvote_repo.New(transaction)
-		var bookTagCountRepo = New(transaction)
+		var bookRepo = book_repo.NewDefault(transaction);
+		var userRepo user_repo.UserRepository = user_repo.NewDefault(transaction)
+		var bookTagRepo = btagvote_repo.NewDefault(transaction)
+		var bookTagCountRepo = NewDefault(transaction)
 
 		Convey("Given a valid user", func (){
 			authorUser := entities.User{

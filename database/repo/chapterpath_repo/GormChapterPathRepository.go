@@ -1,7 +1,6 @@
-package gorm_chapterpath_repo
+package chapterpath_repo
 
 import (
-	"yellowroad_library/database/repo/chapterpath_repo"
 	"yellowroad_library/utils/app_error"
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/entities"
@@ -12,9 +11,9 @@ import (
 type GormChapterPathRepository struct {
 	db *gorm.DB
 }
-var _ chapterpath_repo.ChapterPathRepository = GormChapterPathRepository{}
 
-func New(db *gorm.DB) GormChapterPathRepository{
+var _ ChapterPathRepository = GormChapterPathRepository{} //ensure interface implementation
+func NewDefault(db *gorm.DB) GormChapterPathRepository{
 	return GormChapterPathRepository{
 		db : db,
 	}

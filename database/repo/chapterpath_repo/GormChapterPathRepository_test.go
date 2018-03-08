@@ -1,17 +1,14 @@
-package gorm_chapterpath_repo
+package chapterpath_repo
 
 import (
 	"yellowroad_library/test_utils"
 	"yellowroad_library/database/repo/book_repo"
-	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
 	"yellowroad_library/database/repo/user_repo"
-	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
 	"yellowroad_library/database/entities"
 	"testing"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/repo/chapter_repo"
-	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
 	"yellowroad_library/database"
 	"encoding/json"
 	"fmt"
@@ -22,10 +19,10 @@ func TestGormChapterPathRepository (t *testing.T) {
 	Convey("Given a GormChapterPathRepository, ChapterRepository, BookRepository and UserRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		transaction := gormDB.Begin()
 
-		var chapterPathRepo = New(transaction)
-		var chapterRepo chapter_repo.ChapterRepository = gorm_chapter_repo.New(transaction)
-		var bookRepo book_repo.BookRepository = gorm_book_repo.New(transaction)
-		var userRepo user_repo.UserRepository = gorm_user_repo.New(transaction)
+		var chapterPathRepo = NewDefault(transaction)
+		var chapterRepo chapter_repo.ChapterRepository = chapter_repo.NewDefault(transaction)
+		var bookRepo book_repo.BookRepository = book_repo.NewDefault(transaction)
+		var userRepo user_repo.UserRepository = user_repo.NewDefault(transaction)
 
 		Convey("Given a valid user, book and chapters", func (){
 			//create a user and book to test this

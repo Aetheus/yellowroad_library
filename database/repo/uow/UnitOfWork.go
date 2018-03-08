@@ -7,14 +7,8 @@ import (
 	"yellowroad_library/database/repo/user_repo"
 	"yellowroad_library/utils/app_error"
 	"github.com/jinzhu/gorm"
-	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
-	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
-	"yellowroad_library/database/repo/chapterpath_repo/gorm_chapterpath_repo"
-	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
 	"yellowroad_library/database/repo/btagvote_repo"
 	"yellowroad_library/database/repo/btagvotecount_repo"
-	"yellowroad_library/database/repo/btagvote_repo/gorm_btagvote_repo"
-	"yellowroad_library/database/repo/btagvotecount_repo/gorm_btagvotecount_repo"
 )
 
 type WorkFragment interface {
@@ -111,7 +105,7 @@ func (this AppUnitOfWork) Rollback() (app_error.AppError) {
 
 func (this AppUnitOfWork) BookRepo() (book_repo.BookRepository) {
 	if this.bookRepo == nil {
-		var bookRepo book_repo.BookRepository = gorm_book_repo.New(this.transaction)
+		var bookRepo book_repo.BookRepository = book_repo.NewDefault(this.transaction)
 		this.bookRepo = &bookRepo
 	}
 	return *this.bookRepo
@@ -119,7 +113,7 @@ func (this AppUnitOfWork) BookRepo() (book_repo.BookRepository) {
 
 func (this AppUnitOfWork) ChapterRepo() (chapter_repo.ChapterRepository) {
 	if this.chapterRepo == nil {
-		var chapterRepo chapter_repo.ChapterRepository = gorm_chapter_repo.New(this.transaction)
+		var chapterRepo chapter_repo.ChapterRepository = chapter_repo.NewDefault(this.transaction)
 		this.chapterRepo = &chapterRepo
 	}
 	return *this.chapterRepo
@@ -128,7 +122,7 @@ func (this AppUnitOfWork) ChapterRepo() (chapter_repo.ChapterRepository) {
 func (this AppUnitOfWork) ChapterPathRepo() (chapterpath_repo.ChapterPathRepository) {
 	if this.chapterPathRepo == nil {
 		var chapterPathRepo chapterpath_repo.ChapterPathRepository =
-			gorm_chapterpath_repo.New(this.transaction)
+			chapterpath_repo.NewDefault(this.transaction)
 		this.chapterPathRepo = &chapterPathRepo
 	}
 	return *this.chapterPathRepo
@@ -136,8 +130,7 @@ func (this AppUnitOfWork) ChapterPathRepo() (chapterpath_repo.ChapterPathReposit
 
 func (this AppUnitOfWork) UserRepo() (user_repo.UserRepository) {
 	if this.userRepo == nil {
-		var userRepo user_repo.UserRepository =
-			gorm_user_repo.New(this.transaction)
+		var userRepo user_repo.UserRepository = user_repo.NewDefault(this.transaction)
 		this.userRepo = &userRepo
 	}
 	return *this.userRepo
@@ -146,14 +139,14 @@ func (this AppUnitOfWork) UserRepo() (user_repo.UserRepository) {
 
 func (this AppUnitOfWork) BookTagVoteRepo() (btagvote_repo.BookTagVoteRepository){
 	if this.bookTagRepo == nil {
-		var bookTagRepo btagvote_repo.BookTagVoteRepository = gorm_btagvote_repo.New(this.transaction)
+		var bookTagRepo btagvote_repo.BookTagVoteRepository = btagvote_repo.NewDefault(this.transaction)
 		this.bookTagRepo = &bookTagRepo
 	}
 	return *this.bookTagRepo
 }
 func (this AppUnitOfWork) BookTagVoteCountRepo() (btagvotecount_repo.BookTagVoteCountRepository){
 	if this.bookTagCountRepo == nil {
-		var bookTagRepo btagvotecount_repo.BookTagVoteCountRepository = gorm_btagvotecount_repo.New(this.transaction)
+		var bookTagRepo btagvotecount_repo.BookTagVoteCountRepository = btagvotecount_repo.NewDefault(this.transaction)
 		this.bookTagCountRepo = &bookTagRepo
 	}
 	return *this.bookTagCountRepo

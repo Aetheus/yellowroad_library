@@ -1,16 +1,16 @@
-package gorm_storysave_repo
+package storysave_repo
 
 import "testing"
 import (
 	. "github.com/smartystreets/goconvey/convey"
 	"yellowroad_library/test_utils"
 	"github.com/jinzhu/gorm"
-	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
-	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
-	"yellowroad_library/database/repo/chapter_repo/gorm_chapter_repo"
+	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/database"
 	"encoding/json"
+	"yellowroad_library/database/repo/chapter_repo"
+	"yellowroad_library/database/repo/user_repo"
 )
 
 func TestGormStorySaveRepository(t *testing.T){
@@ -18,10 +18,10 @@ func TestGormStorySaveRepository(t *testing.T){
 	Convey("Given a GormBookRepository, UserRepository and GormStorySaveRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		transaction := gormDB.Begin()
 
-		storySaveRepo := New(transaction)
-		userRepo := gorm_user_repo.New(transaction)
-		bookRepo := gorm_book_repo.New(transaction)
-		chapterRepo := gorm_chapter_repo.New(transaction)
+		storySaveRepo := NewDefault(transaction)
+		userRepo := user_repo.NewDefault(transaction)
+		bookRepo := book_repo.NewDefault(transaction)
+		chapterRepo := chapter_repo.NewDefault(transaction)
 
 		Convey("Creating test user, book and chapter", func (){
 			user := entities.User{

@@ -1,7 +1,6 @@
-package gorm_btagvote_repo
+package btagvote_repo
 
 import (
-	"yellowroad_library/database/repo/btagvote_repo"
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/app_error"
@@ -11,9 +10,9 @@ import (
 type GormBookTagVoteRepository struct {
 	dbConn *gorm.DB
 }
-var _ btagvote_repo.BookTagVoteRepository = GormBookTagVoteRepository{}
 
-func New(dbConn *gorm.DB) GormBookTagVoteRepository {
+var _ BookTagVoteRepository = GormBookTagVoteRepository{} //ensure interface implementation
+func NewDefault(dbConn *gorm.DB) GormBookTagVoteRepository {
 	return GormBookTagVoteRepository{
 		dbConn : dbConn,
 	}

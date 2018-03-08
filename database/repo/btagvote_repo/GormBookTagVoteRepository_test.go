@@ -1,4 +1,4 @@
-package gorm_btagvote_repo
+package btagvote_repo
 
 import "testing"
 import (
@@ -7,17 +7,16 @@ import (
 	"yellowroad_library/test_utils"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/database/repo/user_repo"
-	"yellowroad_library/database/repo/user_repo/gorm_user_repo"
-	"yellowroad_library/database/repo/book_repo/gorm_book_repo"
+	"yellowroad_library/database/repo/book_repo"
 )
 
 func TestGormBookTagRepository(t *testing.T) {
 	// Only pass t into top-level Convey calls
 	Convey("Given a GormBookRepository,UserRepository and GormBookTagRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		var transaction = gormDB.Begin()
-		var bookRepo = gorm_book_repo.New(transaction);
-		var userRepo user_repo.UserRepository = gorm_user_repo.New(transaction)
-		var bookTagRepo = New(transaction)
+		var bookRepo = book_repo.NewDefault(transaction);
+		var userRepo user_repo.UserRepository = user_repo.NewDefault(transaction)
+		var bookTagRepo = NewDefault(transaction)
 
 		Convey("Given several valid users", func (){
 			authorUser := entities.User{

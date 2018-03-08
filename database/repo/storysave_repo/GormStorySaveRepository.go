@@ -1,8 +1,7 @@
-package gorm_storysave_repo
+package storysave_repo
 
 import (
 	"github.com/jinzhu/gorm"
-	"yellowroad_library/database/repo/storysave_repo"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/app_error"
 	"net/http"
@@ -11,9 +10,9 @@ import (
 type GormStorySaveRepository struct {
 	db *gorm.DB
 }
-var _ storysave_repo.StorySaveRepository = GormStorySaveRepository{}
 
-func New(db *gorm.DB) GormStorySaveRepository{
+var _ StorySaveRepository = GormStorySaveRepository{} //ensure interface implementation
+func NewDefault(db *gorm.DB) GormStorySaveRepository{
 	return GormStorySaveRepository{db}
 }
 
