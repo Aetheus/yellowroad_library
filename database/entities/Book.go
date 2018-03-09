@@ -11,13 +11,13 @@ type Book struct {
 	Permissions    string			`json:"permissions"`
 
 	FirstChapterId null.Int 		`json:"first_chapter_id" sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
-	FirstChapter   *Chapter 		`json:"first_chapter,omitempty" gorm:"ForeignKey:FirstChapterId"`
+	FirstChapter   *Chapter 		`json:"first_chapter,omitempty" gorm:"foreignkey:FirstChapterId"`
 
 	//Chapters 		[]Chapter		`gorm:"ForeignKey:BookId;AssociationForeignKey:ID"`
 	ChapterCount 	int				`json:"chapter_count" sql:"-"`
 
 	CreatorId      int				`json:"creator_id"`
-	Creator		   *User			`json:"creator,omitempty" gorm:"ForeignKey:CreatorId"`
+	Creator		   *User			`json:"creator,omitempty" gorm:"foreignkey:CreatorId"`
 
 	//housekeeping attributes
 	ID        int					`json:"id"`

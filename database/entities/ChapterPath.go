@@ -8,10 +8,10 @@ import (
 
 type ChapterPath struct {
 	FromChapterId int 				`json:"from_chapter_id"`
-	FromChapter Chapter 			`json:"from_chapter,omitempty" gorm:"ForeignKey:FromChapterId"`
+	FromChapter Chapter 			`json:"from_chapter,omitempty" gorm:"foreignkey:FromChapterId"`
 
 	ToChapterId int 				`json:"to_chapter_id"`
-	ToChapter Chapter 				`json:"to_chapter,omitempty" gorm:"ForeignKey:ToChapterId"`
+	ToChapter Chapter 				`json:"to_chapter,omitempty" gorm:"foreignkey:ToChapterId"`
 
 	Effects database.Jsonb			`json:"effects"`
 	Requirements database.Jsonb		`json:"requirements"`

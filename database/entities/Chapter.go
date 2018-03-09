@@ -19,10 +19,10 @@ type Chapter struct {
 	Body      string			`json:"body"`
 
 	BookId    int				`json:"book_id"`
-	Book	  *Book 			`json:"book,omitempty" gorm:"ForeignKey:BookId"`
+	Book	  *Book 			`json:"book,omitempty" gorm:"foreignkey:BookId"`
 
 	CreatorId int				`json:"creator_id"`
-	Creator	  *User				`json:"creator,omitempty" gorm:"ForeignKey:CreatorId"`
+	Creator	  *User				`json:"creator,omitempty" gorm:"foreignkey:CreatorId"`
 
 	PathsAway []ChapterPath		`json:"paths_away" gorm:"foreignkey:FromChapterId;association_foreignkey:ID"`
 

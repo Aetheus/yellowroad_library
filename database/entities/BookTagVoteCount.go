@@ -5,7 +5,7 @@ type BookTagVoteCount struct {
 	Count			int				`json:"count"`
 
 	BookId			int				`json:"book_id"`
-	Book			*Book			`json:"book,omitempty" gorm:"ForeignKey:BookId"`
+	Book			*Book			`json:"book,omitempty" gorm:"foreignkey:BookId"`
 
 	//housekeeping attributes
 	ID        		int				`json:"id"`

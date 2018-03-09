@@ -10,13 +10,13 @@ type StorySave struct {
 	Save 			database.Jsonb		`json:"save"`
 
 	CreatedBy 		int					`json:"created_by"`
-	Creator			User				`json:"creator,omitempty" gorm:"ForeignKey:CreatedBy"`
+	Creator			User				`json:"creator,omitempty" gorm:"foreignkey:CreatedBy"`
 
 	BookId    		int					`json:"book_id"`
-	Book			Book				`json:"book,omitempty" gorm:"ForeignKey:BookId"`
+	Book			Book				`json:"book,omitempty" gorm:"foreignkey:BookId"`
 
 	ChapterId 		int					`json:"chapter_id"`
-	Chapter			Chapter 			`json:"chapter,omitempty" gorm:"ForeignKey:ChapterId"`
+	Chapter			Chapter 			`json:"chapter,omitempty" gorm:"foreignkey:ChapterId"`
 
 	//housekeeping attributes
 	CreatedAt 		time.Time			`json:"created_at"`

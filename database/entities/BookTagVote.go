@@ -4,10 +4,10 @@ type BookTagVote struct {
 	Tag          	string			`json:"title"`
 
 	BookId			int				`json:"book_id"`
-	Book			*Book			`json:"book,omitempty" gorm:"ForeignKey:BookId"`
+	Book			*Book			`json:"book,omitempty" gorm:"foreignkey:BookId"`
 
 	UserId      	int				`json:"user_id"`
-	User		   	*User			`json:"user,omitempty" gorm:"ForeignKey:UserId"`
+	User		   	*User			`json:"user,omitempty" gorm:"foreignkey:UserId"`
 
 	Direction 		int				`json:"direction"`
 
