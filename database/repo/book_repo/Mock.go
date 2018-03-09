@@ -26,7 +26,7 @@ var (
 //             DeleteFunc: func(in1 *entities.Book) app_error.AppError {
 // 	               panic("TODO: mock out the Delete method")
 //             },
-//             FindByIdFunc: func(in1 int) (entities.Book, app_error.AppError) {
+//             FindByIdFunc: func(id int, associations []string) (entities.Book, app_error.AppError) {
 // 	               panic("TODO: mock out the FindById method")
 //             },
 //             InsertFunc: func(in1 *entities.Book) app_error.AppError {
@@ -49,7 +49,7 @@ type BookRepositoryMock struct {
 	DeleteFunc func(in1 *entities.Book) app_error.AppError
 
 	// FindByIdFunc mocks the FindById method.
-	FindByIdFunc func(in1 int) (entities.Book, app_error.AppError)
+	FindByIdFunc func(id int, associations []string) (entities.Book, app_error.AppError)
 
 	// InsertFunc mocks the Insert method.
 	InsertFunc func(in1 *entities.Book) app_error.AppError
@@ -69,8 +69,10 @@ type BookRepositoryMock struct {
 		}
 		// FindById holds details about calls to the FindById method.
 		FindById []struct {
-			// In1 is the in1 argument value.
-			In1 int
+			// Id is the id argument value.
+			Id int
+			// Associations is the associations argument value.
+			Associations []string
 		}
 		// Insert holds details about calls to the Insert method.
 		Insert []struct {
@@ -126,29 +128,33 @@ func (mock *BookRepositoryMock) DeleteCalls() []struct {
 }
 
 // FindById calls FindByIdFunc.
-func (mock *BookRepositoryMock) FindById(in1 int) (entities.Book, app_error.AppError) {
+func (mock *BookRepositoryMock) FindById(id int, associations []string) (entities.Book, app_error.AppError) {
 	if mock.FindByIdFunc == nil {
 		panic("moq: BookRepositoryMock.FindByIdFunc is nil but BookRepository.FindById was just called")
 	}
 	callInfo := struct {
-		In1 int
+		Id           int
+		Associations []string
 	}{
-		In1: in1,
+		Id:           id,
+		Associations: associations,
 	}
 	lockBookRepositoryMockFindById.Lock()
 	mock.calls.FindById = append(mock.calls.FindById, callInfo)
 	lockBookRepositoryMockFindById.Unlock()
-	return mock.FindByIdFunc(in1)
+	return mock.FindByIdFunc(id, associations)
 }
 
 // FindByIdCalls gets all the calls that were made to FindById.
 // Check the length with:
 //     len(mockedBookRepository.FindByIdCalls())
 func (mock *BookRepositoryMock) FindByIdCalls() []struct {
-	In1 int
+	Id           int
+	Associations []string
 } {
 	var calls []struct {
-		In1 int
+		Id           int
+		Associations []string
 	}
 	lockBookRepositoryMockFindById.RLock()
 	calls = mock.calls.FindById

@@ -76,14 +76,20 @@ func TestGormBookRepository(t *testing.T) {
 				}
 
 				Convey("If perpage = 5, only 5 Books should be returned", func (){
-					results,err := bookRepo.Paginate(1,5,SearchOptions{})
+					results,err := bookRepo.Paginate(SearchOptions{
+						StartPage: 1,
+						PerPage: 5,
+					})
 					So(err,ShouldBeNil)
 					So(len(results), ShouldEqual, 5)
 				})
 
 				Convey("There should be at least 3 pages of results (when perpage = 10)", func (){
 					for i := 0 ; i < 3; i++ {
-						results,err := bookRepo.Paginate(1,10,SearchOptions{})
+						results,err := bookRepo.Paginate(SearchOptions{
+							StartPage: 1,
+							PerPage: 10,
+						})
 						So(err,ShouldBeNil)
 						So(len(results), ShouldEqual, 10)
 					}

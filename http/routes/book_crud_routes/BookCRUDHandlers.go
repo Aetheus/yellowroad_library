@@ -60,7 +60,10 @@ func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
 
 		//TODO: since this is a GET request, it doesn't make sense for search options to be a separate JSON. add "page" and "perpage" to searchoptions and just try to marshal query params into that?
 		var paginateErr app_error.AppError
-		results, paginateErr = repository.Paginate(page,perpage, book_repo.SearchOptions{})
+		results, paginateErr = repository.Paginate(book_repo.SearchOptions{
+			StartPage: page,
+			PerPage: perpage,
+		})
 		if paginateErr != nil {
 			return paginateErr
 		}

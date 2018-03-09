@@ -7,14 +7,15 @@ import (
 
 //go:generate moq -out Mock.go . BookRepository
 type BookRepository interface {
-	FindById(int) (entities.Book, app_error.AppError)
+	FindById(id int) (entities.Book, app_error.AppError)
 	Update(*entities.Book) app_error.AppError
 	Insert(*entities.Book) app_error.AppError
 	Delete(*entities.Book) app_error.AppError
-    Paginate(startpage int, perpage int, options SearchOptions) ([]entities.Book, app_error.AppError)
+    Paginate(options SearchOptions) ([]entities.Book, app_error.AppError)
 }
 
-//TODO : define this
-type SearchOptions struct {
 
+type SearchOptions struct {
+	StartPage int
+	PerPage int
 }
