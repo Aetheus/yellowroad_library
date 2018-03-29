@@ -16,9 +16,20 @@ Route | Routes are responsible for **getting request parameters, passing them to
 Service | All "**business logic**" is handled by Services, which make use of Repositories to handle database interaction
 Repository | All the nitty-gritty **database handling** is handled by Repositories, which take and return *Model structs*, which are POGS (plain old Go structs)
 
-
 -------
 
+# Running the App
+
+If you've `go build`'ed the executable:
+    
+    `$ [executable] server`
+    
+If you want it running quick-and-dirty using `go run`:
+    
+    `$ go run main.go server`
+
+
+-------
 
 # Unit Tests
 
@@ -60,6 +71,7 @@ For instance, a migration written on the 2nd of October 2017 at exactly 12:06AM 
     
     `201710020006_add_requirements_and_effect_to_chapter_path.up.sql`
 
+TODO: Add a command to create new migrations!
 
 --------
 
