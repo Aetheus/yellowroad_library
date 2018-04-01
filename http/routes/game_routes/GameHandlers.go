@@ -2,7 +2,7 @@ package game_routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"yellowroad_library/services/story_serv"
+	"yellowroad_library/services/game_serv"
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/database/repo/uow"
@@ -27,7 +27,7 @@ func (this GameHandlers) NavigateToSingleChapter(c *gin.Context) {
 	storyService := this.Container.StoryService(work)
 	/***************************/
 
-	var pathResponse story_serv.PathResponse
+	var pathResponse game_serv.PathResponse
 	var form NavigationForm
 	err := work.AutoCommit([]uow.WorkFragment{storyService}, func() app_error.AppError {
 		err := gin_tools.BindJSON(&form,c);
@@ -47,7 +47,7 @@ func (this GameHandlers) NavigateToSingleChapter(c *gin.Context) {
 		if (err != nil){ return err }
 
 
-		pathRequest := story_serv.NewPathRequest(bookId, chapterId, chapterPathId, currentSave, isFreeMode)
+		pathRequest := game_serv.NewPathRequest(bookId, chapterId, chapterPathId, currentSave, isFreeMode)
 		pathResponse, err = storyService.NavigateToChapter(pathRequest)
 		if (err != nil) { return err }
 

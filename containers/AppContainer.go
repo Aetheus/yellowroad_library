@@ -10,7 +10,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/services/book_serv"
-	"yellowroad_library/services/story_serv"
+	"yellowroad_library/services/game_serv"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/services/chapter_serv"
 	"yellowroad_library/utils/app_error"
@@ -21,7 +21,7 @@ type AppContainer struct {
 	tokenService  *token_serv.TokenService
 	authService   *auth_serv.AuthService
 	bookService	  *book_serv.BookService
-	storyService  *story_serv.StoryService
+	storyService  *game_serv.GameService
 	configuration config.Configuration
 }
 //ensure interface implementation
@@ -98,11 +98,11 @@ func (ac AppContainer) ChapterService(work uow.UnitOfWork) chapter_serv.ChapterS
 	return chapter_serv.Default(work);
 }
 
-func (ac AppContainer) StoryService(work uow.UnitOfWork) story_serv.StoryService {
+func (ac AppContainer) StoryService(work uow.UnitOfWork) game_serv.GameService {
 	if (work == nil){
 		work = ac.UnitOfWork()
 	}
-	return story_serv.Default(work);
+	return game_serv.Default(work);
 }
 
 /***********************************************************************************************/

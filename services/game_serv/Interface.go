@@ -1,4 +1,4 @@
-package story_serv
+package game_serv
 
 import (
 	"yellowroad_library/utils/app_error"
@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 )
 
-type StoryService interface {
+type GameService interface {
 	NavigateToChapter(request PathRequest) (response PathResponse, err app_error.AppError)
 	SetUnitOfWork(work uow.UnitOfWork)
 }

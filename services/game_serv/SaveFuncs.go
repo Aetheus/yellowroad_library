@@ -1,4 +1,4 @@
-package story_serv
+package game_serv
 
 import (
 	"yellowroad_library/utils/app_error"

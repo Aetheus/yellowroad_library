@@ -1,4 +1,4 @@
-package story_serv
+package game_serv
 
 import (
 	"testing"
@@ -196,7 +196,7 @@ func TestDefaultStoryService_NavigateToChapter(t *testing.T) {
 			second_to_third_b_chapter_path_id,
 		)
 
-			Convey("Given a DefaultStoryService", func(){
+			Convey("Given a DefaultGameService", func(){
 				storyServ := Default(work)
 
 				Convey("Navigating to the first chapter should produce no error", func (){

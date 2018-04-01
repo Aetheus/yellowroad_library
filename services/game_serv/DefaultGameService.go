@@ -1,4 +1,4 @@
-package story_serv
+package game_serv
 
 import (
 	"yellowroad_library/utils/app_error"
@@ -8,20 +8,20 @@ import (
 	"net/http"
 )
 
-type DefaultStoryService struct {
+type DefaultGameService struct {
 	work uow.UnitOfWork
 }
-var _ StoryService = DefaultStoryService{}
+var _ GameService = DefaultGameService{}
 
-func Default(work uow.UnitOfWork) StoryService {
-	return DefaultStoryService{ work: work }
+func Default(work uow.UnitOfWork) GameService {
+	return DefaultGameService{ work: work }
 }
 
-func (this DefaultStoryService) SetUnitOfWork(work uow.UnitOfWork) {
+func (this DefaultGameService) SetUnitOfWork(work uow.UnitOfWork) {
 	this.work = work
 }
 
-func (this DefaultStoryService) NavigateToChapter(
+func (this DefaultGameService) NavigateToChapter(
 	request PathRequest,
 ) (response PathResponse, err app_error.AppError) {
 
