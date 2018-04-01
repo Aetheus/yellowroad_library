@@ -17,8 +17,9 @@ type GameHandlers struct {
 
 
 type NavigationForm struct {
-	Save 		json.RawMessage
-	IsFreeMode 	*bool //optional
+	Save 			json.RawMessage		`json:"save"`
+	IsFreeMode 		*bool 				`json:"mode"`//optional
+	ChapterPathId	int  				`json:"chapter_path_id"`//chapter path can be ignored if we're on freemode or the first chapter
 }
 func (this GameHandlers) NavigateToSingleChapter(c *gin.Context) {
 	/*Dependencies**************/
@@ -33,6 +34,7 @@ func (this GameHandlers) NavigateToSingleChapter(c *gin.Context) {
 		if (err != nil){ return err }
 
 		currentSave := form.Save
+		chapterPathId := form.ChapterPathId
 		isFreeMode := false
 		if form.IsFreeMode != nil {
 			isFreeMode = *form.IsFreeMode
@@ -44,7 +46,6 @@ func (this GameHandlers) NavigateToSingleChapter(c *gin.Context) {
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
 		if (err != nil){ return err }
 
-		chapterPathId := gin_tools.GetIntQueryOrDefault("chapter_path_id", 0,c)	//chapter path can be ignored if we're on freemode
 
 		pathRequest := story_serv.NewPathRequest(bookId, chapterId, chapterPathId, currentSave, isFreeMode)
 		pathResponse, err = storyService.NavigateToChapter(pathRequest)

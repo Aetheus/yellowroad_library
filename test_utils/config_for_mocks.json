@@ -9,6 +9,6 @@
     "MigrationsDir" : "file:///home/adrian/go/src/yellowroad_library/database/migrations"
   },
   "Web" : {
-    "Port" : 8080
+    "Port" : 8089
   }
 }

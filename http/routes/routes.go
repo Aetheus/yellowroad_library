@@ -31,6 +31,11 @@ func ROUTES(
 		auth_api.DELETE("stories/:book_id", bookCrudHandlers.DeleteBook)
 	}
 
+	gameHandlers := game_routes.GameHandlers{container}
+	{
+		public_api.POST("stories/:book_id/chapters/:chapter_id/game", gameHandlers.NavigateToSingleChapter)
+	}
+
 	chapterCrudHandlers := chapter_crud_routes.ChapterCrudHandlers{container}
 	{
 		auth_api.POST("stories/:book_id/chapters", chapterCrudHandlers.CreateChapter)
@@ -40,11 +45,6 @@ func ROUTES(
 		auth_api.DELETE("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.DeleteChapter)
 
 		auth_api.POST("stories/:book_id/chapters/:chapter_id/paths", chapterCrudHandlers.CreatePathAwayFromThisChapter)
-	}
-
-	gameHandlers := game_routes.GameHandlers{container}
-	{
-		public_api.POST("stories/:book_id/chapters/:chapter_id/game", gameHandlers.NavigateToSingleChapter)
 	}
 
 	userRouteHandlers := user_routes.UserRouteHandlers{container}

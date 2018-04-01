@@ -7,7 +7,14 @@ import (
 	"net/http"
 	"github.com/xeipuuv/gojsonschema"
 	jmutate "github.com/Aetheus/jmutate_go"
+	"encoding/json"
 )
+
+//TODO : move
+func isValidSave(saveJsonString string) bool {
+	var jsonMessage json.RawMessage
+	return json.Unmarshal([]byte(saveJsonString), &jsonMessage) == nil
+}
 
 func ValidateSaveRequirements(saveDataAsJsonString string,requirementsAsJsonString string) (err app_error.AppError) {
 	if strings.Trim(requirementsAsJsonString, " ") == ""{
