@@ -5,7 +5,6 @@ import (
 	"yellowroad_library/database/entities"
 	"net/http"
 	"yellowroad_library/database/repo/uow"
-	"gopkg.in/guregu/null.v3"
 )
 
 type DefaultBookService struct {
@@ -26,23 +25,30 @@ func (this DefaultBookService) SetUnitOfWork(work uow.UnitOfWork) {
 	this.work = work
 }
 func (this DefaultBookService) CreateBook(creator entities.User, form entities.Book_CreationForm) (entities.Book,app_error.AppError) {
+	var BookRepo = this.work.BookRepo()
+	var ChapterRepo = this.work.ChapterRepo()
+
 	var book entities.Book
 	form.Apply(&book)
 	book.CreatorId = creator.ID
-	book.FirstChapterId = null.IntFrom(0)
-	if err := this.work.BookRepo().Insert(&book); err != nil {
+	if err := BookRepo.Insert(&book); err != nil {
 		return book, app_error.Wrap(err)
 	}
 
 	var first_chapter =  entities.Chapter {
 		Title: book.Title + ": Chapter 1",
 		Body: "This is your first chapter. Fill it up!",
+		CreatorId: creator.ID,
 		BookId : book.ID,
 	}
-	if err := this.work.ChapterRepo().Insert(&first_chapter); err != nil {
+	if err := ChapterRepo.Insert(&first_chapter); err != nil {
 		return book, app_error.Wrap(err)
 	}
-	book.FirstChapterId = null.IntFrom( int64(first_chapter.ID) )
+
+	book.FirstChapterId = first_chapter.ID
+	if err := BookRepo.Update(&book); err != nil {
+		return book, app_error.Wrap(err)
+	}
 
 	return book, nil
 }
