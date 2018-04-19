@@ -27,14 +27,22 @@ func (this DefaultBookService) SetUnitOfWork(work uow.UnitOfWork) {
 }
 func (this DefaultBookService) CreateBook(creator entities.User, form entities.Book_CreationForm) (entities.Book,app_error.AppError) {
 	var book entities.Book
-
 	form.Apply(&book)
 	book.CreatorId = creator.ID
 	book.FirstChapterId = null.IntFrom(0)
-
 	if err := this.work.BookRepo().Insert(&book); err != nil {
 		return book, app_error.Wrap(err)
 	}
+
+	var first_chapter =  entities.Chapter {
+		Title: book.Title + ": Chapter 1",
+		Body: "This is your first chapter. Fill it up!",
+		BookId : book.ID,
+	}
+	if err := this.work.ChapterRepo().Insert(&first_chapter); err != nil {
+		return book, app_error.Wrap(err)
+	}
+	book.FirstChapterId = null.IntFrom( int64(first_chapter.ID) )
 
 	return book, nil
 }
