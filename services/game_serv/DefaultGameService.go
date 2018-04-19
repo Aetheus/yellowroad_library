@@ -28,7 +28,7 @@ func (this DefaultGameService) NavigateToChapter(
 	destinationChapter, err := this.work.ChapterRepo().FindWithinBook(request.DestinationChapterId,request.BookId)
 	if (err != nil) { return response, err }
 
-	destinationChapterIsFirstChapter := ( int64(destinationChapter.ID) == destinationChapter.Book.FirstChapterId.Int64 )
+	destinationChapterIsFirstChapter := ( destinationChapter.ID == destinationChapter.Book.FirstChapterId )
 
 	currentSaveAsJsonString := string(request.SaveData)
 	newSaveAsJsonString := currentSaveAsJsonString

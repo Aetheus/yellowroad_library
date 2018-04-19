@@ -10,7 +10,7 @@ type Book struct {
 	Description    string			`json:"description"`
 	Permissions    string			`json:"permissions"`
 
-	FirstChapterId null.Int 		`json:"first_chapter_id" sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
+	FirstChapterId int 		`json:"first_chapter_id" sql:"DEFAULT:null"` //when first creating a book, you won't have a first chapter
 	FirstChapter   *Chapter 		`json:"first_chapter,omitempty" gorm:"foreignkey:FirstChapterId"`
 
 	//Chapters 		[]Chapter		`gorm:"ForeignKey:BookId;AssociationForeignKey:ID"`
