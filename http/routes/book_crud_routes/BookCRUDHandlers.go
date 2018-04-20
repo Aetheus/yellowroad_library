@@ -32,11 +32,7 @@ func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
 
 		var findErr app_error.AppError
 		book, findErr = bookRepo.FindById(book_id)
-		if findErr != nil {
-			return err
-		}
-
-		return nil
+		return findErr
 	})
 
 	if ( err != nil ){

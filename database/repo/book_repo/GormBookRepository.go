@@ -24,26 +24,23 @@ func (repo GormBookRepository) FindById(id int) (entities.Book, app_error.AppErr
 	dbConn := repo.dbConn
 
 	queryResult := dbConn.
-				Select("books.*, COUNT(chapters_c.id) as chapter_count").
-				Joins("LEFT JOIN chapters as chapters_c on chapters_c.book_id = books.id").
-				Preload(entities.ASSOC_BOOK_CREATOR,func(db *gorm.DB) *gorm.DB {
-					return db.Select("username, id")
-				}).
-				Preload(entities.ASSOC_BOOK_FIRST_CHAPTER).
-				Where("books.id = ?", id).
-				Group("books.id").
-				First(&book)
+					Select("books.*, COUNT(chapters_c.id) as chapter_count").
+					Joins("LEFT JOIN chapters as chapters_c on chapters_c.book_id = books.id").
+					Preload(entities.ASSOC_BOOK_CREATOR,func(db *gorm.DB) *gorm.DB {
+						return db.Select("username, id")
+					}).
+					Preload(entities.ASSOC_BOOK_FIRST_CHAPTER).
+					Where("books.id = ?", id).
+					Group("books.id").
+					First(&book)
 
-
-	if queryResult.Error != nil {
-		var returnedErr app_error.AppError
-		if queryResult.RecordNotFound() {
-			returnedErr = app_error.Wrap(queryResult.Error).
-				SetEndpointMessage("No such book found").
-				SetHttpCode(http.StatusNotFound)
-		} else {
-			returnedErr = app_error.Wrap(queryResult.Error)
-		}
+	if queryResult.RecordNotFound() {
+		returnedErr := app_error.Wrap(queryResult.Error).
+						SetEndpointMessage("No such book found").
+						SetHttpCode(http.StatusNotFound)
+		return book, returnedErr
+	} else if queryResult.Error != nil {
+		returnedErr := app_error.Wrap(queryResult.Error)
 		return book, returnedErr
 	}
 
