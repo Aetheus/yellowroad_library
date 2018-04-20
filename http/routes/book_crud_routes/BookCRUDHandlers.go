@@ -26,7 +26,6 @@ func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
 
 		book_id, err := gin_tools.GetIntParam("book_id", c)
 		if err != nil {
-			c.JSON(api_reply.ConvertErrWithCode(err))
 			return err
 		}
 

@@ -25,10 +25,6 @@ func SuccessResponse(data interface{}) ApiResponse{
 		Data : data,
 	}
 }
-//a convenience for Gin's context.JSON() func, which takes two parameters
-func SuccessWithCode(data interface{}) (int, ApiResponse) {
-	return http.StatusOK, SuccessResponse(data)
-}
 
 //converts an AppError into either a FailResponse or ErrorResponse response, depending on its HTTP code
 func ConvertErr(err app_error.AppError) ApiResponse{
@@ -40,10 +36,6 @@ func ConvertErr(err app_error.AppError) ApiResponse{
 		var dummyData struct{} //TODO add "data" field to AppError and use it here instead
 		return FailResponse(err.EndpointMessage(), dummyData)
 	}
-}
-//a convenience for Gin's context.JSON() func, which takes two parameters
-func ConvertErrWithCode(err app_error.AppError) (int, ApiResponse) {
-	return err.HttpCode(),ConvertErr(err)
 }
 
 func FailResponse(message string, data interface{}) ApiResponse{
@@ -72,8 +64,8 @@ func isServerErrorCode(code int) bool{
 
 // Convenience methods for sending Gin responses
 func Success(c *gin.Context, payload interface{}){
-	c.JSON(SuccessWithCode(payload))
+	c.JSON(http.StatusOK, SuccessResponse(payload))
 }
 func Failure(c *gin.Context, err app_error.AppError) {
-	c.JSON(ConvertErrWithCode(err))
+	c.JSON(err.HttpCode(),ConvertErr(err))
 }
