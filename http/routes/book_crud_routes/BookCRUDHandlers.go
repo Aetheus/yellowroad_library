@@ -29,9 +29,8 @@ func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
 			return err
 		}
 
-		var findErr app_error.AppError
-		book, findErr = bookRepo.FindById(book_id)
-		return findErr
+		book, err = bookRepo.FindById(book_id)
+		return err
 	})
 
 	if ( err != nil ){
@@ -172,10 +171,7 @@ func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 		}
 
 		book, err = bookService.UpdateBook(user,book_id,form)
-		if err != nil {
-			return err
-		}
-		return nil
+		return err
 	})
 
 	if ( err != nil ){
