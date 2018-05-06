@@ -97,8 +97,8 @@ func (this DefaultChapterService) CreateChapterAndPath(
 	instigator entities.User,
 	form entities.Chapter_And_Path_CreationForm,
 ) (chapter entities.Chapter,chapter_path entities.ChapterPath, err app_error.AppError){
-	chapter_form := form.ChapterForm
-	path_form := form.ChapterPathForm
+	chapter_form := *form.ChapterForm
+	path_form := *form.ChapterPathForm
 
 	chapter, err = this.CreateChapter(instigator, chapter_form)
 	if (err != nil){

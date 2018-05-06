@@ -3,6 +3,9 @@ package entities
 import (
 	"time"
 	"gopkg.in/guregu/null.v3"
+	"encoding/json"
+	"yellowroad_library/utils/app_error"
+	"net/http"
 )
 
 /*
@@ -61,6 +64,31 @@ func (this Chapter_CreationForm) Apply(chapter *Chapter){
 }
 
 type Chapter_And_Path_CreationForm struct {
-	ChapterForm Chapter_CreationForm
-	ChapterPathForm ChapterPath_CreationForm
+	ChapterForm 	*Chapter_CreationForm		`json:"chapter"`
+	ChapterPathForm *ChapterPath_CreationForm	`json:"chapter_path"`
+}
+
+func (form *Chapter_And_Path_CreationForm) UnmarshalJSON(data []byte) (error) {
+	unmarshalTarget := struct {
+		ChapterForm 	*Chapter_CreationForm		`json:"chapter"`
+		ChapterPathForm *ChapterPath_CreationForm	`json:"chapter_path"`
+	}{}
+
+	err := json.Unmarshal(data, &unmarshalTarget)
+	if (err != nil){
+		return err
+	} else if unmarshalTarget.ChapterForm == nil {
+		return app_error.New(http.StatusBadRequest,
+			"",
+			"'chapter' is a required field!")
+	} else if unmarshalTarget.ChapterPathForm == nil {
+		return app_error.New(http.StatusBadRequest,
+			"",
+			"'chapter_path' is a required field!")
+	} else {
+		form.ChapterForm = unmarshalTarget.ChapterForm
+		form.ChapterPathForm = unmarshalTarget.ChapterPathForm
+	}
+
+	return nil
 }
