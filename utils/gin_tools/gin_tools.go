@@ -61,19 +61,16 @@ func BindJSON(formPointer interface{}, c *gin.Context) (app_error.AppError){
 	}
 
 	err = json.Unmarshal(data, formPointer)
-	errMessage := ""
-	errorCode := http.StatusBadRequest;
-
-	if jsonError, ok := err.(*json.UnmarshalTypeError); ok {
-		errMessage = fmt.Sprintf("[%v]: Expected type '%v', got a '%v' instead",jsonError.Field, jsonError.Type.Name(), jsonError.Value,  )
-		errorCode = http.StatusUnprocessableEntity
-	} else {
-		errMessage = "Cannot parse JSON due to an unexpected syntax error"
-		errorCode = http.StatusBadRequest
-	}
-
-	if (err != nil) {
-		return app_error.New(errorCode, err.Error(), errMessage)
+	if err != nil {
+		if appErr,ok := err.(app_error.AppError); ok {
+			return appErr
+		} else if jsonError, ok := err.(*json.UnmarshalTypeError); ok {
+			errMessage := fmt.Sprintf("[%v]: Expected type '%v', got a '%v' instead",jsonError.Field, jsonError.Type.Name(), jsonError.Value,  )
+			errorCode := http.StatusUnprocessableEntity
+			return app_error.New(errorCode, err.Error(), errMessage)
+		} else {
+			return app_error.New(http.StatusBadRequest, err.Error(), err.Error())
+		}
 	}
 
 	return nil
