@@ -71,6 +71,31 @@ func (this GormChapterRepository) FindWithinBook(chapter_id int, book_id int) (e
 	return chapter, nil
 }
 
+func (this GormChapterRepository) ChaptersIndex(book_id int) ([]entities.Chapter, app_error.AppError){
+	var chapters []entities.Chapter
+
+	queryResult := this.dbConn.
+						Select("title, id, created_at, updated_at, deleted_at").
+						Preload(entities.ASSOC_CHAPTER_CREATOR).
+						Preload(entities.ASSOC_CHAPTER_PATHS_AWAY).
+						Where("book_id = ?", book_id).
+						Find(&chapters)
+
+	if queryResult.Error != nil {
+		var returnedErr app_error.AppError
+		if queryResult.RecordNotFound() {
+			returnedErr = app_error.Wrap(queryResult.Error).
+				SetHttpCode(http.StatusNotFound).
+				SetEndpointMessage("No chapter found")
+		} else {
+			returnedErr = app_error.Wrap(queryResult.Error)
+		}
+		return chapters, returnedErr
+	}
+
+	return chapters, nil
+}
+
 func (this GormChapterRepository) Update(chapter *entities.Chapter) app_error.AppError {
 	queryResult := this.dbConn.
 						Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!

@@ -40,6 +40,7 @@ func ROUTES(
 	{
 		auth_api.POST("stories/:book_id/chapters", chapterCrudHandlers.CreateChapter)
 
+		public_api.GET("stories/:book_id/chapters", chapterCrudHandlers.FetchChaptersIndex)
 		public_api.GET("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.FetchSingleChapter)
 		auth_api.PUT("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.UpdateChapter)
 		auth_api.DELETE("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.DeleteChapter)

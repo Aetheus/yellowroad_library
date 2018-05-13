@@ -10,6 +10,7 @@ import (
 type ChapterRepository interface {
 	FindById(int) (entities.Chapter, app_error.AppError)
 	FindWithinBook(chapter_id int, book_id int) (entities.Chapter, app_error.AppError)
+	ChaptersIndex(book_id int) ([]entities.Chapter, app_error.AppError)
 	Update(*entities.Chapter) app_error.AppError
 	Insert(*entities.Chapter) app_error.AppError
 	Delete(*entities.Chapter) app_error.AppError
