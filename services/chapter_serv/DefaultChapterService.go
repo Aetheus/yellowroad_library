@@ -119,7 +119,11 @@ func (this DefaultChapterService) CreatePathBetweenChapters(
 	var chapterPathRepo = this.work.ChapterPathRepo()
 
 	var path entities.ChapterPath
-	form.Apply(&path)
+
+	err := form.Apply(&path)
+	if (err != nil) {
+		return path, err
+	}
 
 	//check if these two chapters exist and are in the same book
 	fromChapter, err := chapterRepo.FindById(path.FromChapterId)
