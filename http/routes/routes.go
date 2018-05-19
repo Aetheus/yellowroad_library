@@ -39,13 +39,14 @@ func ROUTES(
 	chapterCrudHandlers := chapter_crud_routes.ChapterCrudHandlers{container}
 	{
 		auth_api.POST("stories/:book_id/chapters", chapterCrudHandlers.CreateChapter)
-
 		public_api.GET("stories/:book_id/chapters", chapterCrudHandlers.FetchChaptersIndex)
 		public_api.GET("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.FetchSingleChapter)
 		auth_api.PUT("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.UpdateChapter)
 		auth_api.DELETE("stories/:book_id/chapters/:chapter_id", chapterCrudHandlers.DeleteChapter)
 
-		auth_api.POST("stories/:book_id/chapters/:chapter_id/paths", chapterCrudHandlers.CreatePathAwayFromThisChapter)
+		auth_api.POST("stories/:book_id/chapter_paths", chapterCrudHandlers.CreateChapterPath)
+		auth_api.PUT("stories/:book_id/chapter_paths/:chapter_path_id", chapterCrudHandlers.UpdateChapterPath)
+
 	}
 
 	userRouteHandlers := user_routes.UserRouteHandlers{container}

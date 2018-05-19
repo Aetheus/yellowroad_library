@@ -54,6 +54,7 @@ func NewAppUnitOfWork(db *gorm.DB) UnitOfWork{
 	}
 }
 
+//TODO: remove the workfragment concept entirely
 func (this AppUnitOfWork) AutoCommit(fragments []WorkFragment,callback func() app_error.AppError) app_error.AppError {
 	for _, fragment := range fragments {
 		fragment.SetUnitOfWork(this)

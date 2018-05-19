@@ -189,7 +189,7 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 	}
 }
 
-func (this ChapterCrudHandlers) CreatePathAwayFromThisChapter(c *gin.Context) {
+func (this ChapterCrudHandlers) CreateChapterPath(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
 	authService := this.Container.AuthService(work)
@@ -200,16 +200,10 @@ func (this ChapterCrudHandlers) CreatePathAwayFromThisChapter(c *gin.Context) {
 	var form entities.ChapterPath_CreationForm
 
 	err := work.AutoCommit([]uow.WorkFragment{ authService, chapterService }, func () app_error.AppError{
-		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
+		err := gin_tools.BindJSON(&form,c)
 		if (err != nil){
 			return err
 		}
-
-		err = gin_tools.BindJSON(&form,c)
-		if (err != nil){
-			return err
-		}
-		form.FromChapterId = &chapterId
 
 		currentUser, err := authService.GetLoggedInUser(c)
 		if (err != nil){
@@ -228,5 +222,47 @@ func (this ChapterCrudHandlers) CreatePathAwayFromThisChapter(c *gin.Context) {
 		api_reply.Failure(c,err)
 	}else{
 		api_reply.Success(c,newPath)
+	}
+}
+
+func (this ChapterCrudHandlers) UpdateChapterPath(c *gin.Context){
+	/*Dependencies**************/
+	work := this.Container.UnitOfWork()
+	authService := this.Container.AuthService(work)
+	chapterService  := this.Container.ChapterService(work)
+	/***************************/
+
+	var chapter_path entities.ChapterPath
+
+	err := work.AutoCommit([]uow.WorkFragment{}, func () app_error.AppError{
+		var update_form entities.ChapterPath_UpdateForm
+
+		chapter_path_id, err := gin_tools.GetIntParam("chapter_path_id", c)
+		if err != nil {
+			return err
+		}
+
+		err = gin_tools.BindJSON(&update_form,c)
+		if err != nil {
+			return err
+		}
+
+		currentUser, err := authService.GetLoggedInUser(c)
+		if err != nil {
+			return err
+		}
+
+		chapter_path, err = chapterService.UpdatePathBetweenChapters(currentUser,chapter_path_id, update_form)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if (err != nil){
+		api_reply.Failure(c,err)
+	}else{
+		api_reply.Success(c,chapter_path)
 	}
 }
