@@ -1,4 +1,4 @@
-package storysave_repo
+package save_repo
 
 import "testing"
 import (
@@ -54,52 +54,62 @@ func TestGormStorySaveRepository(t *testing.T){
 
 
 			Convey("Inserting some Story Saves should work", func (){
-				rawBytes, err := json.Marshal(map[string]interface{} {
-					"have_heard_the_wolf_cry_to_the_blue_corn_moon" : true,
-				})
+				rawBytes, err := json.Marshal(
+					map[string]interface{} {
+						"history" : []interface{}{
+							map[string]interface{}{
+								"have_heard_the_wolf_cry_to_the_blue_corn_moon" : true,
+							},
+						},
+						"cursor" : 0,
+					},
+				)
 				So(err, ShouldBeNil)
 
-				storySave := entities.StorySave{
-					Token:     "HaveYouEverHeardTheWolfCryToTheBlueCornMoon",
-					Save:      database.Jsonb{json.RawMessage(rawBytes)},
+				storySave := entities.SaveState{
+					State:      database.Jsonb{json.RawMessage(rawBytes)},
 					CreatedBy: user.ID,
 					BookId:    book.ID,
-					ChapterId: chapter.ID,
 				}
 				err = storySaveRepo.Insert(&storySave)
 				So(err, ShouldBeNil)
 
-				secondStorySave := entities.StorySave{
-					Token:     "OrAskedTheGrinningBobcatWhyHeGrinned",
-					Save:      database.Jsonb{json.RawMessage(rawBytes)},
+				secondStorySave := entities.SaveState{
+					State:      database.Jsonb{json.RawMessage(rawBytes)},
 					CreatedBy: user.ID,
 					BookId:    book.ID,
-					ChapterId: chapter.ID,
 				}
 				err = storySaveRepo.Insert(&secondStorySave)
 				So(err, ShouldBeNil)
 
 
-				Convey("Finding the newly created Save using the token should work", func (){
-					searchResult, err := storySaveRepo.FindByToken(storySave.Token)
+				Convey("Finding the newly created Save using the id should work", func (){
+					searchResult, err := storySaveRepo.FindById(storySave.Id)
 					So(err, ShouldBeNil)
-					So(searchResult.Save.ToString(), ShouldEqual, storySave.Save.ToString())
+					So(searchResult.State.ToString(), ShouldEqual, storySave.State.ToString())
 				})
 
 				Convey("Updating the created Save should work", func (){
-					rawBytes, err = json.Marshal(map[string]interface{} {
-						"have_heard_the_wolf_cry_to_the_blue_corn_moon" : false,
-					})
+					rawBytes, err = json.Marshal(
+						map[string]interface{} {
+							"history" : []interface{}{
+								map[string]interface{}{
+									"have_heard_the_wolf_cry_to_the_blue_corn_moon" : false,
+								},
+							},
+							"cursor" : 0,
+						},
+					)
 					So(err, ShouldBeNil)
 
-					storySave.Save = database.Jsonb{ json.RawMessage(rawBytes) }
+					storySave.State = database.Jsonb{ json.RawMessage(rawBytes) }
 					err = storySaveRepo.Update(&storySave)
 					So(err, ShouldBeNil)
 
 					Convey("Finding the updated Save should yield a result with updated fields", func (){
-						searchResult, err := storySaveRepo.FindByToken(storySave.Token)
+						searchResult, err := storySaveRepo.FindById(storySave.Id)
 						So(err,ShouldBeNil)
-						So(searchResult.Save.ToString(), ShouldEqual, storySave.Save.ToString())
+						So(searchResult.State.ToString(), ShouldEqual, storySave.State.ToString())
 					})
 				})
 
@@ -109,13 +119,13 @@ func TestGormStorySaveRepository(t *testing.T){
 					So(err, ShouldBeNil)
 
 					Convey("Finding the deleted Save should yield no results", func (){
-						_, err := storySaveRepo.FindByToken(storySave.Token)
+						_, err := storySaveRepo.FindById(storySave.Id)
 						So(err,ShouldNotBeNil)
 						So(err.EndpointMessage(), ShouldEqual, "No save found")
 					})
 
 					Convey("Finding the Save that wasn't deleted should still yield a result", func(){
-						_, err := storySaveRepo.FindByToken(secondStorySave.Token)
+						_, err := storySaveRepo.FindById(secondStorySave.Id)
 						So(err, ShouldBeNil)
 					})
 				})

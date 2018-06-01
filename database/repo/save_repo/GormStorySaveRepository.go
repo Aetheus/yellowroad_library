@@ -1,4 +1,4 @@
-package storysave_repo
+package save_repo
 
 import (
 	"github.com/jinzhu/gorm"
@@ -11,16 +11,16 @@ type GormStorySaveRepository struct {
 	db *gorm.DB
 }
 
-var _ StorySaveRepository = GormStorySaveRepository{} //ensure interface implementation
+var _ SaveRepository = GormStorySaveRepository{} //ensure interface implementation
 func NewDefault(db *gorm.DB) GormStorySaveRepository{
 	return GormStorySaveRepository{db}
 }
 
-func (this GormStorySaveRepository) FindByToken(token string) (entities.StorySave, app_error.AppError) {
-	var save entities.StorySave
+func (this GormStorySaveRepository) FindById(id int) (entities.SaveState, app_error.AppError) {
+	var save entities.SaveState
 
 	queryResult := this.db.
-						Where("token = ?", token).
+						Where("id = ?", id).
 						First(&save)
 
 	if(queryResult.Error != nil) {
@@ -38,7 +38,7 @@ func (this GormStorySaveRepository) FindByToken(token string) (entities.StorySav
 	return save, nil
 }
 
-func (this GormStorySaveRepository) Insert(save *entities.StorySave) (app_error.AppError) {
+func (this GormStorySaveRepository) Insert(save *entities.SaveState) (app_error.AppError) {
 	queryResult := this.db.
 						Set("gorm:save_associations", false).
 						Create(save)
@@ -50,7 +50,7 @@ func (this GormStorySaveRepository) Insert(save *entities.StorySave) (app_error.
 	return nil
 }
 
-func (this GormStorySaveRepository) Update(save *entities.StorySave) (app_error.AppError) {
+func (this GormStorySaveRepository) Update(save *entities.SaveState) (app_error.AppError) {
 	queryResult := this.db.
 						Set("gorm:save_associations", false).
 						Save(save)
@@ -62,7 +62,7 @@ func (this GormStorySaveRepository) Update(save *entities.StorySave) (app_error.
 	return nil
 }
 
-func (this GormStorySaveRepository) Delete(save *entities.StorySave) (app_error.AppError) {
+func (this GormStorySaveRepository) Delete(save *entities.SaveState) (app_error.AppError) {
 	queryResult := this.db.
 						Set("gorm:save_associations", false).
 						Delete(save)
