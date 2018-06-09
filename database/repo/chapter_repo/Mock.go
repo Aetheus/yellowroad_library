@@ -10,6 +10,7 @@ import (
 )
 
 var (
+	lockChapterRepositoryMockChaptersIndex  sync.RWMutex
 	lockChapterRepositoryMockDelete         sync.RWMutex
 	lockChapterRepositoryMockFindById       sync.RWMutex
 	lockChapterRepositoryMockFindWithinBook sync.RWMutex
@@ -23,6 +24,9 @@ var (
 //
 //         // make and configure a mocked ChapterRepository
 //         mockedChapterRepository := &ChapterRepositoryMock{
+//             ChaptersIndexFunc: func(book_id int) ([]entities.Chapter, app_error.AppError) {
+// 	               panic("TODO: mock out the ChaptersIndex method")
+//             },
 //             DeleteFunc: func(in1 *entities.Chapter) app_error.AppError {
 // 	               panic("TODO: mock out the Delete method")
 //             },
@@ -45,6 +49,9 @@ var (
 //
 //     }
 type ChapterRepositoryMock struct {
+	// ChaptersIndexFunc mocks the ChaptersIndex method.
+	ChaptersIndexFunc func(book_id int) ([]entities.Chapter, app_error.AppError)
+
 	// DeleteFunc mocks the Delete method.
 	DeleteFunc func(in1 *entities.Chapter) app_error.AppError
 
@@ -62,6 +69,11 @@ type ChapterRepositoryMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// ChaptersIndex holds details about calls to the ChaptersIndex method.
+		ChaptersIndex []struct {
+			// Book_id is the book_id argument value.
+			Book_id int
+		}
 		// Delete holds details about calls to the Delete method.
 		Delete []struct {
 			// In1 is the in1 argument value.
@@ -90,6 +102,37 @@ type ChapterRepositoryMock struct {
 			In1 *entities.Chapter
 		}
 	}
+}
+
+// ChaptersIndex calls ChaptersIndexFunc.
+func (mock *ChapterRepositoryMock) ChaptersIndex(book_id int) ([]entities.Chapter, app_error.AppError) {
+	if mock.ChaptersIndexFunc == nil {
+		panic("moq: ChapterRepositoryMock.ChaptersIndexFunc is nil but ChapterRepository.ChaptersIndex was just called")
+	}
+	callInfo := struct {
+		Book_id int
+	}{
+		Book_id: book_id,
+	}
+	lockChapterRepositoryMockChaptersIndex.Lock()
+	mock.calls.ChaptersIndex = append(mock.calls.ChaptersIndex, callInfo)
+	lockChapterRepositoryMockChaptersIndex.Unlock()
+	return mock.ChaptersIndexFunc(book_id)
+}
+
+// ChaptersIndexCalls gets all the calls that were made to ChaptersIndex.
+// Check the length with:
+//     len(mockedChapterRepository.ChaptersIndexCalls())
+func (mock *ChapterRepositoryMock) ChaptersIndexCalls() []struct {
+	Book_id int
+} {
+	var calls []struct {
+		Book_id int
+	}
+	lockChapterRepositoryMockChaptersIndex.RLock()
+	calls = mock.calls.ChaptersIndex
+	lockChapterRepositoryMockChaptersIndex.RUnlock()
+	return calls
 }
 
 // Delete calls DeleteFunc.

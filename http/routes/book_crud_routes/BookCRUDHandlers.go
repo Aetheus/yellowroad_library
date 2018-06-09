@@ -7,7 +7,6 @@ import (
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/utils/gin_tools"
-	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/containers"
 )
 
@@ -21,7 +20,7 @@ func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
 	/***************************/
 
 	var book entities.Book
-	err := work.AutoCommit([]uow.WorkFragment{}, func() app_error.AppError {
+	err := work.AutoCommit(func() app_error.AppError {
 		bookRepo := work.BookRepo()
 
 		book_id, err := gin_tools.GetIntParam("book_id", c)
@@ -46,7 +45,7 @@ func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
 	/***************************/
 
 	var results []entities.Book
-	err := work.AutoCommit([]uow.WorkFragment{}, func() app_error.AppError {
+	err := work.AutoCommit(func() app_error.AppError {
 		repository := work.BookRepo()
 
 		page := gin_tools.GetIntQueryOrDefault("page",1,c)
@@ -80,7 +79,7 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 	/***************************/
 
 	var book entities.Book
-	err := work.AutoCommit([]uow.WorkFragment{authService,bookService}, func() app_error.AppError {
+	err := work.AutoCommit(func() app_error.AppError {
 		var form entities.Book_CreationForm
 
 		//Get logged in user
@@ -118,7 +117,7 @@ func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 	bookService := this.Container.BookService(work)
 	/***************************/
 
-	err := work.AutoCommit([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
+	err := work.AutoCommit(func() app_error.AppError {
 		book_id, err := gin_tools.GetIntParam("book_id",c)
 		if err != nil {
 			return err
@@ -152,7 +151,7 @@ func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 	/***************************/
 
 	var book entities.Book
-	err := work.AutoCommit([]uow.WorkFragment{authService, bookService}, func() app_error.AppError {
+	err := work.AutoCommit(func() app_error.AppError {
 		var form entities.Book_UpdateForm
 
 		book_id, err := gin_tools.GetIntParam("book_id",c)

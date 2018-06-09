@@ -32,7 +32,7 @@ var (
 //
 //         // make and configure a mocked UnitOfWork
 //         mockedUnitOfWork := &UnitOfWorkMock{
-//             AutoCommitFunc: func(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError {
+//             AutoCommitFunc: func(in1 func() app_error.AppError) app_error.AppError {
 // 	               panic("TODO: mock out the AutoCommit method")
 //             },
 //             BookRepoFunc: func() book_repo.BookRepository {
@@ -67,7 +67,7 @@ var (
 //     }
 type UnitOfWorkMock struct {
 	// AutoCommitFunc mocks the AutoCommit method.
-	AutoCommitFunc func(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError
+	AutoCommitFunc func(in1 func() app_error.AppError) app_error.AppError
 
 	// BookRepoFunc mocks the BookRepo method.
 	BookRepoFunc func() book_repo.BookRepository
@@ -98,9 +98,7 @@ type UnitOfWorkMock struct {
 		// AutoCommit holds details about calls to the AutoCommit method.
 		AutoCommit []struct {
 			// In1 is the in1 argument value.
-			In1 []WorkFragment
-			// In2 is the in2 argument value.
-			In2 func() app_error.AppError
+			In1 func() app_error.AppError
 		}
 		// BookRepo holds details about calls to the BookRepo method.
 		BookRepo []struct {
@@ -130,33 +128,29 @@ type UnitOfWorkMock struct {
 }
 
 // AutoCommit calls AutoCommitFunc.
-func (mock *UnitOfWorkMock) AutoCommit(in1 []WorkFragment, in2 func() app_error.AppError) app_error.AppError {
+func (mock *UnitOfWorkMock) AutoCommit(in1 func() app_error.AppError) app_error.AppError {
 	if mock.AutoCommitFunc == nil {
 		panic("moq: UnitOfWorkMock.AutoCommitFunc is nil but UnitOfWork.AutoCommit was just called")
 	}
 	callInfo := struct {
-		In1 []WorkFragment
-		In2 func() app_error.AppError
+		In1 func() app_error.AppError
 	}{
 		In1: in1,
-		In2: in2,
 	}
 	lockUnitOfWorkMockAutoCommit.Lock()
 	mock.calls.AutoCommit = append(mock.calls.AutoCommit, callInfo)
 	lockUnitOfWorkMockAutoCommit.Unlock()
-	return mock.AutoCommitFunc(in1, in2)
+	return mock.AutoCommitFunc(in1)
 }
 
 // AutoCommitCalls gets all the calls that were made to AutoCommit.
 // Check the length with:
 //     len(mockedUnitOfWork.AutoCommitCalls())
 func (mock *UnitOfWorkMock) AutoCommitCalls() []struct {
-	In1 []WorkFragment
-	In2 func() app_error.AppError
+	In1 func() app_error.AppError
 } {
 	var calls []struct {
-		In1 []WorkFragment
-		In2 func() app_error.AppError
+		In1 func() app_error.AppError
 	}
 	lockUnitOfWorkMockAutoCommit.RLock()
 	calls = mock.calls.AutoCommit

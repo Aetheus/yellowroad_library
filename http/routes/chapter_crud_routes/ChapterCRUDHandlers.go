@@ -2,7 +2,6 @@ package chapter_crud_routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/api_reply"
@@ -22,7 +21,7 @@ func (this ChapterCrudHandlers) FetchSingleChapter(c *gin.Context) {
 
 	var chapter entities.Chapter
 
-	err := work.AutoCommit([]uow.WorkFragment{}, func() app_error.AppError {
+	err := work.AutoCommit(func() app_error.AppError {
 		book_id, err := gin_tools.GetIntParam("book_id",c)
 		if (err != nil) { return err }
 
@@ -51,7 +50,7 @@ func (this ChapterCrudHandlers) FetchChaptersIndex(c *gin.Context) {
 	/***************************/
 
 	var chapters []entities.Chapter
-	err := work.AutoCommit([]uow.WorkFragment{}, func() app_error.AppError {
+	err := work.AutoCommit(func() app_error.AppError {
 		book_id ,err := gin_tools.GetIntParam("book_id",c)
 		if (err != nil){
 			return err
@@ -84,7 +83,7 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 	var newChapter entities.Chapter
 	var newPath entities.ChapterPath
 
-	err := work.AutoCommit([]uow.WorkFragment{chapterService},func () app_error.AppError{
+	err := work.AutoCommit(func () app_error.AppError{
 		book_id, err := gin_tools.GetIntParam("book_id",c)
 		if (err != nil){
 			return err
@@ -128,7 +127,7 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 	var updatedChapter entities.Chapter
 	var chapterForm entities.Chapter_UpdateForm
 
-	err := work.AutoCommit([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
+	err := work.AutoCommit(func () app_error.AppError {
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
 		if (err != nil){
 			return err
@@ -163,7 +162,7 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
-	err := work.AutoCommit([]uow.WorkFragment{authService, chapterService}, func () app_error.AppError {
+	err := work.AutoCommit(func () app_error.AppError {
 		chapterId, err := gin_tools.GetIntParam("chapter_id",c)
 		if (err != nil){
 			return err
@@ -199,7 +198,7 @@ func (this ChapterCrudHandlers) CreateChapterPath(c *gin.Context) {
 	var newPath entities.ChapterPath
 	var form entities.ChapterPath_CreationForm
 
-	err := work.AutoCommit([]uow.WorkFragment{ authService, chapterService }, func () app_error.AppError{
+	err := work.AutoCommit(func () app_error.AppError{
 		err := gin_tools.BindJSON(&form,c)
 		if (err != nil){
 			return err
@@ -234,7 +233,7 @@ func (this ChapterCrudHandlers) UpdateChapterPath(c *gin.Context){
 
 	var chapter_path entities.ChapterPath
 
-	err := work.AutoCommit([]uow.WorkFragment{}, func () app_error.AppError{
+	err := work.AutoCommit(func () app_error.AppError{
 		var update_form entities.ChapterPath_UpdateForm
 
 		chapter_path_id, err := gin_tools.GetIntParam("chapter_path_id", c)

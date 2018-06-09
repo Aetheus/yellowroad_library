@@ -5,7 +5,6 @@ import (
 	"yellowroad_library/services/game_serv"
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/utils/api_reply"
-	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/containers"
 	"encoding/json"
@@ -29,7 +28,7 @@ func (this GameHandlers) NavigateToSingleChapter(c *gin.Context) {
 
 	var pathResponse game_serv.PathResponse
 	var form NavigationForm
-	err := work.AutoCommit([]uow.WorkFragment{storyService}, func() app_error.AppError {
+	err := work.AutoCommit(func() app_error.AppError {
 		err := gin_tools.BindJSON(&form,c);
 		if (err != nil){ return err }
 

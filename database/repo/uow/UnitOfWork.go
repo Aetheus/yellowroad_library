@@ -11,9 +11,6 @@ import (
 	"yellowroad_library/database/repo/btagvotecount_repo"
 )
 
-type WorkFragment interface {
-	SetUnitOfWork(work UnitOfWork)
-}
 
 //go:generate moq -out Mock.go . UnitOfWork
 type UnitOfWork interface {
@@ -24,7 +21,7 @@ type UnitOfWork interface {
 	BookTagVoteRepo() (btagvote_repo.BookTagVoteRepository)
 	BookTagVoteCountRepo() (btagvotecount_repo.BookTagVoteCountRepository)
 
-	AutoCommit([]WorkFragment, func() app_error.AppError) app_error.AppError
+	AutoCommit(func() app_error.AppError) app_error.AppError
 	Commit() (app_error.AppError)
 	Rollback() (app_error.AppError)
 }
@@ -55,11 +52,7 @@ func NewAppUnitOfWork(db *gorm.DB) UnitOfWork{
 }
 
 //TODO: remove the workfragment concept entirely
-func (this AppUnitOfWork) AutoCommit(fragments []WorkFragment,callback func() app_error.AppError) app_error.AppError {
-	for _, fragment := range fragments {
-		fragment.SetUnitOfWork(this)
-	}
-
+func (this AppUnitOfWork) AutoCommit(callback func() app_error.AppError) app_error.AppError {
 	err := callback()
 	if (err != nil) {
 		rollbackErr := this.Rollback()

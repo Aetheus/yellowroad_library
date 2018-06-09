@@ -10,7 +10,7 @@ import (
 func prepopulateMockData() uow.UnitOfWork {
 
 	return &uow.UnitOfWorkMock{
-		AutoCommitFunc: func(in1 []uow.WorkFragment, in2 func() app_error.AppError) app_error.AppError {
+		AutoCommitFunc: func(in2 func() app_error.AppError) app_error.AppError {
 			return nil
 		},
 		CommitFunc: func() app_error.AppError {
