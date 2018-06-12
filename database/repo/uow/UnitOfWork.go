@@ -8,7 +8,7 @@ import (
 	"yellowroad_library/utils/app_error"
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/repo/btagvote_repo"
-	"yellowroad_library/database/repo/btagvotecount_repo"
+	"yellowroad_library/database/repo/btag_repo"
 )
 
 
@@ -19,7 +19,7 @@ type UnitOfWork interface {
 	ChapterPathRepo() (chapterpath_repo.ChapterPathRepository)
 	UserRepo() (user_repo.UserRepository)
 	BookTagVoteRepo() (btagvote_repo.BookTagVoteRepository)
-	BookTagVoteCountRepo() (btagvotecount_repo.BookTagVoteCountRepository)
+	BookTagVoteCountRepo() (btag_repo.BookTagRepository)
 
 	AutoCommit(func() app_error.AppError) app_error.AppError
 	Commit() (app_error.AppError)
@@ -32,7 +32,7 @@ type AppUnitOfWork struct {
 	chapterPathRepo *chapterpath_repo.ChapterPathRepository
 	userRepo *user_repo.UserRepository
 	bookTagRepo *btagvote_repo.BookTagVoteRepository
-	bookTagCountRepo *btagvotecount_repo.BookTagVoteCountRepository
+	bookTagCountRepo *btag_repo.BookTagRepository
 
 	hasCommitted bool
 	hasCommitErrors bool
@@ -138,9 +138,9 @@ func (this AppUnitOfWork) BookTagVoteRepo() (btagvote_repo.BookTagVoteRepository
 	}
 	return *this.bookTagRepo
 }
-func (this AppUnitOfWork) BookTagVoteCountRepo() (btagvotecount_repo.BookTagVoteCountRepository){
+func (this AppUnitOfWork) BookTagVoteCountRepo() (btag_repo.BookTagRepository){
 	if this.bookTagCountRepo == nil {
-		var bookTagRepo btagvotecount_repo.BookTagVoteCountRepository = btagvotecount_repo.NewDefault(this.transaction)
+		var bookTagRepo btag_repo.BookTagRepository = btag_repo.NewDefault(this.transaction)
 		this.bookTagCountRepo = &bookTagRepo
 	}
 	return *this.bookTagCountRepo

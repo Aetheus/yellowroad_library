@@ -1,4 +1,4 @@
-package btagvotecount_repo
+package btag_repo
 
 import (
 	"github.com/jinzhu/gorm"
@@ -7,18 +7,18 @@ import (
 	"errors"
 )
 
-type GormBookTagVoteCountRepository struct {
+type GormBookTagRepository struct {
 	dbConn *gorm.DB
 }
 
-var _ BookTagVoteCountRepository = GormBookTagVoteCountRepository{} //ensure interface implementation
-func NewDefault(dbConn *gorm.DB) GormBookTagVoteCountRepository {
-	return GormBookTagVoteCountRepository{
+var _ BookTagRepository = GormBookTagRepository{} //ensure interface implementation
+func NewDefault(dbConn *gorm.DB) GormBookTagRepository {
+	return GormBookTagRepository{
 		dbConn : dbConn,
 	}
 }
 
-func (this GormBookTagVoteCountRepository) Insert(booktag_count *entities.BookTagVoteCount) (app_error.AppError){
+func (this GormBookTagRepository) Insert(booktag_count *entities.BookTag) (app_error.AppError){
 	queryResult := this.dbConn.
 		Set("gorm:save_associations", false).	//no magic! let the individual objects be saved on their own!
 		Create(booktag_count)
@@ -29,7 +29,7 @@ func (this GormBookTagVoteCountRepository) Insert(booktag_count *entities.BookTa
 
 	return nil
 }
-func (this GormBookTagVoteCountRepository) Delete(booktag_count *entities.BookTagVoteCount) (app_error.AppError) {
+func (this GormBookTagRepository) Delete(booktag_count *entities.BookTag) (app_error.AppError) {
 	if (booktag_count.ID == 0){
 		err := errors.New("Invalid primary key value of 0 while attempting to delete")
 		return app_error.Wrap(err)
@@ -41,7 +41,7 @@ func (this GormBookTagVoteCountRepository) Delete(booktag_count *entities.BookTa
 
 	return nil
 }
-func (this GormBookTagVoteCountRepository) SyncCount(tag string, book_id int) (count entities.BookTagVoteCount, err app_error.AppError) {
+func (this GormBookTagRepository) SyncCount(tag string, book_id int) (count entities.BookTag, err app_error.AppError) {
 	//count the rows in BookTags that match the given tag and book_id
 	var result struct {
 		Total int
@@ -59,10 +59,10 @@ func (this GormBookTagVoteCountRepository) SyncCount(tag string, book_id int) (c
 	total_tags_in_book = result.Total
 
 
-	//upsert the value into the BookTagVoteCount table
+	//upsert the value into the BookTag table
 	queryResult = this.dbConn.
-						Where(entities.BookTagVoteCount{Tag:tag, BookId:book_id}).
-						Assign(entities.BookTagVoteCount{Count: total_tags_in_book}).
+						Where(entities.BookTag{Tag:tag, BookId:book_id}).
+						Assign(entities.BookTag{Count: total_tags_in_book}).
 						FirstOrCreate(&count)
 
 	if queryResult.Error != nil {

@@ -17,7 +17,7 @@ type BookTagVote struct {
 
 //for GORM; table name
 func (BookTagVote) TableName() string {
-	return "btags_votes"
+	return "book_tag_votes"
 }
 
 //for GORM; associations

@@ -1,4 +1,4 @@
-package btagvotecount_repo
+package btag_repo
 
 import "testing"
 import (
@@ -12,9 +12,9 @@ import (
 	"strconv"
 )
 
-func TestGormBookTagCountRepository(t *testing.T) {
+func TestGormBookTagRepository(t *testing.T) {
 	// Only pass t into top-level Convey calls
-	Convey("Given a GormBookRepository,UserRepository, GormBookTagVoteRepository and GormBookTagVoteCountRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
+	Convey("Given a GormBookRepository,UserRepository, GormBookTagVoteRepository and GormBookTagRepository", t, test_utils.WithRealGormDBConnection(func(gormDB *gorm.DB){
 		var transaction = gormDB.Begin()
 		var bookRepo = book_repo.NewDefault(transaction);
 		var userRepo user_repo.UserRepository = user_repo.NewDefault(transaction)
