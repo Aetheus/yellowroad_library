@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"encoding/json"
 	"fmt"
+	"yellowroad_library/services/token_serv"
+	"errors"
 )
 
 func GetIntParam(key string,c *gin.Context) (int, app_error.AppError){
@@ -74,4 +76,27 @@ func BindJSON(formPointer interface{}, c *gin.Context) (app_error.AppError){
 	}
 
 	return nil
+}
+
+
+func Claim(c *gin.Context) ClaimAdapter {
+	return ClaimAdapter{c}
+}
+
+type ClaimAdapter struct{
+	c *gin.Context
+}
+func (this ClaimAdapter) GetLoginClaim() (tokenClaim token_serv.LoginClaim,err app_error.AppError) {
+	potentialClaim, exists := this.c.Get(token_serv.TOKEN_CLAIMS_CONTEXT_KEY)
+
+	if !exists {
+		err = app_error.Wrap(errors.New("No token claim was provided")).
+			SetHttpCode(http.StatusUnauthorized).
+			SetEndpointMessage("No login token provided");
+		return
+	}
+
+	tokenClaim = potentialClaim.(token_serv.LoginClaim)
+
+	return
 }

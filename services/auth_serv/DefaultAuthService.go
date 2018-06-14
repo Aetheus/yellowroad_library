@@ -1,10 +1,8 @@
 package auth_serv
 
 import (
-	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 
-	"errors"
 	"unicode/utf8"
 
 	"yellowroad_library/database/entities"
@@ -94,39 +92,15 @@ func (service DefaultAuthService) VerifyToken(tokenString string) (user entities
 	return
 }
 
-func (service DefaultAuthService) GetLoggedInUser(data interface{}) (entities.User, app_error.AppError) {
+func (service DefaultAuthService) GetLoggedInUser(loginClaimAdapter LoginClaimExtractor) (entities.User, app_error.AppError) {
 	var user entities.User
 	var err app_error.AppError
 
-	context, ok := data.(*gin.Context)
-	if !ok {
-		err := errors.New("Provided data was not a gin context struct");
-		return user, app_error.Wrap(err)
-	}
-	//incase we pass it to any goroutines
-	context = context.Copy()
-
-	tokenClaim, err := getTokenClaim(context)
+	tokenClaim, err := loginClaimAdapter.GetLoginClaim()
 	if err != nil {
 		return user, app_error.Wrap(err)
 	}
 
 	user, err = service.work.UserRepo().FindById(tokenClaim.UserID)
 	return user, err
-}
-
-func getTokenClaim(c *gin.Context) (token_serv.LoginClaim, app_error.AppError) {
-	var tokenClaim token_serv.LoginClaim
-	potentialClaim, exists := c.Get(token_serv.TOKEN_CLAIMS_CONTEXT_KEY)
-
-	if !exists {
-		err := app_error.Wrap(errors.New("No token claim was provided")).
-							SetHttpCode(http.StatusUnauthorized).
-							SetEndpointMessage("No login token provided");
-		return tokenClaim, err
-	}
-
-	tokenClaim = potentialClaim.(token_serv.LoginClaim)
-
-	return tokenClaim, nil
 }

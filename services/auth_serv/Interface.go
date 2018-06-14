@@ -4,18 +4,18 @@ import (
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/services/token_serv"
 )
 
 type AuthService interface {
 	RegisterUser(username string, password string, email string) (entities.User, app_error.AppError)
 	LoginUser(username string, password string) (entities.User, string, app_error.AppError)
 	VerifyToken(token string) (entities.User, app_error.AppError)
+	GetLoggedInUser(adapter LoginClaimExtractor) (entities.User, app_error.AppError)
 
-
-	//TODO: unfortunately, unless we want a tonne of boilerplate, this is the "quickest" data
-	//from the routes - by actually passing the context object to it. Now why are we passing
-	//it as an empty interface instead of as a *gin.Context? In case we ditch Gin, mostly. 
-	//may not be a good idea, so may have to revisit this
-	GetLoggedInUser(data interface{}) (entities.User, app_error.AppError)
 	SetUnitOfWork(work uow.UnitOfWork)
+}
+
+type LoginClaimExtractor interface{
+	GetLoginClaim()(token_serv.LoginClaim, app_error.AppError)
 }

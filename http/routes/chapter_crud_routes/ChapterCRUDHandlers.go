@@ -95,7 +95,7 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 		}
 		form.ChapterForm.BookId = &book_id //ensures that the bookId is the book id of this route
 
-		user, err := authService.GetLoggedInUser(c)
+		user, err := authService.GetLoggedInUser(gin_tools.Claim(c))
 		if (err != nil){
 			return err
 		}
@@ -138,7 +138,7 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 			return err
 		}
 
-		currentUser, err := authService.GetLoggedInUser(c)
+		currentUser, err := authService.GetLoggedInUser(gin_tools.Claim(c))
 		if (err != nil){
 			return err
 		}
@@ -168,7 +168,7 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 			return err
 		}
 
-		user, err := authService.GetLoggedInUser(c)
+		user, err := authService.GetLoggedInUser(gin_tools.Claim(c))
 		if (err != nil){
 			return err
 		}
@@ -204,7 +204,7 @@ func (this ChapterCrudHandlers) CreateChapterPath(c *gin.Context) {
 			return err
 		}
 
-		currentUser, err := authService.GetLoggedInUser(c)
+		currentUser, err := authService.GetLoggedInUser(gin_tools.Claim(c))
 		if (err != nil){
 			return err
 		}
@@ -246,7 +246,7 @@ func (this ChapterCrudHandlers) UpdateChapterPath(c *gin.Context){
 			return err
 		}
 
-		currentUser, err := authService.GetLoggedInUser(c)
+		currentUser, err := authService.GetLoggedInUser(gin_tools.Claim(c))
 		if err != nil {
 			return err
 		}

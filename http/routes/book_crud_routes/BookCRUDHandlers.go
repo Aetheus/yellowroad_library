@@ -82,7 +82,7 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 		var form entities.Book_CreationForm
 
 		//Get logged in user
-		user, err := authService.GetLoggedInUser(c);
+		user, err := authService.GetLoggedInUser(gin_tools.Claim(c));
 		if err != nil {
 			return err
 		}
@@ -122,7 +122,7 @@ func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 			return err
 		}
 
-		user, err := authService.GetLoggedInUser(c)
+		user, err := authService.GetLoggedInUser(gin_tools.Claim(c))
 		if err != nil {
 			return err
 		}
@@ -163,7 +163,7 @@ func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 			return err
 		}
 
-		user, err := authService.GetLoggedInUser(c)
+		user, err := authService.GetLoggedInUser(gin_tools.Claim(c))
 		if err != nil {
 			return err
 		}
