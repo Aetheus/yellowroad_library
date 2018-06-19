@@ -120,7 +120,7 @@ func (this DefaultBookService) VoteOnTag(currentUser entities.User, book_id int,
 	err = this.work.BookTagVoteRepo().Upsert(&vote)
 	if (err != nil) {return newCount,err}
 
-	result, err := this.work.BookTagVoteCountRepo().SyncCount(tagName,book_id)
+	result, err := this.work.BookTagRepo().SyncCount(tagName,book_id)
 	if (err != nil) {return newCount,err}
 	newCount = result.Count
 

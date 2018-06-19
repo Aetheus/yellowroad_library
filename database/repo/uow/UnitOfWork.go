@@ -18,8 +18,8 @@ type UnitOfWork interface {
 	ChapterRepo() (chapter_repo.ChapterRepository)
 	ChapterPathRepo() (chapterpath_repo.ChapterPathRepository)
 	UserRepo() (user_repo.UserRepository)
+	BookTagRepo() (btag_repo.BookTagRepository)
 	BookTagVoteRepo() (btagvote_repo.BookTagVoteRepository)
-	BookTagVoteCountRepo() (btag_repo.BookTagRepository)
 
 	AutoCommit(func() app_error.AppError) app_error.AppError
 	Commit() (app_error.AppError)
@@ -138,7 +138,7 @@ func (this AppUnitOfWork) BookTagVoteRepo() (btagvote_repo.BookTagVoteRepository
 	}
 	return *this.bookTagRepo
 }
-func (this AppUnitOfWork) BookTagVoteCountRepo() (btag_repo.BookTagRepository){
+func (this AppUnitOfWork) BookTagRepo() (btag_repo.BookTagRepository){
 	if this.bookTagCountRepo == nil {
 		var bookTagRepo btag_repo.BookTagRepository = btag_repo.NewDefault(this.transaction)
 		this.bookTagCountRepo = &bookTagRepo

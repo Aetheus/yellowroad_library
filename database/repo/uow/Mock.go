@@ -39,7 +39,7 @@ var (
 // 	               panic("TODO: mock out the BookRepo method")
 //             },
 //             BookTagVoteCountRepoFunc: func() btagvotecount_repo.BookTagRepository {
-// 	               panic("TODO: mock out the BookTagVoteCountRepo method")
+// 	               panic("TODO: mock out the BookTagRepo method")
 //             },
 //             BookTagVoteRepoFunc: func() btagvote_repo.BookTagVoteRepository {
 // 	               panic("TODO: mock out the BookTagVoteRepo method")
@@ -72,7 +72,7 @@ type UnitOfWorkMock struct {
 	// BookRepoFunc mocks the BookRepo method.
 	BookRepoFunc func() book_repo.BookRepository
 
-	// BookTagVoteCountRepoFunc mocks the BookTagVoteCountRepo method.
+	// BookTagVoteCountRepoFunc mocks the BookTagRepo method.
 	BookTagVoteCountRepoFunc func() btag_repo.BookTagRepository
 
 	// BookTagVoteRepoFunc mocks the BookTagVoteRepo method.
@@ -103,7 +103,7 @@ type UnitOfWorkMock struct {
 		// BookRepo holds details about calls to the BookRepo method.
 		BookRepo []struct {
 		}
-		// BookTagVoteCountRepo holds details about calls to the BookTagVoteCountRepo method.
+		// BookTagRepo holds details about calls to the BookTagRepo method.
 		BookTagVoteCountRepo []struct {
 		}
 		// BookTagVoteRepo holds details about calls to the BookTagVoteRepo method.
@@ -184,10 +184,10 @@ func (mock *UnitOfWorkMock) BookRepoCalls() []struct {
 	return calls
 }
 
-// BookTagVoteCountRepo calls BookTagVoteCountRepoFunc.
+// BookTagRepo calls BookTagVoteCountRepoFunc.
 func (mock *UnitOfWorkMock) BookTagVoteCountRepo() btag_repo.BookTagRepository {
 	if mock.BookTagVoteCountRepoFunc == nil {
-		panic("moq: UnitOfWorkMock.BookTagVoteCountRepoFunc is nil but UnitOfWork.BookTagVoteCountRepo was just called")
+		panic("moq: UnitOfWorkMock.BookTagVoteCountRepoFunc is nil but UnitOfWork.BookTagRepo was just called")
 	}
 	callInfo := struct {
 	}{}
@@ -197,7 +197,7 @@ func (mock *UnitOfWorkMock) BookTagVoteCountRepo() btag_repo.BookTagRepository {
 	return mock.BookTagVoteCountRepoFunc()
 }
 
-// BookTagVoteCountRepoCalls gets all the calls that were made to BookTagVoteCountRepo.
+// BookTagVoteCountRepoCalls gets all the calls that were made to BookTagRepo.
 // Check the length with:
 //     len(mockedUnitOfWork.BookTagVoteCountRepoCalls())
 func (mock *UnitOfWorkMock) BookTagVoteCountRepoCalls() []struct {
