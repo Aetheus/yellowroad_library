@@ -14,4 +14,7 @@ type ChapterRepository interface {
 	Update(*entities.Chapter) app_error.AppError
 	Insert(*entities.Chapter) app_error.AppError
 	Delete(*entities.Chapter) app_error.AppError
+
+	//TODO: we need a "FindInId" or something for fetching multiple chapters
+	//TODO: we need to add an "associations" param for most of these functions to fetch the associations
 }
