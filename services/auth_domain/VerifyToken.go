@@ -30,6 +30,3 @@ type LoginClaim struct {
 	jwt.StandardClaims
 }
 
-type TokenStringValidator interface{
-	ValidateTokenString(string) (LoginClaim, app_error.AppError)
-}

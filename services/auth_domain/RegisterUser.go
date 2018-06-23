@@ -8,9 +8,6 @@ import (
 	"yellowroad_library/database/repo/user_repo"
 )
 
-type TokenStringCreator interface {
-	CreateTokenString(entities.User) (string, app_error.AppError)
-}
 
 type RegisterUser struct {
 	userRepo user_repo.UserRepository

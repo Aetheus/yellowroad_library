@@ -9,13 +9,21 @@ import (
 
 type GetLoggedInUser struct {
 	userRepo user_repo.UserRepository
+	tokenHelper TokenStringValidator
 }
 
-func (this GetLoggedInUser) Execute(loginClaimAdapter LoginClaimExtractor) (entities.User, app_error.AppError) {
+func NewGetLoggedInUser(
+	userRepo user_repo.UserRepository,
+	tokenHelper TokenStringValidator,
+) GetLoggedInUser {
+	return GetLoggedInUser {userRepo,tokenHelper}
+}
+
+func (this GetLoggedInUser) Execute(tokenString string) (entities.User, app_error.AppError) {
 	var user entities.User
 	var err app_error.AppError
 
-	tokenClaim, err := loginClaimAdapter.GetLoginClaim()
+	tokenClaim, err := this.tokenHelper.ValidateTokenString(tokenString)
 	if err != nil {
 		return user, app_error.Wrap(err)
 	}
