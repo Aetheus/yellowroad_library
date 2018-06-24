@@ -7,6 +7,7 @@ import (
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/containers"
+	"yellowroad_library/http/middleware/auth_middleware"
 )
 
 type ChapterCrudHandlers struct {
@@ -75,7 +76,6 @@ func (this ChapterCrudHandlers) FetchChaptersIndex(c *gin.Context) {
 func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
 	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
@@ -95,7 +95,7 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 		}
 		form.ChapterForm.BookId = &book_id //ensures that the bookId is the book id of this route
 
-		user, err := authService.GetLoggedInUser(gin_tools.Claim(c))
+		user, err := auth_middleware.GetUser(c)
 		if (err != nil){
 			return err
 		}
@@ -120,7 +120,6 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
 	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
@@ -138,7 +137,7 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 			return err
 		}
 
-		currentUser, err := authService.GetLoggedInUser(gin_tools.Claim(c))
+		currentUser, err := auth_middleware.GetUser(c)
 		if (err != nil){
 			return err
 		}
@@ -158,7 +157,6 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
 	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
@@ -168,7 +166,7 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 			return err
 		}
 
-		user, err := authService.GetLoggedInUser(gin_tools.Claim(c))
+		user, err := auth_middleware.GetUser(c)
 		if (err != nil){
 			return err
 		}
@@ -191,7 +189,6 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 func (this ChapterCrudHandlers) CreateChapterPath(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
 	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
@@ -204,7 +201,7 @@ func (this ChapterCrudHandlers) CreateChapterPath(c *gin.Context) {
 			return err
 		}
 
-		currentUser, err := authService.GetLoggedInUser(gin_tools.Claim(c))
+		currentUser, err := auth_middleware.GetUser(c)
 		if (err != nil){
 			return err
 		}
@@ -227,7 +224,6 @@ func (this ChapterCrudHandlers) CreateChapterPath(c *gin.Context) {
 func (this ChapterCrudHandlers) UpdateChapterPath(c *gin.Context){
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
 	chapterService  := this.Container.ChapterService(work)
 	/***************************/
 
@@ -246,7 +242,7 @@ func (this ChapterCrudHandlers) UpdateChapterPath(c *gin.Context){
 			return err
 		}
 
-		currentUser, err := authService.GetLoggedInUser(gin_tools.Claim(c))
+		currentUser, err := auth_middleware.GetUser(c)
 		if err != nil {
 			return err
 		}

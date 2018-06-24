@@ -23,7 +23,7 @@ type Container interface {
 	UnitOfWork() uow.UnitOfWork
 
 	//middleware
-	GetAuthMiddleware() auth_middleware.AuthMiddleware
+	AuthMiddleware() auth_middleware.AuthMiddleware
 
 	//configuration
 	GetConfiguration() config.Configuration

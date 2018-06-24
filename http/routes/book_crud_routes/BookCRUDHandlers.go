@@ -8,6 +8,7 @@ import (
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/containers"
+	"yellowroad_library/http/middleware/auth_middleware"
 )
 
 type BookCrudHandlers struct {
@@ -73,7 +74,6 @@ func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
 func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
 	bookService := this.Container.BookService(work)
 	/***************************/
 
@@ -82,7 +82,7 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 		var form entities.Book_CreationForm
 
 		//Get logged in user
-		user, err := authService.GetLoggedInUser(gin_tools.Claim(c));
+		user, err := auth_middleware.GetUser(c)
 		if err != nil {
 			return err
 		}
@@ -112,7 +112,6 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
 	bookService := this.Container.BookService(work)
 	/***************************/
 
@@ -122,7 +121,7 @@ func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 			return err
 		}
 
-		user, err := authService.GetLoggedInUser(gin_tools.Claim(c))
+		user, err := auth_middleware.GetUser(c)
 		if err != nil {
 			return err
 		}
@@ -145,7 +144,6 @@ func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
 	bookService := this.Container.BookService(work)
 	/***************************/
 
@@ -163,7 +161,7 @@ func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 			return err
 		}
 
-		user, err := authService.GetLoggedInUser(gin_tools.Claim(c))
+		user, err := auth_middleware.GetUser(c)
 		if err != nil {
 			return err
 		}

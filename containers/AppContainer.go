@@ -14,6 +14,9 @@ import (
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/services/chapter_serv"
 	"yellowroad_library/utils/app_error"
+	"yellowroad_library/services/auth_domain"
+	"github.com/dgrijalva/jwt-go"
+	"yellowroad_library/database/repo/user_repo"
 )
 
 type AppContainer struct {
@@ -23,6 +26,8 @@ type AppContainer struct {
 	bookService	  *book_serv.BookService
 	storyService  *game_serv.GameService
 	configuration config.Configuration
+
+	tokenHelper   	*auth_domain.TokenHelper
 }
 //ensure interface implementation
 var _ Container = AppContainer{}
@@ -54,7 +59,6 @@ func NewAppContainer(config config.Configuration) (container AppContainer, appEr
 /***********************************************************************************************/
 //Non-interface methods
 //
-
 
 /***********************************************************************************************/
 /***********************************************************************************************/
@@ -104,6 +108,25 @@ func (ac AppContainer) StoryService(work uow.UnitOfWork) game_serv.GameService {
 	}
 	return game_serv.Default(work);
 }
+/***********************************************************************************************/
+/***********************************************************************************************/
+// Domain
+func (ac AppContainer) TokenHelper() auth_domain.TokenHelper {
+	if (ac.tokenHelper == nil) {
+		tokenHelper := auth_domain.NewTokenHelper(
+			jwt.SigningMethodHS256,
+			[]byte(ac.configuration.JWT.SecretKey),
+			ac.configuration.JWT.ExpiryDurationInDays,
+		)
+		ac.tokenHelper = &tokenHelper
+	}
+	return *ac.tokenHelper
+}
+
+func (ac AppContainer) GetLoggedInUser(userRepo user_repo.UserRepository) auth_domain.GetLoggedInUser {
+	return auth_domain.NewGetLoggedInUser(userRepo, ac.TokenHelper())
+}
+
 
 /***********************************************************************************************/
 /***********************************************************************************************/
@@ -118,8 +141,11 @@ func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
 /***********************************************************************************************/
 //Middleware
 
-func (ac AppContainer) GetAuthMiddleware() auth_middleware.AuthMiddleware {
-	return auth_middleware.New(ac.TokenService())
+func (ac AppContainer) AuthMiddleware() auth_middleware.AuthMiddleware {
+	userRepo := user_repo.NewDefault(ac.dbConn)
+	getLoggedInUser := ac.GetLoggedInUser(userRepo)
+
+	return auth_middleware.New(getLoggedInUser)
 }
 
 /***********************************************************************************************/

@@ -19,7 +19,7 @@ func ROUTES(
 
 	// Group that will be used by all routes that need a Auth Middleware
 	// (i.e: routes that require the user to be logged in)
-	auth_api := public_api.Group("", gin.HandlerFunc(container.GetAuthMiddleware()))
+	auth_api := public_api.Group("", gin.HandlerFunc(container.AuthMiddleware()))
 
 	bookCrudHandlers := book_crud_routes.BookCrudHandlers{container}
 	{
