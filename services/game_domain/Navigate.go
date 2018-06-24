@@ -12,6 +12,15 @@ type NavigateToChapter struct {
 	chapterPathRepo chapterpath_repo.ChapterPathRepository
 }
 
+func newNavigateToChapter(
+	chapterRepo 	chapter_repo.ChapterRepository,
+	chapterPathRepo chapterpath_repo.ChapterPathRepository,
+) NavigateToChapter{
+	return NavigateToChapter{
+		chapterRepo,chapterPathRepo,
+	}
+}
+
 func (this NavigateToChapter) Execute(
 	request PathRequest,
 ) (response PathResponse, err app_error.AppError) {
