@@ -37,7 +37,7 @@ func New(getLoggedInUser auth_domain.GetLoggedInUser) AuthMiddleware {
 
 		if len(token) == 0 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H {
-				"message" : "No valid login token provided!",
+				"message" : "No login token provided!",
 			})
 			return
 		}
