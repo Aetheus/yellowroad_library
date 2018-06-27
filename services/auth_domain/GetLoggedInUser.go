@@ -25,7 +25,7 @@ func (this GetLoggedInUser) Execute(tokenString string) (entities.User, app_erro
 
 	tokenClaim, err := this.tokenHelper.ValidateTokenString(tokenString)
 	if err != nil {
-		return user, app_error.Wrap(err)
+		return user, err
 	}
 
 	user, err = this.userRepo.FindById(tokenClaim.UserID)

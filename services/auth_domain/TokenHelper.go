@@ -44,7 +44,9 @@ func (this TokenHelper) ValidateTokenString(tokenString string) (LoginClaim, app
 	})
 
 	if err != nil {
-		return claims, app_error.Wrap(err)
+		return claims, app_error.
+						Wrap(err).
+						SetEndpointMessage("Invalid login token provided")
 	}
 
 	if claims, ok := token.Claims.(*LoginClaim); ok && token.Valid {
