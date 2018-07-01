@@ -7,7 +7,7 @@ import (
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/database/repo/uow"
-	"yellowroad_library/services/auth_domain"
+	"yellowroad_library/domain/auth_domain"
 )
 
 

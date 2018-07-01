@@ -4,7 +4,6 @@ import (
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/database/repo/user_repo"
-	"yellowroad_library/services/token_serv"
 )
 
 type GetLoggedInUser struct {
@@ -32,7 +31,3 @@ func (this GetLoggedInUser) Execute(tokenString string) (entities.User, app_erro
 	return user, err
 }
 
-
-type LoginClaimExtractor interface{
-	GetLoginClaim()(token_serv.LoginClaim, app_error.AppError)
-}

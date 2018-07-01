@@ -9,7 +9,7 @@ import (
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/http/middleware/auth_middleware"
 	"yellowroad_library/database/repo/uow"
-	"yellowroad_library/services/book_domain"
+	"yellowroad_library/domain/book_domain"
 )
 
 type BookCrudContainer interface {

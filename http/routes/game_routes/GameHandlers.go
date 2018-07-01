@@ -6,7 +6,7 @@ import (
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/utils/app_error"
 	"encoding/json"
-	"yellowroad_library/services/game_domain"
+	"yellowroad_library/domain/game_domain"
 	"yellowroad_library/database/repo/uow"
 )
 

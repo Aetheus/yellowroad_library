@@ -3,7 +3,7 @@ package auth_middleware
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"yellowroad_library/services/auth_domain"
+	"yellowroad_library/domain/auth_domain"
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/app_error"
 )

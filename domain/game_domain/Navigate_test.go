@@ -126,7 +126,7 @@ var (
 func TestDefaultStoryService_NavigateToChapter(t *testing.T) {
 	// Only pass t into top-level Convey calls
 	Convey("Given an instance of NavigateToChapter", t,  func(){
-		navigateToChapter := newNavigateToChapter(chapterRepo,chapterPathRepo)
+		navigateToChapter := NewNavigateToChapter(chapterRepo,chapterPathRepo)
 
 		Convey("Navigating to the first chapter with an empty save should work", func (){
 			request := PathRequest{

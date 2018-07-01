@@ -8,12 +8,12 @@ import (
 	"github.com/jinzhu/gorm"
 	"yellowroad_library/database/repo/uow"
 	"yellowroad_library/utils/app_error"
-	"yellowroad_library/services/auth_domain"
+	"yellowroad_library/domain/auth_domain"
 	"github.com/dgrijalva/jwt-go"
 	"yellowroad_library/database/repo/user_repo"
-	"yellowroad_library/services/book_domain"
-	"yellowroad_library/services/chapter_domain"
-	"yellowroad_library/services/game_domain"
+	"yellowroad_library/domain/book_domain"
+	"yellowroad_library/domain/chapter_domain"
+	"yellowroad_library/domain/game_domain"
 )
 
 type AppContainer struct {
