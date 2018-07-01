@@ -1,20 +1,24 @@
 TODO: Clean this readme up. 
 
-An unfinished webapp project (previously written in Node.js) that I'm reviving and rewriting from scratch in Go. Part of the goal is of course to finish the project itself - another part of the Go(al) is to master Golang itself. 
+An unfinished webapp project (previously written in Node.js) that I'm reviving and rewriting from scratch in Go. Part of the goal is of course to finish the project itself - another part of the Go(al) is to master Golang and to see if it's possible to implement age-old software design patterns in it without too much hassle (spoilers: it does make it a bit of a pain).
 
-This is the API server of the app - the frontend will eventually be written in its own repo.
+This is the API server of the app - the frontend is being developed in its own repo.
 
-Current major libraries used :
+Current major libraries/software used:
 * gin (Routing)
 * gorm (ORM)
+* PostgreSQL
 
 The project adopts a three-layered pattern inspired by (but not in full compliance with) Uncle Bob's "Clean Architecture".  
 
 Layer | Purpose
 ----- | -------
 Handlers | Handlers are responsible for **getting request parameters, passing them to the necessary Domain Use Cases/Repositories, and returning responses**.
-Domain/Use Cases | All "**business logic**" are handled by Use Cases, which make use of Repositories to handle database interaction
+Domain/Use Cases | All "**business logic**" are handled by Use Cases, which often make use of **Repositories** to handle underlying database interactions.
 Repository | All the nitty-gritty **database handling** is handled by Repositories, which take and return *Model structs*, which are POGS (plain old Go structs). Within the system, they are often created by **Unit of Work**s, as a means of ensuring that multiple Repositories can share the same Transaction context.
+
+This pattern ensures that the implementation for the first and last layers (**Handlers and Repositories**) can both be easily mocked/swapped without heavily affecting the middle layer (**Domain/Use Cases**).
+
 
 -------
 
