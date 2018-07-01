@@ -8,13 +8,13 @@ Current major libraries used :
 * gin (Routing)
 * gorm (ORM)
 
-The project adopts a "[Route]-[Service]-[Repository]" architecture instead of traditional MVC:
+The project adopts a three-layered pattern inspired by (but not in full compliance with) Uncle Bob's "Clean Architecture".  
 
 Layer | Purpose
 ----- | -------
-Route | Routes are responsible for **getting request parameters, passing them to the necessary Services/Repositories, and returning responses**.
-Service | All "**business logic**" is handled by Services, which make use of Repositories to handle database interaction
-Repository | All the nitty-gritty **database handling** is handled by Repositories, which take and return *Model structs*, which are POGS (plain old Go structs)
+Handlers | Handlers are responsible for **getting request parameters, passing them to the necessary Domain Use Cases/Repositories, and returning responses**.
+Domain/Use Cases | All "**business logic**" are handled by Use Cases, which make use of Repositories to handle database interaction
+Repository | All the nitty-gritty **database handling** is handled by Repositories, which take and return *Model structs*, which are POGS (plain old Go structs). Within the system, they are often created by **Unit of Work**s, as a means of ensuring that multiple Repositories can share the same Transaction context.
 
 -------
 
