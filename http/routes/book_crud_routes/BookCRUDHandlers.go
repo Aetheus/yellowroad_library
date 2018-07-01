@@ -7,12 +7,19 @@ import (
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/database/repo/book_repo"
 	"yellowroad_library/utils/gin_tools"
-	"yellowroad_library/containers"
 	"yellowroad_library/http/middleware/auth_middleware"
+	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/services/book_domain"
 )
 
+type BookCrudContainer interface {
+	UnitOfWork() uow.UnitOfWork
+	CreateBook(uow.UnitOfWork) book_domain.CreateBook
+	DeleteBook(uow.UnitOfWork) book_domain.DeleteBook
+	UpdateBook(uow.UnitOfWork) book_domain.UpdateBook
+}
 type BookCrudHandlers struct {
-	Container containers.Container
+	Container BookCrudContainer
 }
 
 func (this BookCrudHandlers) FetchSingleBook(c *gin.Context)  {
@@ -70,11 +77,10 @@ func (this BookCrudHandlers) FetchBooks(c *gin.Context) {
 	}
 }
 
-
 func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	bookService := this.Container.BookService(work)
+	createBook := this.Container.CreateBook(work)
 	/***************************/
 
 	var book entities.Book
@@ -92,7 +98,7 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 			return err
 		}
 
-		book, err = bookService.CreateBook(user, form)
+		book, err = createBook.Execute(user, form)
 		if err != nil {
 			return err
 		}
@@ -107,12 +113,10 @@ func (this BookCrudHandlers) CreateBook (c *gin.Context) {
 	}
 }
 
-
-
 func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	bookService := this.Container.BookService(work)
+	deleteBook := this.Container.DeleteBook(work)
 	/***************************/
 
 	err := work.AutoCommit(func() app_error.AppError {
@@ -126,7 +130,7 @@ func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 			return err
 		}
 
-		err = bookService.DeleteBook(user, book_id)
+		err = deleteBook.Execute(user, book_id)
 		if err != nil {
 			return err
 		}
@@ -144,7 +148,7 @@ func (this BookCrudHandlers) DeleteBook (c *gin.Context) {
 func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	bookService := this.Container.BookService(work)
+	updateBook := this.Container.UpdateBook(work)
 	/***************************/
 
 	var book entities.Book
@@ -166,7 +170,7 @@ func (this BookCrudHandlers) UpdateBook (c *gin.Context) {
 			return err
 		}
 
-		book, err = bookService.UpdateBook(user,book_id,form)
+		book, err = updateBook.Execute(user,book_id,form)
 		return err
 	})
 

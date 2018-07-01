@@ -5,32 +5,22 @@ import (
 
 	"yellowroad_library/config"
 	"yellowroad_library/http/middleware/auth_middleware"
-	"yellowroad_library/services/auth_serv"
-	"yellowroad_library/services/token_serv"
-
 	"github.com/jinzhu/gorm"
-	"yellowroad_library/services/book_serv"
-	"yellowroad_library/services/game_serv"
 	"yellowroad_library/database/repo/uow"
-	"yellowroad_library/services/chapter_serv"
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/services/auth_domain"
 	"github.com/dgrijalva/jwt-go"
 	"yellowroad_library/database/repo/user_repo"
+	"yellowroad_library/services/book_domain"
+	"yellowroad_library/services/chapter_domain"
+	"yellowroad_library/services/game_domain"
 )
 
 type AppContainer struct {
 	dbConn        *gorm.DB
-	tokenService  *token_serv.TokenService
-	authService   *auth_serv.AuthService
-	bookService	  *book_serv.BookService
-	storyService  *game_serv.GameService
 	configuration config.Configuration
-
 	tokenHelper   	*auth_domain.TokenHelper
 }
-//ensure interface implementation
-var _ Container = AppContainer{}
 
 func NewAppContainer(config config.Configuration) (container AppContainer, appErr app_error.AppError) {
 	//setup the DB connection
@@ -55,59 +45,11 @@ func NewAppContainer(config config.Configuration) (container AppContainer, appEr
 	return
 }
 
-/***********************************************************************************************/
-/***********************************************************************************************/
-//Non-interface methods
-//
-
-/***********************************************************************************************/
-/***********************************************************************************************/
-//Configuration
-
-func (ac AppContainer) GetConfiguration() config.Configuration {
+func (ac AppContainer) Configuration() config.Configuration {
 	return ac.configuration
 }
 
-/***********************************************************************************************/
-/***********************************************************************************************/
-//Services
 
-func (ac AppContainer) TokenService() token_serv.TokenService {
-	if ac.tokenService == nil {
-		var tokenService token_serv.TokenService = token_serv.Default(ac.GetConfiguration())
-		ac.tokenService = &tokenService
-	}
-
-	return *ac.tokenService
-}
-
-func (ac AppContainer) AuthService(work uow.UnitOfWork) auth_serv.AuthService{
-	if (work == nil){
-		work = ac.UnitOfWork()
-	}
-	return auth_serv.Default(work, ac.TokenService());
-}
-
-func (ac AppContainer) BookService(work uow.UnitOfWork) book_serv.BookService {
-	if (work == nil){
-		work = ac.UnitOfWork()
-	}
-	return book_serv.Default(work)
-}
-
-func (ac AppContainer) ChapterService(work uow.UnitOfWork) chapter_serv.ChapterService {
-	if (work == nil){
-		work = ac.UnitOfWork()
-	}
-	return chapter_serv.Default(work);
-}
-
-func (ac AppContainer) StoryService(work uow.UnitOfWork) game_serv.GameService {
-	if (work == nil){
-		work = ac.UnitOfWork()
-	}
-	return game_serv.Default(work);
-}
 /***********************************************************************************************/
 /***********************************************************************************************/
 // Domain
@@ -122,28 +64,81 @@ func (ac AppContainer) TokenHelper() auth_domain.TokenHelper {
 	}
 	return *ac.tokenHelper
 }
-
-func (ac AppContainer) GetLoggedInUser(userRepo user_repo.UserRepository) auth_domain.GetLoggedInUser {
-	return auth_domain.NewGetLoggedInUser(userRepo, ac.TokenHelper())
+func (ac AppContainer) RegisterUser(work uow.UnitOfWork) auth_domain.RegisterUser {
+	return auth_domain.NewRegisterUser(
+		work.UserRepo(),
+		ac.TokenHelper(),
+	)
+}
+func (ac AppContainer) LoginUser(work uow.UnitOfWork) auth_domain.LoginUser {
+	return auth_domain.NewLoginUser(
+		work.UserRepo(),
+		ac.TokenHelper(),
+	)
+}
+func (ac AppContainer) VerifyToken() auth_domain.VerifyToken {
+	userRepo := user_repo.NewDefault(ac.dbConn)
+	return auth_domain.NewVerifyToken(ac.TokenHelper(), userRepo)
 }
 
+func (ac AppContainer) CreateBook(work uow.UnitOfWork) book_domain.CreateBook {
+	return book_domain.NewCreateBook(work.BookRepo(), work.ChapterRepo())
+}
+func (ac AppContainer) DeleteBook(work uow.UnitOfWork) book_domain.DeleteBook {
+	return book_domain.NewDeleteBook(work.BookRepo())
+}
+func (ac AppContainer) UpdateBook(work uow.UnitOfWork) book_domain.UpdateBook {
+	return book_domain.NewUpdateBook(work.BookRepo())
+}
+
+func (ac AppContainer) CreateChapterAndPath(work uow.UnitOfWork) chapter_domain.CreateChapterAndPath {
+	return chapter_domain.NewCreateChapterAndPath(
+		work.ChapterRepo(),
+		work.ChapterPathRepo(),
+		work.BookRepo(),
+	)
+}
+func (ac AppContainer) UpdateChapter(work uow.UnitOfWork) chapter_domain.UpdateChapter {
+	return chapter_domain.NewUpdateChapter(work.BookRepo(),work.ChapterRepo())
+}
+func (ac AppContainer) DeleteChapter(work uow.UnitOfWork) chapter_domain.DeleteChapter {
+	return chapter_domain.NewDeleteChapter(work.ChapterRepo(),work.BookRepo())
+}
+func (ac AppContainer) CreatePathBetweenChapters(work uow.UnitOfWork) chapter_domain.CreatePathBetweenChapters {
+	return chapter_domain.NewCreatePathBetweenChapters(
+		work.ChapterRepo(),
+		work.ChapterPathRepo(),
+		work.BookRepo(),
+	)
+}
+func (ac AppContainer) UpdatePathBetweenChapters(work uow.UnitOfWork) chapter_domain.UpdatePathBetweenChapters {
+	return chapter_domain.NewUpdatePathBetweenChapters(
+		work.ChapterRepo(),
+		work.ChapterPathRepo(),
+		work.BookRepo(),
+	)
+}
+
+func (ac AppContainer) NavigateToChapter(work uow.UnitOfWork) game_domain.NavigateToChapter {
+	return game_domain.NewNavigateToChapter(
+		work.ChapterRepo(),
+		work.ChapterPathRepo(),
+	)
+}
 
 /***********************************************************************************************/
 /***********************************************************************************************/
 // Unit of Work
-
 func (ac AppContainer) UnitOfWork() uow.UnitOfWork {
 	return uow.NewAppUnitOfWork(ac.dbConn)
 }
 
-
 /***********************************************************************************************/
 /***********************************************************************************************/
 //Middleware
-
 func (ac AppContainer) AuthMiddleware() auth_middleware.AuthMiddleware {
 	userRepo := user_repo.NewDefault(ac.dbConn)
-	getLoggedInUser := ac.GetLoggedInUser(userRepo)
+	getLoggedInUser := auth_domain.NewGetLoggedInUser(userRepo, ac.TokenHelper())
 
 	return auth_middleware.New(getLoggedInUser)
 }

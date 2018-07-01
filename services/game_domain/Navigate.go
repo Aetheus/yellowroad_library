@@ -12,7 +12,7 @@ type NavigateToChapter struct {
 	chapterPathRepo chapterpath_repo.ChapterPathRepository
 }
 
-func newNavigateToChapter(
+func NewNavigateToChapter(
 	chapterRepo 	chapter_repo.ChapterRepository,
 	chapterPathRepo chapterpath_repo.ChapterPathRepository,
 ) NavigateToChapter{

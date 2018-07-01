@@ -2,18 +2,21 @@ package game_routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"yellowroad_library/services/game_serv"
 	"yellowroad_library/utils/gin_tools"
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/utils/app_error"
-	"yellowroad_library/containers"
 	"encoding/json"
+	"yellowroad_library/services/game_domain"
+	"yellowroad_library/database/repo/uow"
 )
 
-type GameHandlers struct {
-	Container containers.Container
+type GameContainer interface{
+	UnitOfWork() uow.UnitOfWork
+	NavigateToChapter(uow.UnitOfWork) game_domain.NavigateToChapter
 }
-
+type GameHandlers struct {
+	Container GameContainer
+}
 
 type NavigationForm struct {
 	Save 			json.RawMessage		`json:"save"`
@@ -23,10 +26,10 @@ type NavigationForm struct {
 func (this GameHandlers) NavigateToSingleChapter(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	storyService := this.Container.StoryService(work)
+	navigateToChapter := this.Container.NavigateToChapter(work)
 	/***************************/
 
-	var pathResponse game_serv.PathResponse
+	var pathResponse game_domain.PathResponse
 	var form NavigationForm
 	err := work.AutoCommit(func() app_error.AppError {
 		err := gin_tools.BindJSON(&form,c);
@@ -46,8 +49,8 @@ func (this GameHandlers) NavigateToSingleChapter(c *gin.Context) {
 		if (err != nil){ return err }
 
 
-		pathRequest := game_serv.NewPathRequest(bookId, chapterId, chapterPathId, currentSave, isFreeMode)
-		pathResponse, err = storyService.NavigateToChapter(pathRequest)
+		pathRequest := game_domain.NewPathRequest(bookId, chapterId, chapterPathId, currentSave, isFreeMode)
+		pathResponse, err = navigateToChapter.Execute(pathRequest)
 		if (err != nil) { return err }
 
 		return nil

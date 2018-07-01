@@ -5,12 +5,20 @@ import (
 	"yellowroad_library/utils/app_error"
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/database/entities"
-	"yellowroad_library/containers"
 	"yellowroad_library/utils/gin_tools"
+	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/services/auth_domain"
 )
 
+
+type UserContainer interface {
+	UnitOfWork() uow.UnitOfWork
+	RegisterUser(uow.UnitOfWork) auth_domain.RegisterUser
+	LoginUser(uow.UnitOfWork) auth_domain.LoginUser
+	VerifyToken() auth_domain.VerifyToken
+}
 type UserRouteHandlers struct {
-	Container containers.Container
+	Container UserContainer
 }
 
 type signUpForm struct {
@@ -21,11 +29,11 @@ type signUpForm struct {
 func (this UserRouteHandlers) SignUp(c *gin.Context)  {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
+	registerUser := this.Container.RegisterUser(work)
 	/***************************/
 
-
 	var user entities.User
+	var loginToken string
 	err := work.AutoCommit(func() (errOrNil app_error.AppError) {
 		form := signUpForm{}
 
@@ -33,7 +41,7 @@ func (this UserRouteHandlers) SignUp(c *gin.Context)  {
 			return err
 		}
 
-		user, errOrNil = authService.RegisterUser(form.Username,form.Password,form.Email)
+		user, loginToken, errOrNil = registerUser.Execute(form.Username,form.Password,form.Email)
 		return errOrNil
 	});
 
@@ -41,7 +49,7 @@ func (this UserRouteHandlers) SignUp(c *gin.Context)  {
 	if(err != nil){
 		api_reply.Failure(c, err)
 	} else {
-		api_reply.Success(c, gin.H{"user" : user})
+		api_reply.Success(c, gin.H{"user" : user, "token": loginToken})
 	}
 }
 
@@ -52,9 +60,8 @@ type loginForm struct {
 func (this UserRouteHandlers) Login(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
+	loginUser := this.Container.LoginUser(work)
 	/***************************/
-
 
 	var user entities.User
 	var loginToken string
@@ -64,7 +71,7 @@ func (this UserRouteHandlers) Login(c *gin.Context) {
 			return formErr
 		}
 
-		user, loginToken, errOrNil = authService.LoginUser(form.Username, form.Password)
+		user, loginToken, errOrNil = loginUser.Execute(form.Username, form.Password)
 		return errOrNil
 	});
 
@@ -82,7 +89,7 @@ type verifyTokenForm struct {
 func (this UserRouteHandlers) VerifyToken(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	authService := this.Container.AuthService(work)
+	verifyToken := this.Container.VerifyToken()
 	/***************************/
 
 
@@ -93,7 +100,7 @@ func (this UserRouteHandlers) VerifyToken(c *gin.Context) {
 			return formErr
 		}
 
-		user, errOrNil = authService.VerifyToken(form.TokenString)
+		user, errOrNil = verifyToken.Execute(form.TokenString)
 		return errOrNil
 	})
 

@@ -24,7 +24,7 @@ func NewCreateChapterAndPath(
 	}
 }
 
-func (this CreateChapterAndPath) CreateChapterAndPath(
+func (this CreateChapterAndPath) Execute(
 	user entities.User,
 	form entities.Chapter_And_Path_CreationForm,
 ) (chapter entities.Chapter,chapter_path entities.ChapterPath, err app_error.AppError){

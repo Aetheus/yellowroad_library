@@ -15,8 +15,8 @@ type UpdatePathBetweenChapters struct {
 }
 
 func NewUpdatePathBetweenChapters(
-	chapterPathRepo chapterpath_repo.ChapterPathRepository,
 	chapterRepo chapter_repo.ChapterRepository,
+	chapterPathRepo chapterpath_repo.ChapterPathRepository,
 	bookRepo book_repo.BookRepository,
 ) UpdatePathBetweenChapters {
 	return UpdatePathBetweenChapters{

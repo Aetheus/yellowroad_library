@@ -12,7 +12,7 @@ import (
 
 func ROUTES(
 	ginEngine *gin.Engine,
-	container containers.Container,
+	container containers.AppContainer,
 ){
 	// Group to prefix all routes with "api"
 	public_api := ginEngine.Group("api")

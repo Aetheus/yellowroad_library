@@ -6,12 +6,22 @@ import (
 	"yellowroad_library/database/entities"
 	"yellowroad_library/utils/api_reply"
 	"yellowroad_library/utils/gin_tools"
-	"yellowroad_library/containers"
 	"yellowroad_library/http/middleware/auth_middleware"
+	"yellowroad_library/database/repo/uow"
+	"yellowroad_library/services/chapter_domain"
 )
 
+
+type ChapterCrudContainer interface {
+	UnitOfWork() uow.UnitOfWork
+	CreateChapterAndPath(uow.UnitOfWork) chapter_domain.CreateChapterAndPath
+	UpdateChapter(uow.UnitOfWork) chapter_domain.UpdateChapter
+	DeleteChapter(uow.UnitOfWork) chapter_domain.DeleteChapter
+	CreatePathBetweenChapters(uow.UnitOfWork) chapter_domain.CreatePathBetweenChapters
+	UpdatePathBetweenChapters(uow.UnitOfWork) chapter_domain.UpdatePathBetweenChapters
+}
 type ChapterCrudHandlers struct {
-	Container containers.Container
+	Container ChapterCrudContainer
 }
 
 func (this ChapterCrudHandlers) FetchSingleChapter(c *gin.Context) {
@@ -76,7 +86,7 @@ func (this ChapterCrudHandlers) FetchChaptersIndex(c *gin.Context) {
 func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	chapterService  := this.Container.ChapterService(work)
+	createChapterAndPath := this.Container.CreateChapterAndPath(work)
 	/***************************/
 
 	var form entities.Chapter_And_Path_CreationForm
@@ -100,7 +110,7 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 			return err
 		}
 
-		newChapter, newPath, err = chapterService.CreateChapterAndPath(user,form)
+		newChapter, newPath, err = createChapterAndPath.Execute(user,form)
 		if (err != nil) {
 			return err
 		}
@@ -120,7 +130,7 @@ func (this ChapterCrudHandlers) CreateChapter(c *gin.Context) {
 func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	chapterService  := this.Container.ChapterService(work)
+	updateChapter := this.Container.UpdateChapter(work)
 	/***************************/
 
 	var updatedChapter entities.Chapter
@@ -142,7 +152,7 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 			return err
 		}
 
-		updatedChapter, err = chapterService.UpdateChapter(currentUser,chapterId, chapterForm)
+		updatedChapter, err = updateChapter.Execute(currentUser,chapterId, chapterForm)
 		return nil
 	})
 
@@ -157,7 +167,7 @@ func (this ChapterCrudHandlers) UpdateChapter (c *gin.Context) {
 func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	chapterService  := this.Container.ChapterService(work)
+	deleteChapter := this.Container.DeleteChapter(work)
 	/***************************/
 
 	err := work.AutoCommit(func () app_error.AppError {
@@ -171,7 +181,7 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 			return err
 		}
 
-		err = chapterService.DeleteChapter(user,chapterId)
+		err = deleteChapter.Execute(user,chapterId)
 		if(err != nil){
 			return err
 		}
@@ -189,7 +199,7 @@ func (this ChapterCrudHandlers) DeleteChapter(c *gin.Context){
 func (this ChapterCrudHandlers) CreateChapterPath(c *gin.Context) {
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	chapterService  := this.Container.ChapterService(work)
+	createPathBetweenChapters := this.Container.CreatePathBetweenChapters(work)
 	/***************************/
 
 	var newPath entities.ChapterPath
@@ -206,7 +216,7 @@ func (this ChapterCrudHandlers) CreateChapterPath(c *gin.Context) {
 			return err
 		}
 
-		newPath, err = chapterService.CreatePathBetweenChapters(currentUser, form)
+		newPath, err = createPathBetweenChapters.Execute(currentUser, form)
 		if (err != nil) {
 			return err
 		}
@@ -224,7 +234,7 @@ func (this ChapterCrudHandlers) CreateChapterPath(c *gin.Context) {
 func (this ChapterCrudHandlers) UpdateChapterPath(c *gin.Context){
 	/*Dependencies**************/
 	work := this.Container.UnitOfWork()
-	chapterService  := this.Container.ChapterService(work)
+	updatePathBetweenChapters := this.Container.UpdatePathBetweenChapters(work)
 	/***************************/
 
 	var chapter_path entities.ChapterPath
@@ -247,7 +257,7 @@ func (this ChapterCrudHandlers) UpdateChapterPath(c *gin.Context){
 			return err
 		}
 
-		chapter_path, err = chapterService.UpdatePathBetweenChapters(currentUser,chapter_path_id, update_form)
+		chapter_path, err = updatePathBetweenChapters.Execute(currentUser,chapter_path_id, update_form)
 		if err != nil {
 			return err
 		}
