@@ -5,6 +5,24 @@ import (
 	"net/http"
 )
 
+func ServerError (httpErrorCode int, contextMessage string) AppError {
+	enhancedError := merry.New(contextMessage).
+						WithUserMessage("An unexpected error has occured").
+						WithHTTPCode(httpErrorCode)
+	return &appError {
+		enhancedError : enhancedError,
+	}
+}
+
+func ClientError(httpErrorCode int, endpointMessage string) AppError {
+	enhancedError := merry.New(endpointMessage).
+						WithUserMessage(endpointMessage).
+						WithHTTPCode(httpErrorCode)
+	return &appError {
+		enhancedError : enhancedError,
+	}
+}
+
 func New (httpErrorCode int, contextMessage string, endpointMessage string) AppError {
 	enhancedError := merry.New(contextMessage).WithUserMessage(endpointMessage).WithHTTPCode(httpErrorCode)
 	return &appError {
@@ -27,8 +45,8 @@ func Wrap (err error) AppError {
 		return nil
 	} else {
 		enhancedError := merry.Wrap(err).
-			WithHTTPCode(http.StatusInternalServerError).
-			WithUserMessage("An unhandled error occurred")
+							WithHTTPCode(http.StatusInternalServerError).
+							WithUserMessage("An unhandled error occurred")
 
 		return &appError {
 			enhancedError : enhancedError,
@@ -51,6 +69,8 @@ type AppError interface{
 
 	HttpCode() int
 	SetHttpCode(code int) AppError
+
+	IsServerErr() bool
 }
 
 
@@ -81,6 +101,15 @@ func (this *appError) SetHttpCode(code int) AppError {
 }
 func (this appError) HttpCode() int {
 	return merry.HTTPCode(this.enhancedError)
+}
+
+func (this appError) IsServerErr() bool {
+	errCode := merry.HTTPCode(this.enhancedError)
+	if errCode >= 500 && errCode < 600 {
+		return true
+	} else {
+		return false
+	}
 }
 
 
